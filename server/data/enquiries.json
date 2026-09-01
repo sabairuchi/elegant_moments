@@ -1,0 +1,53 @@
+[
+  {
+    "id": "ENQ-960774",
+    "name": "Ruchi sabai",
+    "email": "sabairuchi@gmail.com",
+    "phone": "09856321475",
+    "eventType": "Luxury Wedding",
+    "eventDate": "",
+    "location": "udaipur",
+    "guestCount": "100 - 200 Guests",
+    "estimatedBudget": "$150,000 - $250,000",
+    "servicesRequired": [
+      "Luxury Wedding Planning"
+    ],
+    "vision": "",
+    "status": "New",
+    "createdAt": "2026-08-31T09:52:40.774Z"
+  },
+  {
+    "id": "ENQ-460053",
+    "name": "Lady Catherine",
+    "email": "catherine@example.com",
+    "phone": "",
+    "eventType": "Royal Wedding",
+    "eventDate": "",
+    "location": "",
+    "guestCount": "",
+    "estimatedBudget": "",
+    "servicesRequired": [],
+    "vision": "Chateau celebration",
+    "status": "New",
+    "createdAt": "2026-08-31T09:27:40.053Z"
+  },
+  {
+    "id": "ENQ-1001",
+    "name": "Victoria Sterling & Alexander Wright",
+    "email": "victoria@example.com",
+    "phone": "+1 (555) 234-5678",
+    "eventType": "Destination Wedding",
+    "eventDate": "2027-06-18",
+    "location": "Villa d'Este, Lake Como, Italy",
+    "guestCount": "120-150",
+    "estimatedBudget": "$250,000+",
+    "servicesRequired": [
+      "Luxury Wedding Planning",
+      "Destination Weddings",
+      "Hospitality & Concierge"
+    ],
+    "vision": "We envision an intimate 3-day luxury celebration overlooking Lake Como with editorial floral styling, candlelit banquet tables, private boat transfers for guests, and acoustic live orchestra.",
+    "status": "New",
+    "createdAt": "2026-08-30T10:15:00.000Z"
+  }
+]

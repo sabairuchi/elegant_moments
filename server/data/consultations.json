@@ -1,0 +1,12 @@
+[
+  {
+    "id": "CNS-2001",
+    "name": "Eleanor Vance",
+    "email": "eleanor.vance@example.com",
+    "phone": "+1 (555) 987-6543",
+    "preferredTime": "Afternoon (2PM - 5PM)",
+    "note": "Looking for advice on a private estate wedding in Paris.",
+    "status": "Pending",
+    "createdAt": "2026-08-31T09:00:00.000Z"
+  }
+]
