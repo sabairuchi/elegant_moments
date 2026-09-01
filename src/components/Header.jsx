@@ -95,7 +95,7 @@ export default function Header({ onOpenEnquiry }) {
           width: '100%',
           zIndex: 1000,
           backgroundColor: '#3B161B', // Deep Burgundy as in Image 1
-          borderBottom: '1px solid rgba(201, 168, 106, 0.25)',
+          borderBottom: 'none',
           boxShadow: isScrolled
             ? '0 10px 30px rgba(0, 0, 0, 0.4)'
             : '0 4px 20px rgba(0, 0, 0, 0.2)',

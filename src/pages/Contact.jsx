@@ -19,7 +19,7 @@ export default function Contact({ onOpenEnquiry }) {
   };
 
   return (
-    <div style={{ paddingTop: '5rem', backgroundColor: 'var(--color-ivory)' }}>
+    <div style={{ paddingTop: '74px', backgroundColor: 'var(--color-ivory)' }}>
       {/* 9. CONTACT — EMOTIONAL ATELIER HERO (Deep Burgundy) */}
       <section
         style={{

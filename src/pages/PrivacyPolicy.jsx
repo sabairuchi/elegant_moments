@@ -3,7 +3,7 @@ import { Shield, Sparkles } from '../components/Icons';
 
 export default function PrivacyPolicy() {
   return (
-    <div style={{ paddingTop: '5rem', backgroundColor: 'var(--color-ivory)', minHeight: '100vh' }}>
+    <div style={{ paddingTop: '74px', backgroundColor: 'var(--color-ivory)', minHeight: '100vh' }}>
       {/* Editorial Header */}
       <section className="section-padding bg-ivory-dark" style={{ borderBottom: '1px solid var(--color-border-subtle)' }}>
         <div className="container-luxury" style={{ maxWidth: '850px' }}>

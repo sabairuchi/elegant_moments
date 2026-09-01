@@ -4,7 +4,7 @@ import { TEAM_MEMBERS } from '../data/content';
 
 export default function About({ onOpenEnquiry }) {
   return (
-    <div style={{ paddingTop: '5rem', backgroundColor: 'var(--color-ivory)' }}>
+    <div style={{ paddingTop: '74px', backgroundColor: 'var(--color-ivory)' }}>
       {/* 2. ABOUT — EDITORIAL STORY HERO (Split Composition) */}
       <section className="section-padding bg-ivory-dark" style={{ borderBottom: '1px solid var(--color-border-subtle)' }}>
         <div className="container-luxury">

@@ -6,7 +6,7 @@ export default function Stories({ onOpenEnquiry }) {
   const [activeStory, setActiveStory] = useState(null);
 
   return (
-    <div style={{ paddingTop: '5rem', backgroundColor: 'var(--color-ivory)' }}>
+    <div style={{ paddingTop: '74px', backgroundColor: 'var(--color-ivory)' }}>
       {/* 7. WEDDING STORIES — STORYTELLING MAGAZINE HERO (Layered Composition) */}
       <section className="section-padding bg-ivory-dark" style={{ borderBottom: '1px solid var(--color-border-subtle)', position: 'relative' }}>
         <div className="container-luxury">

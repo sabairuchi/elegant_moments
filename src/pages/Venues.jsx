@@ -17,7 +17,7 @@ export default function Venues({ onOpenEnquiry }) {
   });
 
   return (
-    <div style={{ paddingTop: '5rem', backgroundColor: 'var(--color-ivory)' }}>
+    <div style={{ paddingTop: '74px', backgroundColor: 'var(--color-ivory)' }}>
       {/* 5. VENUES — DESTINATION SANCTUARY HERO (Full Width Cinematic) */}
       <section
         style={{

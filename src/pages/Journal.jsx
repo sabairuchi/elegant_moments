@@ -13,7 +13,7 @@ export default function Journal() {
   );
 
   return (
-    <div style={{ paddingTop: '5rem', backgroundColor: 'var(--color-ivory)' }}>
+    <div style={{ paddingTop: '74px', backgroundColor: 'var(--color-ivory)' }}>
       {/* 8. JOURNAL — EDITORIAL MAGAZINE HERO WITH ARCHITECTURAL BACKGROUND */}
       <section
         style={{

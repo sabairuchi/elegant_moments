@@ -4,7 +4,7 @@ import { EXPERIENCES, CINEMATIC_VIDEOS } from '../data/content';
 
 export default function Experiences({ onOpenEnquiry }) {
   return (
-    <div style={{ paddingTop: '5rem', backgroundColor: 'var(--color-ivory)' }}>
+    <div style={{ paddingTop: '74px', backgroundColor: 'var(--color-ivory)' }}>
       {/* 3. EXPERIENCES — IMMERSIVE HERO WITH VIDEO */}
       <section
         style={{

@@ -14,7 +14,7 @@ export default function Portfolio({ onOpenEnquiry }) {
   );
 
   return (
-    <div style={{ paddingTop: '5rem', backgroundColor: 'var(--color-ivory)' }}>
+    <div style={{ paddingTop: '74px', backgroundColor: 'var(--color-ivory)' }}>
       {/* 6. PORTFOLIO — VISUAL HERO (Photography Centric) */}
       <section
         style={{
