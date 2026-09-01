@@ -20,30 +20,14 @@ export default function Home({ onOpenEnquiry }) {
   return (
     <div style={{ width: '100%', backgroundColor: 'var(--color-ivory)' }}>
       {/* 1. CINEMATIC VIDEO HERO (Full Viewport 100vh) */}
-      <section
-        style={{
-          position: 'relative',
-          height: '100vh',
-          width: '100%',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          overflow: 'hidden',
-          backgroundColor: 'var(--color-burgundy-dark)',
-          color: 'var(--color-ivory)',
-        }}
-      >
-        {/* Full Viewport Background Video / Poster (Natural Appearance) */}
-        <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', zIndex: 1 }}>
+      <section className="hero-section">
+        {/* Full Viewport Background Video & Poster (Natural Color Appearance) */}
+        <div className="hero-video-container">
           {prefersReducedMotion ? (
             <img
               src="https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=2000&q=90"
-              alt="Cinematic Wedding Poster"
-              style={{
-                width: '100%',
-                height: '100%',
-                objectFit: 'cover',
-              }}
+              alt="Cinematic Luxury Wedding"
+              className="hero-video"
             />
           ) : (
             <video
@@ -53,112 +37,110 @@ export default function Home({ onOpenEnquiry }) {
               playsInline
               preload="auto"
               poster="https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=2000&q=90"
-              style={{
-                width: '100%',
-                height: '100%',
-                objectFit: 'cover',
-              }}
+              className="hero-video"
             >
+              <source src={CINEMATIC_VIDEOS.heroFallback || CINEMATIC_VIDEOS.hero} type="video/mp4" />
               <source src={CINEMATIC_VIDEOS.hero} type="video/mp4" />
-              <source src={CINEMATIC_VIDEOS.heroFallback} type="video/mp4" />
             </video>
           )}
+          {/* Subtle localized vignette overlay - keeps natural video colors visible, NO burgundy tint */}
+          <div className="hero-vignette" />
         </div>
 
         {/* Hero Overlay Content */}
-        <div
-          className="container-luxury"
-          style={{
-            position: 'relative',
-            zIndex: 2,
-            textAlign: 'center',
-            maxWidth: '1050px',
-            padding: '0 1.5rem',
-          }}
-        >
-          <div className="hero-eyebrow-reveal">
+        <div className="container-luxury hero-content-wrapper">
+          {/* Eyebrow */}
+          <div className="hero-anim-eyebrow">
             <span
-              className="eyebrow-label"
               style={{
-                color: 'var(--color-gold)',
-                marginBottom: '1.5rem',
+                display: 'inline-block',
+                fontFamily: 'var(--font-sans)',
+                fontSize: 'clamp(0.72rem, 1.1vw, 0.85rem)',
                 letterSpacing: '0.38em',
-                textShadow: '0 2px 12px rgba(0,0,0,0.6)',
+                textTransform: 'uppercase',
+                color: 'var(--color-gold-light)',
+                fontWeight: '600',
+                marginBottom: '1.4rem',
+                textShadow: '0 2px 10px rgba(0,0,0,0.7)',
               }}
             >
               ELEGANT MOMENTS
             </span>
           </div>
 
-          <div className="hero-title-reveal">
+          {/* Main Heading */}
+          <div className="hero-anim-heading">
             <h1
               style={{
-                fontSize: 'clamp(3.2rem, 7.5vw, 6.2rem)',
-                color: 'var(--color-ivory)',
+                fontSize: 'clamp(2.8rem, 6.8vw, 6rem)',
+                color: 'var(--color-ivory-pure)',
                 fontFamily: 'var(--font-serif)',
-                letterSpacing: '0.06em',
-                lineHeight: '1.02',
+                letterSpacing: '0.08em',
+                lineHeight: '1.05',
                 marginBottom: '1.6rem',
-                fontWeight: '400',
-                textShadow: '0 3px 20px rgba(0,0,0,0.7), 0 6px 40px rgba(0,0,0,0.5)',
+                fontWeight: '300',
+                textShadow: '0 3px 25px rgba(0,0,0,0.65), 0 6px 45px rgba(0,0,0,0.4)',
+                textTransform: 'uppercase',
               }}
             >
               WHERE MOMENTS<br />BECOME MEMORIES
             </h1>
           </div>
 
-          <div className="hero-subtext-reveal">
+          {/* Supporting Text */}
+          <div className="hero-anim-subtext">
             <p
               style={{
-                fontFamily: 'var(--font-serif)',
-                fontSize: 'clamp(1.2rem, 2.2vw, 1.8rem)',
-                color: 'var(--color-gold)',
-                fontStyle: 'italic',
+                fontFamily: 'var(--font-sans)',
+                fontSize: 'clamp(1.05rem, 1.8vw, 1.35rem)',
+                color: 'rgba(255, 255, 255, 0.92)',
                 fontWeight: '300',
+                letterSpacing: '0.02em',
                 marginBottom: '2.8rem',
-                maxWidth: '680px',
-                margin: '0 auto 2.8rem',
-                lineHeight: '1.4',
-                textShadow: '0 2px 15px rgba(0,0,0,0.7)',
+                maxWidth: '650px',
+                lineHeight: '1.5',
+                textShadow: '0 2px 12px rgba(0,0,0,0.75)',
               }}
             >
               "Luxury celebrations, thoughtfully crafted around your story."
             </p>
           </div>
 
-          <div className="hero-buttons-reveal" style={{ display: 'flex', gap: '1.5rem', justifyContent: 'center', flexWrap: 'wrap' }}>
-            <button onClick={onOpenEnquiry} className="btn-gold" style={{ padding: '1.1rem 2.8rem', fontSize: '0.85rem' }}>
+          {/* CTA Buttons */}
+          <div className="hero-anim-cta hero-cta-group">
+            <button onClick={onOpenEnquiry} className="btn-hero-primary">
               BEGIN YOUR STORY →
             </button>
-            <a href="#explore-world" className="btn-outline-gold" style={{ padding: '1.1rem 2.5rem', fontSize: '0.85rem' }}>
+            <a href="#explore-world" className="btn-hero-secondary">
               EXPLORE OUR WORLD ↓
             </a>
           </div>
         </div>
 
         {/* Scroll Indicator */}
-        <div
-          className="hero-scroll-indicator"
+        <a
+          href="#explore-world"
+          className="hero-anim-scroll"
           style={{
             position: 'absolute',
-            bottom: '2.5rem',
+            bottom: '2.2rem',
             left: '50%',
             transform: 'translateX(-50%)',
-            zIndex: 2,
-            color: 'var(--color-gold)',
+            zIndex: 3,
+            color: 'var(--color-gold-light)',
             fontSize: '0.72rem',
-            letterSpacing: '0.3em',
+            letterSpacing: '0.32em',
             textTransform: 'uppercase',
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
-            gap: '0.6rem',
-            opacity: 0.85,
+            gap: '0.5rem',
+            textDecoration: 'none',
           }}
         >
-          <span>EXPLORE</span>
-          <div style={{ width: '1px', height: '32px', backgroundColor: 'var(--color-gold)', animation: 'pulseHeight 2.5s ease-in-out infinite' }} />
-        </div>
+          <span style={{ fontWeight: '500', textShadow: '0 2px 8px rgba(0,0,0,0.7)' }}>EXPLORE</span>
+          <span className="scroll-arrow-pulse" style={{ fontSize: '1.1rem', textShadow: '0 2px 8px rgba(0,0,0,0.7)' }}>↓</span>
+        </a>
       </section>
 
       {/* 2. EDITORIAL MANIFESTO */}
