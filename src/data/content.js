@@ -2,6 +2,9 @@
 
 export const BRAND = {
   name: "Elegant Moments",
+  logo: "/logo.png",
+  logoTransparent: "/logo-transparent.png",
+  logoEmblem: "/logo-emblem.png",
   tagline: "Where Moments Become Memories.",
   subtext: "Luxury wedding and event experiences crafted around your story, style and vision.",
   address: "740 Park Avenue, Suite 1800, New York & Via Montenapoleone 8, Milan",

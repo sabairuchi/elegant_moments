@@ -15,30 +15,47 @@ export default function Footer() {
       }}
     >
       <div className="container-luxury" style={{ textAlign: 'center', maxWidth: '950px' }}>
-        {/* Centered Wordmark & Tagline */}
-        <Link to="/" style={{ textDecoration: 'none', display: 'inline-block', marginBottom: '1.2rem' }}>
-          <span
+        {/* Centered Luxury Logo & Tagline */}
+        <Link
+          to="/"
+          style={{
+            textDecoration: 'none',
+            display: 'inline-flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            marginBottom: '1.5rem',
+          }}
+          aria-label="Elegant Moments Home"
+        >
+          <img
+            src="/logo-transparent.png"
+            alt="Elegant Moments Wedding Planner & Management"
             style={{
-              fontFamily: 'var(--font-serif)',
-              fontSize: '2rem',
-              color: 'var(--color-ivory)',
-              letterSpacing: '0.15em',
-              fontWeight: '400',
-              lineHeight: 1,
-              display: 'block',
+              height: 'clamp(85px, 12vw, 115px)',
+              width: 'auto',
+              objectFit: 'contain',
+              filter: 'drop-shadow(0 4px 15px rgba(0, 0, 0, 0.4))',
+              transition: 'transform 0.4s ease, filter 0.4s ease',
             }}
-          >
-            ELEGANT MOMENTS
-          </span>
+            onMouseEnter={(e) => {
+              e.currentTarget.style.transform = 'scale(1.04)';
+              e.currentTarget.style.filter = 'drop-shadow(0 6px 20px rgba(201, 168, 106, 0.5))';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = 'scale(1)';
+              e.currentTarget.style.filter = 'drop-shadow(0 4px 15px rgba(0, 0, 0, 0.4))';
+            }}
+          />
           <span
             style={{
               fontFamily: 'var(--font-sans)',
-              fontSize: '0.62rem',
-              letterSpacing: '0.35em',
-              color: 'var(--color-gold)',
+              fontSize: '0.68rem',
+              letterSpacing: '0.38em',
+              color: 'var(--color-gold-light)',
               textTransform: 'uppercase',
-              marginTop: '0.4rem',
-              display: 'block',
+              marginTop: '0.6rem',
+              fontWeight: '500',
+              opacity: 0.9,
             }}
           >
             Where Moments Become Memories

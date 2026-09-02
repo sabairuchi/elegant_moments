@@ -80,9 +80,10 @@ export default function Docs() {
           <div style={{ display: 'flex', gap: '1rem', borderBottom: '1px solid var(--color-border-subtle)', marginBottom: '3rem', flexWrap: 'wrap' }}>
             {[
               { id: 'overview', label: '1. Overview & Setup', icon: Terminal },
-              { id: 'structure', label: '2. Project Structure', icon: Layers },
-              { id: 'enquiry', label: '3. Enquiry API Flow', icon: Database },
-              { id: 'milestone2', label: '4. Milestone 2 Prep', icon: Code },
+              { id: 'brand', label: '2. Brand Assets & Logo Kit', icon: Sparkles },
+              { id: 'structure', label: '3. Project Structure', icon: Layers },
+              { id: 'enquiry', label: '4. Enquiry API Flow', icon: Database },
+              { id: 'milestone2', label: '5. Milestone 2 Prep', icon: Code },
             ].map((tab) => {
               const IconComp = tab.icon;
               const isActive = activeTab === tab.id;
@@ -141,6 +142,54 @@ export default function Docs() {
                   <li><strong>Client-Side Validation & Multi-Step Wizard:</strong> The "Tell Us Your Story" modal breaks lengthy input into 3 logical steps to maximize conversion while verifying email syntax and required fields.</li>
                   <li><strong>Data Persistence Layer:</strong> API entries are saved to disk (`server/data/enquiries.json`) ensuring submitted requests persist across server restarts.</li>
                 </ul>
+              </div>
+            </div>
+          )}
+
+          {/* TAB 2: BRAND ASSETS & LOGO KIT */}
+          {activeTab === 'brand' && (
+            <div>
+              <h2 style={{ color: 'var(--color-burgundy)', marginBottom: '1rem' }}>Official Brand Logo Identity & Asset Kit</h2>
+              <p style={{ color: 'var(--color-charcoal-muted)', lineHeight: '1.7', marginBottom: '2rem' }}>
+                The official 3D metallic gold <strong>Elegant Moments</strong> logo identity system is integrated across the website header, footer, modals, and favicon. Below are the production asset files:
+              </p>
+
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '2rem' }}>
+                {/* Full Logo Card */}
+                <div style={{ padding: '1.8rem', backgroundColor: 'var(--color-burgundy-dark)', border: '1px solid var(--color-gold)', borderRadius: '4px', textAlign: 'center' }}>
+                  <div style={{ padding: '1rem', backgroundColor: 'rgba(255,255,255,0.03)', borderRadius: '4px', marginBottom: '1.2rem', minHeight: '140px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <img src="/logo-transparent.png" alt="Full Transparent Logo" style={{ maxHeight: '110px', maxWidth: '100%', objectFit: 'contain' }} />
+                  </div>
+                  <h3 style={{ color: 'var(--color-ivory)', fontSize: '1.1rem', marginBottom: '0.4rem', fontFamily: 'var(--font-serif)' }}>1. Full Gold Logo (Transparent)</h3>
+                  <code style={{ fontSize: '0.78rem', color: 'var(--color-gold)', display: 'block', marginBottom: '1rem' }}>/logo-transparent.png</code>
+                  <a href="/logo-transparent.png" download="ElegantMoments_FullLogo_Transparent.png" className="btn-gold" style={{ display: 'inline-block', padding: '0.5rem 1.2rem', fontSize: '0.75rem' }}>
+                    DOWNLOAD PNG ↓
+                  </a>
+                </div>
+
+                {/* Emblem Crest Card */}
+                <div style={{ padding: '1.8rem', backgroundColor: 'var(--color-ivory-pure)', border: '1px solid var(--color-gold)', borderRadius: '4px', textAlign: 'center' }}>
+                  <div style={{ padding: '1rem', backgroundColor: 'var(--color-ivory-dark)', borderRadius: '4px', marginBottom: '1.2rem', minHeight: '140px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <img src="/logo-emblem.png" alt="Monogram Emblem Crest" style={{ maxHeight: '100px', maxWidth: '100%', objectFit: 'contain' }} />
+                  </div>
+                  <h3 style={{ color: 'var(--color-burgundy)', fontSize: '1.1rem', marginBottom: '0.4rem', fontFamily: 'var(--font-serif)' }}>2. Gold Monogram Emblem Crest</h3>
+                  <code style={{ fontSize: '0.78rem', color: 'var(--color-gold-dark)', display: 'block', marginBottom: '1rem' }}>/logo-emblem.png</code>
+                  <a href="/logo-emblem.png" download="ElegantMoments_Emblem_Crest.png" className="btn-primary" style={{ display: 'inline-block', padding: '0.5rem 1.2rem', fontSize: '0.75rem' }}>
+                    DOWNLOAD PNG ↓
+                  </a>
+                </div>
+
+                {/* Master Original Card */}
+                <div style={{ padding: '1.8rem', backgroundColor: '#ffffff', border: '1px solid var(--color-border)', borderRadius: '4px', textAlign: 'center' }}>
+                  <div style={{ padding: '1rem', backgroundColor: '#FAF7F0', borderRadius: '4px', marginBottom: '1.2rem', minHeight: '140px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <img src="/logo.png" alt="Master Original Logo" style={{ maxHeight: '110px', maxWidth: '100%', objectFit: 'contain' }} />
+                  </div>
+                  <h3 style={{ color: 'var(--color-burgundy)', fontSize: '1.1rem', marginBottom: '0.4rem', fontFamily: 'var(--font-serif)' }}>3. Master Gold Logo (Original)</h3>
+                  <code style={{ fontSize: '0.78rem', color: 'var(--color-charcoal-muted)', display: 'block', marginBottom: '1rem' }}>/logo.png</code>
+                  <a href="/logo.png" download="ElegantMoments_MasterLogo.png" className="btn-secondary" style={{ display: 'inline-block', padding: '0.5rem 1.2rem', fontSize: '0.75rem' }}>
+                    DOWNLOAD MASTER ↓
+                  </a>
+                </div>
               </div>
             </div>
           )}

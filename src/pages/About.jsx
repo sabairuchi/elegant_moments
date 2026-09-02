@@ -20,7 +20,12 @@ export default function About({ onOpenEnquiry }) {
 
             {/* Right: Editorial Typography */}
             <div>
-              <span className="eyebrow-label" style={{ marginBottom: '1.5rem' }}>
+              <img
+                src="/logo-emblem.png"
+                alt="Elegant Moments Crest"
+                style={{ height: '70px', width: 'auto', objectFit: 'contain', marginBottom: '1.2rem' }}
+              />
+              <span className="eyebrow-label" style={{ marginBottom: '1.5rem', display: 'block' }}>
                 THE ELEGANT MOMENTS STORY
               </span>
 

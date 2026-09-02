@@ -33,9 +33,19 @@ export default function Contact({ onOpenEnquiry }) {
         }}
       >
         <div className="container-luxury" style={{ maxWidth: '750px' }}>
-          {/* Subtle Monogram Artwork */}
-          <div style={{ fontFamily: 'var(--font-serif)', fontSize: '1.4rem', letterSpacing: '0.3em', color: 'var(--color-gold)', marginBottom: '1.2rem', opacity: 0.85 }}>
-            ✦ EM ✦
+          {/* Official Gold Brand Logo Emblem */}
+          <div style={{ marginBottom: '1.5rem', textAlign: 'center' }}>
+            <img
+              src="/logo-transparent.png"
+              alt="Elegant Moments Logo"
+              style={{
+                height: '95px',
+                width: 'auto',
+                objectFit: 'contain',
+                margin: '0 auto',
+                filter: 'drop-shadow(0 4px 15px rgba(0, 0, 0, 0.4))',
+              }}
+            />
           </div>
 
           <span className="eyebrow-label" style={{ color: 'var(--color-gold)', marginBottom: '1.2rem' }}>

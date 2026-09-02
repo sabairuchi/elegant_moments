@@ -185,43 +185,39 @@ export default function Header({ onOpenEnquiry }) {
             </button>
           </div>
 
-          {/* Center Brand Logo (Image 1) */}
+          {/* Center Brand Logo (Image 1 & 2) */}
           <Link
             to="/"
             style={{
               textDecoration: 'none',
               textAlign: 'center',
               display: 'flex',
-              flexDirection: 'column',
               alignItems: 'center',
+              justifyContent: 'center',
+              gap: '0.6rem',
+              padding: '0.2rem 0',
             }}
+            aria-label="Elegant Moments Home"
           >
-            <span
+            <img
+              src="/logo-transparent.png"
+              alt="Elegant Moments Luxury Wedding & Management Logo"
               style={{
-                fontFamily: 'var(--font-serif)',
-                fontSize: 'clamp(1.25rem, 2.2vw, 1.7rem)',
-                fontWeight: '400',
-                color: 'var(--color-ivory-pure)',
-                letterSpacing: '0.14em',
-                lineHeight: 1.05,
-                textTransform: 'uppercase',
+                height: 'clamp(46px, 5.5vh, 56px)',
+                width: 'auto',
+                objectFit: 'contain',
+                filter: 'drop-shadow(0 2px 8px rgba(0, 0, 0, 0.4))',
+                transition: 'transform 0.3s ease, filter 0.3s ease',
               }}
-            >
-              ELEGANT MOMENTS
-            </span>
-            <span
-              style={{
-                fontFamily: 'var(--font-sans)',
-                fontSize: 'clamp(0.5rem, 0.8vw, 0.62rem)',
-                letterSpacing: '0.34em',
-                color: 'var(--color-gold)',
-                textTransform: 'uppercase',
-                fontWeight: '500',
-                marginTop: '0.2rem',
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = 'scale(1.03)';
+                e.currentTarget.style.filter = 'drop-shadow(0 4px 12px rgba(201, 168, 106, 0.4))';
               }}
-            >
-              LUXURY WEDDING & EVENTS
-            </span>
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = 'scale(1)';
+                e.currentTarget.style.filter = 'drop-shadow(0 2px 8px rgba(0, 0, 0, 0.4))';
+              }}
+            />
           </Link>
 
           {/* Right Action: BEGIN YOUR STORY CTA Button */}
@@ -300,35 +296,42 @@ export default function Header({ onOpenEnquiry }) {
               borderBottom: '1px solid rgba(41, 38, 38, 0.08)',
             }}
           >
-            <div>
-              <span
-                style={{
-                  display: 'block',
-                  fontFamily: 'var(--font-serif)',
-                  fontSize: '1.45rem',
-                  color: 'var(--color-burgundy)',
-                  letterSpacing: '0.12em',
-                  lineHeight: 1.1,
-                  textTransform: 'uppercase',
-                  fontWeight: '400',
-                }}
-              >
-                ELEGANT<br />MOMENTS
-              </span>
-              <span
-                style={{
-                  display: 'block',
-                  fontFamily: 'var(--font-sans)',
-                  fontSize: '0.56rem',
-                  letterSpacing: '0.3em',
-                  color: 'var(--color-gold-dark)',
-                  textTransform: 'uppercase',
-                  marginTop: '0.35rem',
-                  fontWeight: '600',
-                }}
-              >
-                LUXURY WEDDING & EVENTS
-              </span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.8rem' }}>
+              <img
+                src="/logo-emblem.png"
+                alt="Elegant Moments Crest"
+                style={{ height: '48px', width: 'auto', objectFit: 'contain' }}
+              />
+              <div>
+                <span
+                  style={{
+                    display: 'block',
+                    fontFamily: 'var(--font-serif)',
+                    fontSize: '1.25rem',
+                    color: 'var(--color-burgundy)',
+                    letterSpacing: '0.12em',
+                    lineHeight: 1.1,
+                    textTransform: 'uppercase',
+                    fontWeight: '500',
+                  }}
+                >
+                  ELEGANT<br />MOMENTS
+                </span>
+                <span
+                  style={{
+                    display: 'block',
+                    fontFamily: 'var(--font-sans)',
+                    fontSize: '0.52rem',
+                    letterSpacing: '0.28em',
+                    color: 'var(--color-gold-dark)',
+                    textTransform: 'uppercase',
+                    marginTop: '0.25rem',
+                    fontWeight: '600',
+                  }}
+                >
+                  LUXURY WEDDINGS
+                </span>
+              </div>
             </div>
 
             <button

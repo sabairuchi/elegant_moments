@@ -49,8 +49,20 @@ export default function Home({ onOpenEnquiry }) {
 
         {/* Hero Overlay Content */}
         <div className="container-luxury hero-content-wrapper">
-          {/* Eyebrow */}
-          <div className="hero-anim-eyebrow">
+          {/* Gold Logo Crest Floating in Hero */}
+          <div className="hero-anim-eyebrow" style={{ textAlign: 'center', marginBottom: '1.2rem' }}>
+            <img
+              src="/logo-transparent.png"
+              alt="Elegant Moments Luxury Emblem"
+              style={{
+                height: 'clamp(70px, 10vh, 100px)',
+                width: 'auto',
+                objectFit: 'contain',
+                margin: '0 auto 1.2rem',
+                display: 'block',
+                filter: 'drop-shadow(0 4px 15px rgba(0, 0, 0, 0.6))',
+              }}
+            />
             <span
               style={{
                 display: 'inline-block',
@@ -60,7 +72,6 @@ export default function Home({ onOpenEnquiry }) {
                 textTransform: 'uppercase',
                 color: 'var(--color-gold-light)',
                 fontWeight: '600',
-                marginBottom: '1.4rem',
                 textShadow: '0 2px 10px rgba(0,0,0,0.7)',
               }}
             >

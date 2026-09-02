@@ -207,9 +207,14 @@ export default function EnquiryModal({ isOpen, onClose }) {
         ) : (
           /* FORM STATE */
           <div>
-            {/* Header */}
-            <div style={{ marginBottom: '2rem' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--color-gold-dark)', marginBottom: '0.3rem' }}>
+            {/* Header with Official Logo Crest */}
+            <div style={{ marginBottom: '2rem', textAlign: 'center' }}>
+              <img
+                src="/logo-emblem.png"
+                alt="Elegant Moments Crest"
+                style={{ height: '64px', width: 'auto', objectFit: 'contain', margin: '0 auto 0.8rem', display: 'block' }}
+              />
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', color: 'var(--color-gold-dark)', marginBottom: '0.3rem' }}>
                 <Sparkles size={16} />
                 <span style={{ fontSize: '0.75rem', letterSpacing: '0.25em', textTransform: 'uppercase', fontWeight: '600' }}>
                   TELL US YOUR STORY
