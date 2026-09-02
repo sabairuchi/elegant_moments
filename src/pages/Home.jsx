@@ -49,25 +49,25 @@ export default function Home({ onOpenEnquiry }) {
 
         {/* Hero Overlay Content */}
         <div className="container-luxury hero-content-wrapper">
-          {/* Gold Logo Crest Floating in Hero */}
-          <div className="hero-anim-eyebrow" style={{ textAlign: 'center', marginBottom: '1.2rem' }}>
+          {/* Floating Brand Logo Emblem & Eyebrow */}
+          <div className="hero-anim-eyebrow" style={{ textAlign: 'center', marginBottom: '1rem' }}>
             <img
               src="/logo-transparent.png"
-              alt="Elegant Moments Luxury Emblem"
+              alt="Elegant Moments Logo"
               style={{
-                height: 'clamp(120px, 18vh, 170px)',
+                height: 'clamp(95px, 14vh, 135px)',
                 width: 'auto',
                 objectFit: 'contain',
-                margin: '0 auto 1.4rem',
+                margin: '0 auto 0.9rem',
                 display: 'block',
-                filter: 'drop-shadow(0 6px 20px rgba(0, 0, 0, 0.7))',
+                filter: 'drop-shadow(0 4px 18px rgba(0, 0, 0, 0.65))',
               }}
             />
             <span
               style={{
                 display: 'inline-block',
                 fontFamily: 'var(--font-sans)',
-                fontSize: 'clamp(0.72rem, 1.1vw, 0.85rem)',
+                fontSize: 'clamp(0.68rem, 1vw, 0.78rem)',
                 letterSpacing: '0.38em',
                 textTransform: 'uppercase',
                 color: 'var(--color-gold-light)',
@@ -75,82 +75,81 @@ export default function Home({ onOpenEnquiry }) {
                 textShadow: '0 2px 10px rgba(0,0,0,0.7)',
               }}
             >
-              ELEGANT MOMENTS
+              WEDDINGS • EVENTS • EXPERIENCES
             </span>
           </div>
 
-          {/* Main Heading */}
+          {/* Main Editorial Headline */}
           <div className="hero-anim-heading">
             <h1
               style={{
-                fontSize: 'clamp(2.8rem, 6.8vw, 6rem)',
-                color: 'var(--color-ivory-pure)',
+                fontSize: 'clamp(2.8rem, 6.2vw, 5.5rem)',
+                color: '#FFFFFF',
                 fontFamily: 'var(--font-serif)',
-                letterSpacing: '0.08em',
-                lineHeight: '1.05',
-                marginBottom: '1.6rem',
+                letterSpacing: '-0.01em',
+                lineHeight: '1.08',
+                marginBottom: '1.4rem',
                 fontWeight: '300',
-                textShadow: '0 3px 25px rgba(0,0,0,0.65), 0 6px 45px rgba(0,0,0,0.4)',
-                textTransform: 'uppercase',
+                textShadow: '0 4px 30px rgba(0,0,0,0.7), 0 2px 10px rgba(0,0,0,0.5)',
               }}
             >
-              WHERE MOMENTS<br />BECOME MEMORIES
+              Where Every Moment<br />Becomes a Memory
             </h1>
           </div>
 
-          {/* Supporting Text */}
+          {/* Supporting Subtext */}
           <div className="hero-anim-subtext">
             <p
               style={{
                 fontFamily: 'var(--font-sans)',
-                fontSize: 'clamp(1.05rem, 1.8vw, 1.35rem)',
-                color: 'rgba(255, 255, 255, 0.92)',
+                fontSize: 'clamp(0.98rem, 1.6vw, 1.22rem)',
+                color: '#F4EFE6',
                 fontWeight: '300',
-                letterSpacing: '0.02em',
-                marginBottom: '2.8rem',
-                maxWidth: '650px',
-                lineHeight: '1.5',
+                letterSpacing: '0.01em',
+                marginBottom: '2.5rem',
+                maxWidth: '620px',
+                lineHeight: '1.6',
                 textShadow: '0 2px 12px rgba(0,0,0,0.75)',
+                opacity: 0.92,
               }}
             >
-              "Luxury celebrations, thoughtfully crafted around your story."
+              Thoughtfully curated celebrations, beautifully designed around you.
             </p>
           </div>
 
-          {/* CTA Buttons */}
+          {/* Minimal Editorial CTA */}
           <div className="hero-anim-cta hero-cta-group">
-            <button onClick={onOpenEnquiry} className="btn-hero-primary">
-              BEGIN YOUR STORY →
+            <button onClick={onOpenEnquiry} className="btn-hero-editorial">
+              <span>BEGIN YOUR STORY</span>
+              <span className="btn-arrow">→</span>
             </button>
-            <a href="#explore-world" className="btn-hero-secondary">
-              EXPLORE OUR WORLD ↓
-            </a>
           </div>
         </div>
 
-        {/* Scroll Indicator */}
+        {/* Minimal Animated Scroll Indicator */}
         <a
           href="#explore-world"
           className="hero-anim-scroll"
           style={{
             position: 'absolute',
-            bottom: '2.2rem',
+            bottom: '1.8rem',
             left: '50%',
             transform: 'translateX(-50%)',
             zIndex: 3,
-            color: 'var(--color-gold-light)',
-            fontSize: '0.72rem',
-            letterSpacing: '0.32em',
+            color: 'rgba(244, 239, 230, 0.75)',
+            fontSize: '0.68rem',
+            letterSpacing: '0.35em',
             textTransform: 'uppercase',
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
-            gap: '0.5rem',
             textDecoration: 'none',
+            transition: 'color 0.3s ease',
           }}
+          aria-label="Scroll to content"
         >
-          <span style={{ fontWeight: '500', textShadow: '0 2px 8px rgba(0,0,0,0.7)' }}>EXPLORE</span>
-          <span className="scroll-arrow-pulse" style={{ fontSize: '1.1rem', textShadow: '0 2px 8px rgba(0,0,0,0.7)' }}>↓</span>
+          <span style={{ fontWeight: '500' }}>SCROLL</span>
+          <div className="hero-scroll-line" />
         </a>
       </section>
 
