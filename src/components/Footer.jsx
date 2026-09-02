@@ -31,10 +31,10 @@ export default function Footer() {
             src="/logo-transparent.png"
             alt="Elegant Moments Wedding Planner & Management"
             style={{
-              height: 'clamp(85px, 12vw, 115px)',
+              height: 'clamp(130px, 18vw, 175px)',
               width: 'auto',
               objectFit: 'contain',
-              filter: 'drop-shadow(0 4px 15px rgba(0, 0, 0, 0.4))',
+              filter: 'drop-shadow(0 6px 20px rgba(0, 0, 0, 0.5))',
               transition: 'transform 0.4s ease, filter 0.4s ease',
             }}
             onMouseEnter={(e) => {

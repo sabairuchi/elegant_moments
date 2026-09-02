@@ -39,11 +39,11 @@ export default function Contact({ onOpenEnquiry }) {
               src="/logo-transparent.png"
               alt="Elegant Moments Logo"
               style={{
-                height: '95px',
+                height: '155px',
                 width: 'auto',
                 objectFit: 'contain',
                 margin: '0 auto',
-                filter: 'drop-shadow(0 4px 15px rgba(0, 0, 0, 0.4))',
+                filter: 'drop-shadow(0 6px 20px rgba(0, 0, 0, 0.5))',
               }}
             />
           </div>

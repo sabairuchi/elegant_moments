@@ -55,12 +55,12 @@ export default function Home({ onOpenEnquiry }) {
               src="/logo-transparent.png"
               alt="Elegant Moments Luxury Emblem"
               style={{
-                height: 'clamp(70px, 10vh, 100px)',
+                height: 'clamp(120px, 18vh, 170px)',
                 width: 'auto',
                 objectFit: 'contain',
-                margin: '0 auto 1.2rem',
+                margin: '0 auto 1.4rem',
                 display: 'block',
-                filter: 'drop-shadow(0 4px 15px rgba(0, 0, 0, 0.6))',
+                filter: 'drop-shadow(0 6px 20px rgba(0, 0, 0, 0.7))',
               }}
             />
             <span

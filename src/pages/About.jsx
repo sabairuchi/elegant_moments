@@ -23,7 +23,7 @@ export default function About({ onOpenEnquiry }) {
               <img
                 src="/logo-emblem.png"
                 alt="Elegant Moments Crest"
-                style={{ height: '70px', width: 'auto', objectFit: 'contain', marginBottom: '1.2rem' }}
+                style={{ height: '105px', width: 'auto', objectFit: 'contain', marginBottom: '1.4rem' }}
               />
               <span className="eyebrow-label" style={{ marginBottom: '1.5rem', display: 'block' }}>
                 THE ELEGANT MOMENTS STORY

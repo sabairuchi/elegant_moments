@@ -94,13 +94,13 @@ export default function Header({ onOpenEnquiry }) {
           left: 0,
           width: '100%',
           zIndex: 1000,
-          backgroundColor: '#3B161B', // Deep Burgundy as in Image 1
+          backgroundColor: '#3B161B', // Deep Burgundy
           borderBottom: 'none',
           boxShadow: isScrolled
             ? '0 10px 30px rgba(0, 0, 0, 0.4)'
             : '0 4px 20px rgba(0, 0, 0, 0.2)',
           transition: 'all 0.4s ease',
-          height: '74px',
+          height: isScrolled ? '80px' : '96px',
           display: 'flex',
           alignItems: 'center',
         }}
@@ -185,7 +185,7 @@ export default function Header({ onOpenEnquiry }) {
             </button>
           </div>
 
-          {/* Center Brand Logo (Image 1 & 2) */}
+          {/* Center Brand Logo (Prominent & Clear) */}
           <Link
             to="/"
             style={{
@@ -194,7 +194,6 @@ export default function Header({ onOpenEnquiry }) {
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              gap: '0.6rem',
               padding: '0.2rem 0',
             }}
             aria-label="Elegant Moments Home"
@@ -203,19 +202,19 @@ export default function Header({ onOpenEnquiry }) {
               src="/logo-transparent.png"
               alt="Elegant Moments Luxury Wedding & Management Logo"
               style={{
-                height: 'clamp(46px, 5.5vh, 56px)',
+                height: isScrolled ? 'clamp(62px, 7.5vh, 72px)' : 'clamp(76px, 9.5vh, 88px)',
                 width: 'auto',
                 objectFit: 'contain',
-                filter: 'drop-shadow(0 2px 8px rgba(0, 0, 0, 0.4))',
-                transition: 'transform 0.3s ease, filter 0.3s ease',
+                filter: 'drop-shadow(0 3px 10px rgba(0, 0, 0, 0.5))',
+                transition: 'all 0.35s ease',
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.transform = 'scale(1.03)';
-                e.currentTarget.style.filter = 'drop-shadow(0 4px 12px rgba(201, 168, 106, 0.4))';
+                e.currentTarget.style.transform = 'scale(1.05)';
+                e.currentTarget.style.filter = 'drop-shadow(0 4px 16px rgba(201, 168, 106, 0.5))';
               }}
               onMouseLeave={(e) => {
                 e.currentTarget.style.transform = 'scale(1)';
-                e.currentTarget.style.filter = 'drop-shadow(0 2px 8px rgba(0, 0, 0, 0.4))';
+                e.currentTarget.style.filter = 'drop-shadow(0 3px 10px rgba(0, 0, 0, 0.5))';
               }}
             />
           </Link>
@@ -300,7 +299,7 @@ export default function Header({ onOpenEnquiry }) {
               <img
                 src="/logo-emblem.png"
                 alt="Elegant Moments Crest"
-                style={{ height: '48px', width: 'auto', objectFit: 'contain' }}
+                style={{ height: '65px', width: 'auto', objectFit: 'contain' }}
               />
               <div>
                 <span

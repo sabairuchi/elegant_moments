@@ -212,7 +212,7 @@ export default function EnquiryModal({ isOpen, onClose }) {
               <img
                 src="/logo-emblem.png"
                 alt="Elegant Moments Crest"
-                style={{ height: '64px', width: 'auto', objectFit: 'contain', margin: '0 auto 0.8rem', display: 'block' }}
+                style={{ height: '90px', width: 'auto', objectFit: 'contain', margin: '0 auto 1rem', display: 'block' }}
               />
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', color: 'var(--color-gold-dark)', marginBottom: '0.3rem' }}>
                 <Sparkles size={16} />
