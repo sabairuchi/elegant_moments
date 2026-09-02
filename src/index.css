@@ -28,6 +28,14 @@
   --color-border: rgba(201, 168, 106, 0.25);
   --color-border-subtle: rgba(41, 38, 38, 0.08);
 
+  /* CTA Warm Champagne Palette Tokens */
+  --cta-bg: #E8DCC8;
+  --cta-heading: #32171B;
+  --cta-body: #5C4540;
+  --cta-accent: #9F7A3A;
+  --cta-btn-bg: #32171B;
+  --cta-btn-text: #F4EDE2;
+
   /* Typography */
   --font-serif: 'Cormorant Garamond', 'Playfair Display', Georgia, serif;
   --font-heading: 'Playfair Display', Georgia, serif;
@@ -294,6 +302,56 @@ p {
 .btn-outline-gold:hover {
   background-color: var(--color-gold);
   color: var(--color-burgundy);
+}
+
+/* Warm Champagne CTA Section & Button */
+.section-cta-champagne {
+  background-color: var(--cta-bg);
+  color: var(--cta-heading);
+  padding: 6.5rem 1.5rem;
+  text-align: center;
+  border-top: 1px solid var(--cta-accent);
+  position: relative;
+  overflow: hidden;
+}
+
+.section-cta-champagne h1,
+.section-cta-champagne h2,
+.section-cta-champagne h3 {
+  color: var(--cta-heading);
+}
+
+.section-cta-champagne p {
+  color: var(--cta-body);
+}
+
+.btn-cta-champagne {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  background-color: var(--cta-btn-bg);
+  color: var(--cta-btn-text);
+  padding: 1.1rem 2.8rem;
+  border-radius: 2px;
+  font-family: var(--font-sans);
+  font-size: 0.82rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  text-decoration: none;
+  border: 1px solid var(--cta-btn-bg);
+  cursor: pointer;
+  transition: all 0.35s ease;
+  box-shadow: 0 4px 18px rgba(50, 23, 27, 0.25);
+}
+
+.btn-cta-champagne:hover {
+  background-color: var(--cta-accent);
+  border-color: var(--cta-accent);
+  color: #FFFFFF;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(159, 122, 58, 0.35);
 }
 
 /* Image Reveal & Zoom Masks */

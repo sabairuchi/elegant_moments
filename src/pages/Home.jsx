@@ -387,36 +387,36 @@ export default function Home({ onOpenEnquiry }) {
         </div>
       </section>
 
-      {/* 7. FINAL EDITORIAL CTA BANNER */}
+      {/* 7. FINAL EDITORIAL CTA BANNER (Warm Champagne Palette) */}
       <section
         style={{
-          backgroundColor: 'var(--color-burgundy)',
-          color: 'var(--color-ivory)',
-          padding: '6rem 1.5rem',
+          backgroundColor: '#E8DCC8',
+          color: '#32171B',
+          padding: '6.5rem 1.5rem',
           textAlign: 'center',
-          borderTop: '1px solid var(--color-gold)',
+          borderTop: '1px solid #9F7A3A',
           position: 'relative',
           overflow: 'hidden',
         }}
       >
         <div className="container-luxury" style={{ maxWidth: '720px' }}>
-          <div style={{ fontFamily: 'var(--font-serif)', fontSize: '1.4rem', letterSpacing: '0.3em', color: 'var(--color-gold)', marginBottom: '1rem', opacity: 0.85 }}>
+          <div style={{ fontFamily: 'var(--font-serif)', fontSize: '1.4rem', letterSpacing: '0.3em', color: '#9F7A3A', marginBottom: '1rem', opacity: 0.9 }}>
             ✦ EM ✦
           </div>
 
-          <span className="eyebrow-label" style={{ color: 'var(--color-gold)', marginBottom: '1rem' }}>
+          <span className="eyebrow-label" style={{ color: '#9F7A3A', marginBottom: '1rem' }}>
             YOUR CELEBRATION
           </span>
 
-          <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: 'clamp(2.5rem, 5vw, 4rem)', color: 'var(--color-ivory)', fontWeight: '400', lineHeight: '1.15', marginBottom: '1.2rem' }}>
+          <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: 'clamp(2.5rem, 5vw, 4rem)', color: '#32171B', fontWeight: '400', lineHeight: '1.15', marginBottom: '1.2rem' }}>
             Begin Your Story
           </h2>
 
-          <p style={{ fontFamily: 'var(--font-sans)', fontSize: '1.05rem', color: 'rgba(250, 247, 240, 0.85)', fontWeight: '300', lineHeight: '1.7', marginBottom: '2.5rem', maxWidth: '540px', margin: '0 auto 2.5rem' }}>
+          <p style={{ fontFamily: 'var(--font-sans)', fontSize: '1.05rem', color: '#5C4540', fontWeight: '400', lineHeight: '1.7', marginBottom: '2.5rem', maxWidth: '540px', margin: '0 auto 2.5rem' }}>
             Tell us what you're dreaming of. We'll take care of the rest.
           </p>
 
-          <button onClick={onOpenEnquiry} className="btn-gold" style={{ padding: '1.1rem 2.8rem', fontSize: '0.82rem', letterSpacing: '0.2em' }}>
+          <button onClick={onOpenEnquiry} className="btn-cta-champagne">
             TELL US YOUR STORY →
           </button>
         </div>

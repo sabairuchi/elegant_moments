@@ -20,14 +20,14 @@ export default function Contact({ onOpenEnquiry }) {
 
   return (
     <div style={{ paddingTop: '74px', backgroundColor: 'var(--color-ivory)' }}>
-      {/* 9. CONTACT — EMOTIONAL ATELIER HERO (Deep Burgundy) */}
+      {/* 9. CONTACT — EMOTIONAL ATELIER HERO (Warm Champagne Palette) */}
       <section
         style={{
-          backgroundColor: 'var(--color-burgundy)',
-          color: 'var(--color-ivory)',
+          backgroundColor: '#E8DCC8',
+          color: '#32171B',
           padding: '6.5rem 1.5rem',
           textAlign: 'center',
-          borderBottom: '1px solid var(--color-gold)',
+          borderBottom: '1px solid #9F7A3A',
           position: 'relative',
           overflow: 'hidden',
         }}
@@ -43,19 +43,19 @@ export default function Contact({ onOpenEnquiry }) {
                 width: 'auto',
                 objectFit: 'contain',
                 margin: '0 auto',
-                filter: 'drop-shadow(0 6px 20px rgba(0, 0, 0, 0.5))',
+                filter: 'drop-shadow(0 6px 20px rgba(0, 0, 0, 0.3))',
               }}
             />
           </div>
 
-          <span className="eyebrow-label" style={{ color: 'var(--color-gold)', marginBottom: '1.2rem' }}>
+          <span className="eyebrow-label" style={{ color: '#9F7A3A', marginBottom: '1.2rem' }}>
             YOUR CELEBRATION
           </span>
 
           <h1
             style={{
               fontSize: 'clamp(3rem, 6.5vw, 5.5rem)',
-              color: 'var(--color-ivory)',
+              color: '#32171B',
               fontFamily: 'var(--font-serif)',
               letterSpacing: '0.06em',
               lineHeight: '1.05',
@@ -66,11 +66,11 @@ export default function Contact({ onOpenEnquiry }) {
             BEGIN YOUR STORY
           </h1>
 
-          <p style={{ fontFamily: 'var(--font-sans)', fontSize: '1.15rem', color: 'rgba(250, 247, 240, 0.88)', fontWeight: '300', lineHeight: '1.8', marginBottom: '2.5rem', maxWidth: '580px', margin: '0 auto 2.5rem' }}>
+          <p style={{ fontFamily: 'var(--font-sans)', fontSize: '1.15rem', color: '#5C4540', fontWeight: '400', lineHeight: '1.8', marginBottom: '2.5rem', maxWidth: '580px', margin: '0 auto 2.5rem' }}>
             Tell us what you're dreaming of. We'll take care of the rest.
           </p>
 
-          <button onClick={onOpenEnquiry} className="btn-gold" style={{ padding: '1.1rem 3rem', fontSize: '0.85rem' }}>
+          <button onClick={onOpenEnquiry} className="btn-cta-champagne">
             TELL US YOUR STORY →
           </button>
         </div>
