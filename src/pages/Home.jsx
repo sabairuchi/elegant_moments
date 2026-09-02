@@ -49,20 +49,8 @@ export default function Home({ onOpenEnquiry }) {
 
         {/* Hero Overlay Content */}
         <div className="container-luxury hero-content-wrapper">
-          {/* Floating Brand Logo Emblem & Eyebrow */}
-          <div className="hero-anim-eyebrow" style={{ textAlign: 'center', marginBottom: '1rem' }}>
-            <img
-              src="/logo-transparent.png?v=2"
-              alt="Elegant Moments Logo"
-              style={{
-                height: 'clamp(95px, 14vh, 135px)',
-                width: 'auto',
-                objectFit: 'contain',
-                margin: '0 auto 0.9rem',
-                display: 'block',
-                filter: 'drop-shadow(0 4px 18px rgba(0, 0, 0, 0.65))',
-              }}
-            />
+          {/* Eyebrow */}
+          <div className="hero-anim-eyebrow" style={{ textAlign: 'center', marginBottom: '1.2rem' }}>
             <span
               style={{
                 display: 'inline-block',
