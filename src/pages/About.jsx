@@ -21,7 +21,7 @@ export default function About({ onOpenEnquiry }) {
             {/* Right: Editorial Typography */}
             <div>
               <img
-                src="/logo-emblem.png"
+                src="/logo-emblem.png?v=2"
                 alt="Elegant Moments Crest"
                 style={{ height: '105px', width: 'auto', objectFit: 'contain', marginBottom: '1.4rem' }}
               />

@@ -28,7 +28,7 @@ export default function Footer() {
           aria-label="Elegant Moments Home"
         >
           <img
-            src="/logo-transparent.png"
+            src="/logo-transparent.png?v=2"
             alt="Elegant Moments Wedding Planner & Management"
             style={{
               height: 'clamp(130px, 18vw, 175px)',

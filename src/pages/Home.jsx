@@ -52,7 +52,7 @@ export default function Home({ onOpenEnquiry }) {
           {/* Floating Brand Logo Emblem & Eyebrow */}
           <div className="hero-anim-eyebrow" style={{ textAlign: 'center', marginBottom: '1rem' }}>
             <img
-              src="/logo-transparent.png"
+              src="/logo-transparent.png?v=2"
               alt="Elegant Moments Logo"
               style={{
                 height: 'clamp(95px, 14vh, 135px)',

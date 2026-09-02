@@ -210,7 +210,7 @@ export default function EnquiryModal({ isOpen, onClose }) {
             {/* Header with Official Logo Crest */}
             <div style={{ marginBottom: '2rem', textAlign: 'center' }}>
               <img
-                src="/logo-emblem.png"
+                src="/logo-emblem.png?v=2"
                 alt="Elegant Moments Crest"
                 style={{ height: '90px', width: 'auto', objectFit: 'contain', margin: '0 auto 1rem', display: 'block' }}
               />

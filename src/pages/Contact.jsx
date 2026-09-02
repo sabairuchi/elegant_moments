@@ -36,7 +36,7 @@ export default function Contact({ onOpenEnquiry }) {
           {/* Official Gold Brand Logo Emblem */}
           <div style={{ marginBottom: '1.5rem', textAlign: 'center' }}>
             <img
-              src="/logo-transparent.png"
+              src="/logo-transparent.png?v=2"
               alt="Elegant Moments Logo"
               style={{
                 height: '155px',

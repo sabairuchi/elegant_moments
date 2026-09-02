@@ -199,7 +199,7 @@ export default function Header({ onOpenEnquiry }) {
             aria-label="Elegant Moments Home"
           >
             <img
-              src="/logo-transparent.png"
+              src="/logo-transparent.png?v=2"
               alt="Elegant Moments Luxury Wedding & Management Logo"
               style={{
                 height: isScrolled ? 'clamp(62px, 7.5vh, 72px)' : 'clamp(76px, 9.5vh, 88px)',
@@ -297,7 +297,7 @@ export default function Header({ onOpenEnquiry }) {
           >
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.8rem' }}>
               <img
-                src="/logo-emblem.png"
+                src="/logo-emblem.png?v=2"
                 alt="Elegant Moments Crest"
                 style={{ height: '65px', width: 'auto', objectFit: 'contain' }}
               />
