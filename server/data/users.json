@@ -117,5 +117,56 @@
     "accountStatus": "ACTIVE",
     "createdAt": "2026-09-03T07:08:24.204Z",
     "updatedAt": "2026-09-03T07:08:24.422Z"
+  },
+  {
+    "id": "usr-client-1788519523263-4aee0d",
+    "email": "sabairuchi@gmail.com",
+    "passwordHash": "$2b$10$PoGJF8jcJ1g743a6W4x9Ju4MmhMHjjCizNi.GAbebtoX2UGIeUHuC",
+    "firstName": "Ruchi",
+    "lastName": "sabai",
+    "phone": "09856321475",
+    "role": "client",
+    "roles": [
+      "client"
+    ],
+    "isActive": true,
+    "isVerified": false,
+    "accountStatus": "PENDING_VERIFICATION",
+    "createdAt": "2026-09-04T10:58:43.275Z",
+    "updatedAt": "2026-09-04T10:58:43.275Z"
+  },
+  {
+    "id": "usr-client-1788520403821-9ef966",
+    "email": "ram@gmail.com",
+    "passwordHash": "$2b$10$8KHoFgl.XTIvxexwx48EqeSSYhn65gfkoH/uygJoKvVKSGnPr1gtW",
+    "firstName": "ram",
+    "lastName": "sabai",
+    "phone": "09632587410",
+    "role": "client",
+    "roles": [
+      "client"
+    ],
+    "isActive": true,
+    "isVerified": false,
+    "accountStatus": "PENDING_VERIFICATION",
+    "createdAt": "2026-09-04T11:13:23.821Z",
+    "updatedAt": "2026-09-04T11:13:23.821Z"
+  },
+  {
+    "id": "usr-client-1788521189871-5f0790",
+    "email": "rk3408330@gmail.com",
+    "passwordHash": "$2b$10$zvCzZcYKTOreSQfBWZaJvenWENx.gUelwpOccESGI.Iwk.K39A0jK",
+    "firstName": "Ruchi",
+    "lastName": "Kumari",
+    "phone": "1234566787",
+    "role": "client",
+    "roles": [
+      "client"
+    ],
+    "isActive": true,
+    "isVerified": false,
+    "accountStatus": "PENDING_VERIFICATION",
+    "createdAt": "2026-09-04T11:26:29.872Z",
+    "updatedAt": "2026-09-04T11:26:29.872Z"
   }
 ]

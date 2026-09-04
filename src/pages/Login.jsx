@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { Eye, EyeOff } from '../components/Icons';
 
 export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -59,7 +61,7 @@ export default function Login() {
         )}
 
         <form onSubmit={handleSubmit}>
-          <div style={{ marginBottom: '20px' }}>
+          <div style={{ marginBottom: '24px' }}>
             <label style={{ display: 'block', fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--color-espresso)', fontWeight: '600', marginBottom: '8px' }}>
               Email Address
             </label>
@@ -69,11 +71,11 @@ export default function Login() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="name@domain.com"
-              style={{ width: '100%', padding: '12px 16px', borderRadius: '6px', border: '1px solid #ddd', fontSize: '1rem', outline: 'none' }}
+              style={{ width: '100%', padding: '14px 16px', borderRadius: '6px', border: '1px solid #ddd', fontSize: '1rem', outline: 'none' }}
             />
           </div>
 
-          <div style={{ marginBottom: '20px' }}>
+          <div style={{ marginBottom: '32px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
               <label style={{ fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--color-espresso)', fontWeight: '600' }}>
                 Password
@@ -82,21 +84,31 @@ export default function Login() {
                 Forgot password?
               </Link>
             </div>
-            <input
-              type="password"
-              required
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="••••••••"
-              style={{ width: '100%', padding: '12px 16px', borderRadius: '6px', border: '1px solid #ddd', fontSize: '1rem', outline: 'none' }}
-            />
+            <div style={{ position: 'relative' }}>
+              <input
+                type={showPassword ? 'text' : 'password'}
+                required
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="••••••••"
+                style={{ width: '100%', padding: '14px 16px', borderRadius: '6px', border: '1px solid #ddd', fontSize: '1rem', outline: 'none' }}
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                style={{ position: 'absolute', right: '16px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: '#888', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                aria-label={showPassword ? 'Hide password' : 'Show password'}
+              >
+                {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+              </button>
+            </div>
           </div>
 
           <button
             type="submit"
             disabled={loading}
             className="btn btn-primary"
-            style={{ width: '100%', padding: '14px', fontSize: '1rem', cursor: loading ? 'not-allowed' : 'pointer' }}
+            style={{ width: '100%', padding: '16px', fontSize: '1.05rem', cursor: loading ? 'not-allowed' : 'pointer' }}
           >
             {loading ? 'Authenticating...' : 'Sign In'}
           </button>
@@ -111,27 +123,24 @@ export default function Login() {
 
         {/* Demo Accounts Panel for User Convenience */}
         <div style={{ marginTop: '35px', paddingTop: '25px', borderTop: '1px solid #eee' }}>
-          <div style={{ fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '1px', color: '#888', textAlign: 'center', marginBottom: '12px', fontWeight: '600' }}>
-            Quick Demo Login (Password: Password123!)
+          <div style={{ fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '1px', color: '#888', textAlign: 'center', marginBottom: '16px', fontWeight: '600' }}>
+            Quick Demo Login (Development Only)
           </div>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', justifyContent: 'center' }}>
-            <button type="button" onClick={() => fillDemoCredentials('client@elegantmoments.com')} style={{ padding: '6px 10px', fontSize: '0.75rem', borderRadius: '4px', background: '#F4F1EA', border: '1px solid #ddd', cursor: 'pointer' }}>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px', justifyContent: 'center' }}>
+            <button type="button" onClick={() => fillDemoCredentials('client@elegantmoments.com')} style={{ padding: '8px 14px', fontSize: '0.8rem', borderRadius: '6px', background: 'transparent', border: '1px solid var(--color-gold)', color: 'var(--color-burgundy)', fontWeight: '500', cursor: 'pointer', transition: 'all 0.2s ease' }} onMouseEnter={(e) => {e.target.style.background = 'rgba(212,175,55,0.1)'}} onMouseLeave={(e) => {e.target.style.background = 'transparent'}}>
               Client
             </button>
-            <button type="button" onClick={() => fillDemoCredentials('planner@elegantmoments.com')} style={{ padding: '6px 10px', fontSize: '0.75rem', borderRadius: '4px', background: '#F4F1EA', border: '1px solid #ddd', cursor: 'pointer' }}>
+            <button type="button" onClick={() => fillDemoCredentials('planner@elegantmoments.com')} style={{ padding: '8px 14px', fontSize: '0.8rem', borderRadius: '6px', background: 'transparent', border: '1px solid var(--color-gold)', color: 'var(--color-burgundy)', fontWeight: '500', cursor: 'pointer', transition: 'all 0.2s ease' }} onMouseEnter={(e) => {e.target.style.background = 'rgba(212,175,55,0.1)'}} onMouseLeave={(e) => {e.target.style.background = 'transparent'}}>
               Planner
             </button>
-            <button type="button" onClick={() => fillDemoCredentials('vendor@elegantmoments.com')} style={{ padding: '6px 10px', fontSize: '0.75rem', borderRadius: '4px', background: '#F4F1EA', border: '1px solid #ddd', cursor: 'pointer' }}>
+            <button type="button" onClick={() => fillDemoCredentials('vendor@elegantmoments.com')} style={{ padding: '8px 14px', fontSize: '0.8rem', borderRadius: '6px', background: 'transparent', border: '1px solid var(--color-gold)', color: 'var(--color-burgundy)', fontWeight: '500', cursor: 'pointer', transition: 'all 0.2s ease' }} onMouseEnter={(e) => {e.target.style.background = 'rgba(212,175,55,0.1)'}} onMouseLeave={(e) => {e.target.style.background = 'transparent'}}>
               Vendor
             </button>
-            <button type="button" onClick={() => fillDemoCredentials('admin@elegantmoments.com')} style={{ padding: '6px 10px', fontSize: '0.75rem', borderRadius: '4px', background: '#F4F1EA', border: '1px solid #ddd', cursor: 'pointer' }}>
+            <button type="button" onClick={() => fillDemoCredentials('admin@elegantmoments.com')} style={{ padding: '8px 14px', fontSize: '0.8rem', borderRadius: '6px', background: 'transparent', border: '1px solid var(--color-gold)', color: 'var(--color-burgundy)', fontWeight: '500', cursor: 'pointer', transition: 'all 0.2s ease' }} onMouseEnter={(e) => {e.target.style.background = 'rgba(212,175,55,0.1)'}} onMouseLeave={(e) => {e.target.style.background = 'transparent'}}>
               Admin
             </button>
-            <button type="button" onClick={() => fillDemoCredentials('superadmin@elegantmoments.com')} style={{ padding: '6px 10px', fontSize: '0.75rem', borderRadius: '4px', background: '#F4F1EA', border: '1px solid #ddd', cursor: 'pointer' }}>
+            <button type="button" onClick={() => fillDemoCredentials('superadmin@elegantmoments.com')} style={{ padding: '8px 14px', fontSize: '0.8rem', borderRadius: '6px', background: 'transparent', border: '1px solid var(--color-gold)', color: 'var(--color-burgundy)', fontWeight: '500', cursor: 'pointer', transition: 'all 0.2s ease' }} onMouseEnter={(e) => {e.target.style.background = 'rgba(212,175,55,0.1)'}} onMouseLeave={(e) => {e.target.style.background = 'transparent'}}>
               Super Admin
-            </button>
-            <button type="button" onClick={() => fillDemoCredentials('suspended@elegantmoments.com')} style={{ padding: '6px 10px', fontSize: '0.75rem', borderRadius: '4px', background: '#FFEAEA', border: '1px solid #E5A0A0', color: '#9B2C2C', cursor: 'pointer' }}>
-              Suspended
             </button>
           </div>
         </div>

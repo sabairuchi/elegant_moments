@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { Eye, EyeOff } from '../components/Icons';
 
 export default function Register() {
   const [formData, setFormData] = useState({
@@ -15,6 +16,8 @@ export default function Register() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [successInfo, setSuccessInfo] = useState(null);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const { register } = useAuth();
   const navigate = useNavigate();
@@ -105,7 +108,7 @@ export default function Register() {
                   value={formData.firstName}
                   onChange={handleChange}
                   placeholder="Eleanor"
-                  style={{ width: '100%', padding: '10px 14px', borderRadius: '6px', border: '1px solid #ddd', fontSize: '0.95rem' }}
+                  style={{ width: '100%', padding: '12px 14px', borderRadius: '6px', border: '1px solid #ddd', fontSize: '0.95rem' }}
                 />
               </div>
               <div>
@@ -119,7 +122,7 @@ export default function Register() {
                   value={formData.lastName}
                   onChange={handleChange}
                   placeholder="Vanderbilt"
-                  style={{ width: '100%', padding: '10px 14px', borderRadius: '6px', border: '1px solid #ddd', fontSize: '0.95rem' }}
+                  style={{ width: '100%', padding: '12px 14px', borderRadius: '6px', border: '1px solid #ddd', fontSize: '0.95rem' }}
                 />
               </div>
             </div>
@@ -135,7 +138,7 @@ export default function Register() {
                 value={formData.email}
                 onChange={handleChange}
                 placeholder="eleanor@vanderbilt.com"
-                style={{ width: '100%', padding: '10px 14px', borderRadius: '6px', border: '1px solid #ddd', fontSize: '0.95rem' }}
+                style={{ width: '100%', padding: '12px 14px', borderRadius: '6px', border: '1px solid #ddd', fontSize: '0.95rem' }}
               />
             </div>
 
@@ -149,7 +152,7 @@ export default function Register() {
                 value={formData.phone}
                 onChange={handleChange}
                 placeholder="+1 (555) 000-1234"
-                style={{ width: '100%', padding: '10px 14px', borderRadius: '6px', border: '1px solid #ddd', fontSize: '0.95rem' }}
+                style={{ width: '100%', padding: '12px 14px', borderRadius: '6px', border: '1px solid #ddd', fontSize: '0.95rem' }}
               />
             </div>
 
@@ -157,30 +160,50 @@ export default function Register() {
               <label style={{ display: 'block', fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--color-espresso)', fontWeight: '600', marginBottom: '6px' }}>
                 Password *
               </label>
-              <input
-                type="password"
-                name="password"
-                required
-                value={formData.password}
-                onChange={handleChange}
-                placeholder="At least 8 chars (1 upper, 1 lower, 1 num, 1 spec)"
-                style={{ width: '100%', padding: '10px 14px', borderRadius: '6px', border: '1px solid #ddd', fontSize: '0.95rem' }}
-              />
+              <div style={{ position: 'relative' }}>
+                <input
+                  type={showPassword ? 'text' : 'password'}
+                  name="password"
+                  required
+                  value={formData.password}
+                  onChange={handleChange}
+                  placeholder="At least 8 chars (1 upper, 1 lower, 1 num, 1 spec)"
+                  style={{ width: '100%', padding: '12px 14px', borderRadius: '6px', border: '1px solid #ddd', fontSize: '0.95rem', paddingRight: '40px' }}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  style={{ position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: '#888', display: 'flex', alignItems: 'center' }}
+                  aria-label={showPassword ? 'Hide password' : 'Show password'}
+                >
+                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                </button>
+              </div>
             </div>
 
-            <div style={{ marginBottom: '20px' }}>
+            <div style={{ marginBottom: '24px' }}>
               <label style={{ display: 'block', fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--color-espresso)', fontWeight: '600', marginBottom: '6px' }}>
                 Confirm Password *
               </label>
-              <input
-                type="password"
-                name="confirmPassword"
-                required
-                value={formData.confirmPassword}
-                onChange={handleChange}
-                placeholder="Repeat password"
-                style={{ width: '100%', padding: '10px 14px', borderRadius: '6px', border: '1px solid #ddd', fontSize: '0.95rem' }}
-              />
+              <div style={{ position: 'relative' }}>
+                <input
+                  type={showConfirmPassword ? 'text' : 'password'}
+                  name="confirmPassword"
+                  required
+                  value={formData.confirmPassword}
+                  onChange={handleChange}
+                  placeholder="Repeat password"
+                  style={{ width: '100%', padding: '12px 14px', borderRadius: '6px', border: '1px solid #ddd', fontSize: '0.95rem', paddingRight: '40px' }}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  style={{ position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: '#888', display: 'flex', alignItems: 'center' }}
+                  aria-label={showConfirmPassword ? 'Hide password' : 'Show password'}
+                >
+                  {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                </button>
+              </div>
             </div>
 
             <div style={{ background: '#FAF7F2', padding: '12px 15px', borderRadius: '6px', border: '1px solid rgba(212,175,55,0.3)', marginBottom: '20px', fontSize: '0.8rem', color: '#555' }}>
@@ -191,7 +214,7 @@ export default function Register() {
               type="submit"
               disabled={loading}
               className="btn btn-primary"
-              style={{ width: '100%', padding: '14px', fontSize: '1rem', cursor: loading ? 'not-allowed' : 'pointer' }}
+              style={{ width: '100%', padding: '16px', fontSize: '1.05rem', cursor: loading ? 'not-allowed' : 'pointer' }}
             >
               {loading ? 'Creating Account...' : 'Register Account'}
             </button>

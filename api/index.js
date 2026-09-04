@@ -3,9 +3,15 @@ import cors from 'cors';
 import apiRouter from '../server/routes/api/index.js';
 import { errorHandler } from '../server/middleware/errorHandler.js';
 
+import { config } from '../server/config/index.js';
+
 const app = express();
 
-app.use(cors());
+// Middlewares
+app.use(cors({
+  origin: config.env === 'production' ? config.clientUrl : true,
+  credentials: true,
+}));
 app.use(express.json());
 
 // Support both /api/... and direct routing in Vercel serverless environment

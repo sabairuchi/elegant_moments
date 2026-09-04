@@ -8,7 +8,10 @@ const app = express();
 const PORT = config.port;
 
 // Middlewares
-app.use(cors());
+app.use(cors({
+  origin: config.env === 'production' ? config.clientUrl : true,
+  credentials: true,
+}));
 app.use(express.json());
 
 // API Routes
@@ -30,4 +33,4 @@ server.on('error', (err) => {
   }
 });
 
-
+export default app;

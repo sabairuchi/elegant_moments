@@ -130,7 +130,13 @@ export default function Profile() {
 
               {resendMsg && (
                 <div style={{ marginTop: '12px', background: '#ffffff', padding: '10px 12px', borderRadius: '4px', border: '1px solid #FDE68A', fontSize: '0.8rem', color: '#B45309', wordBreak: 'break-all' }}>
-                  {resendMsg}
+                  {resendMsg.startsWith('http') ? (
+                    <a href={resendMsg} style={{ color: 'var(--color-burgundy)', fontWeight: 'bold' }}>
+                      {resendMsg}
+                    </a>
+                  ) : (
+                    resendMsg
+                  )}
                 </div>
               )}
             </div>

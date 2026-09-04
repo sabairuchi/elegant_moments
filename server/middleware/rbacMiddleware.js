@@ -24,7 +24,28 @@ export const requireRoles = (...allowedRoles) => {
   };
 };
 
-// 2. Data Ownership Foundation Middleware
+// 2. Permission Guard Middleware
+export const requirePermission = (permission) => {
+  return (req, res, next) => {
+    if (!req.user) {
+      return res.status(401).json({
+        success: false,
+        message: 'Unauthorized. Please authenticate first.',
+      });
+    }
+
+    if (!req.user.permissions || !req.user.permissions.includes(permission)) {
+      return res.status(403).json({
+        success: false,
+        message: `Access denied. Missing required permission: ${permission}`,
+      });
+    }
+
+    next();
+  };
+};
+
+// 3. Data Ownership Foundation Middleware
 // Checks whether the authenticated user owns the target resource or holds administrative override privileges.
 export const checkResourceOwnership = (getOwnerUserId) => {
   return async (req, res, next) => {
@@ -37,15 +58,19 @@ export const checkResourceOwnership = (getOwnerUserId) => {
       return next();
     }
 
-    const ownerUserId = typeof getOwnerUserId === 'function' ? await getOwnerUserId(req) : req.params[getOwnerUserId];
+    try {
+      const ownerUserId = typeof getOwnerUserId === 'function' ? await getOwnerUserId(req) : req.params[getOwnerUserId];
 
-    if (req.user.id !== ownerUserId) {
-      return res.status(403).json({
-        success: false,
-        message: 'Access forbidden. You do not have ownership permission for this resource.',
-      });
+      if (req.user.id !== ownerUserId) {
+        return res.status(403).json({
+          success: false,
+          message: 'Access forbidden. You do not have ownership permission for this resource.',
+        });
+      }
+
+      next();
+    } catch (err) {
+      next(err);
     }
-
-    next();
   };
 };

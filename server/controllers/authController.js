@@ -50,7 +50,7 @@ export const authController = {
         message: 'Registration successful. A verification email has been dispatched.',
         token,
         user,
-        verificationUrlDevOnly: `http://localhost:5173/verify-email?token=${verificationToken}`,
+        verificationUrlDevOnly: `http://localhost:3000/verify-email?token=${verificationToken}`,
       });
     } catch (error) {
       if (error.statusCode) {
@@ -171,7 +171,7 @@ export const authController = {
       res.status(200).json({
         success: true,
         message: result.message,
-        verificationUrlDevOnly: result.token ? `http://localhost:5173/verify-email?token=${result.token}` : undefined,
+        verificationUrlDevOnly: result.token ? `http://localhost:3000/verify-email?token=${result.token}` : undefined,
       });
     } catch (error) {
       next(error);
@@ -191,7 +191,7 @@ export const authController = {
         success: true,
         message: result.message,
         resetUrlDevOnly: result.resetTokenDevOnly
-          ? `http://localhost:5173/reset-password?token=${result.resetTokenDevOnly}`
+          ? `http://localhost:3000/reset-password?token=${result.resetTokenDevOnly}`
           : undefined,
       });
     } catch (error) {

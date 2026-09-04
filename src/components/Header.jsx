@@ -247,6 +247,64 @@ export default function Header({ onOpenEnquiry }) {
                   <span style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#22C55E' }} />
                   <span>{user.firstName?.toUpperCase()} ({user.role?.toUpperCase()})</span>
                 </Link>
+                {(user.role === 'admin' || user.role === 'super_admin') && (
+                  <>
+                    <Link
+                      to="/admin/users"
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '0.5rem',
+                        color: 'var(--color-gold-light)',
+                        textDecoration: 'none',
+                        fontSize: '0.78rem',
+                        fontFamily: 'var(--font-sans)',
+                        letterSpacing: '0.15em',
+                        fontWeight: '600',
+                        padding: '0.4rem 0.8rem',
+                      }}
+                      className="nav-btn-hover"
+                    >
+                      USERS
+                    </Link>
+                    <Link
+                      to="/admin/enquiries"
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '0.5rem',
+                        color: 'var(--color-gold-light)',
+                        textDecoration: 'none',
+                        fontSize: '0.78rem',
+                        fontFamily: 'var(--font-sans)',
+                        letterSpacing: '0.15em',
+                        fontWeight: '600',
+                        padding: '0.4rem 0.8rem',
+                      }}
+                      className="nav-btn-hover"
+                    >
+                      ENQUIRIES
+                    </Link>
+                    <Link
+                      to="/admin/consultations"
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '0.5rem',
+                        color: 'var(--color-gold-light)',
+                        textDecoration: 'none',
+                        fontSize: '0.78rem',
+                        fontFamily: 'var(--font-sans)',
+                        letterSpacing: '0.15em',
+                        fontWeight: '600',
+                        padding: '0.4rem 0.8rem',
+                      }}
+                      className="nav-btn-hover"
+                    >
+                      CONSULTATIONS
+                    </Link>
+                  </>
+                )}
                 <button
                   onClick={logout}
                   style={{

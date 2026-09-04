@@ -19,6 +19,9 @@ import Contact from './pages/Contact';
 import Docs from './pages/Docs';
 import PrivacyPolicy from './pages/PrivacyPolicy';
 import TermsOfService from './pages/TermsOfService';
+import AdminUsers from './pages/AdminUsers';
+import AdminEnquiries from './pages/AdminEnquiries';
+import AdminConsultations from './pages/AdminConsultations';
 
 // Auth Pages (M2.2)
 import Login from './pages/Login';
@@ -147,6 +150,31 @@ export default function App() {
                     <AdminDashboardPlaceholder />
                   </ProtectedRoute>
                 }
+              />
+              {/* Admin Workflow Routes */}
+              <Route 
+                path="/admin/users" 
+                element={
+                  <ProtectedRoute requiredPermissions={['users.view']}>
+                    <AdminUsers />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/admin/enquiries" 
+                element={
+                  <ProtectedRoute requiredPermissions={['enquiries.view']}>
+                    <AdminEnquiries />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/admin/consultations" 
+                element={
+                  <ProtectedRoute requiredPermissions={['consultations.view']}>
+                    <AdminConsultations />
+                  </ProtectedRoute>
+                } 
               />
               <Route
                 path="/super-admin"

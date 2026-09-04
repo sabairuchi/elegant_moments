@@ -3,6 +3,7 @@ import path from 'path';
 import crypto from 'crypto';
 import bcrypt from 'bcryptjs';
 import { fileURLToPath } from 'url';
+import { auditService } from './auditService.js';
 
 import { createRequire } from 'module';
 
@@ -362,4 +363,153 @@ export const userService = {
   async getAllTokens() {
     return readTokens();
   },
+
+  // ---------------------------------------------------------------------------
+  // Admin User Management
+  // ---------------------------------------------------------------------------
+
+  async listUsers({ page = 1, limit = 20, search = '', role = '', status = '' }) {
+    let users = readUsers();
+
+    // Filters
+    if (search) {
+      const s = search.toLowerCase();
+      users = users.filter(
+        (u) =>
+          u.email.toLowerCase().includes(s) ||
+          u.firstName.toLowerCase().includes(s) ||
+          u.lastName.toLowerCase().includes(s)
+      );
+    }
+    if (role && role !== 'All') {
+      users = users.filter((u) => u.role === role);
+    }
+    if (status && status !== 'All') {
+      users = users.filter((u) => u.accountStatus === status);
+    }
+
+    // Pagination
+    const total = users.length;
+    const totalPages = Math.ceil(total / limit);
+    const start = (page - 1) * limit;
+    const paginated = users.slice(start, start + limit).map((u) => this.getSafeUser(u));
+
+    return {
+      data: paginated,
+      pagination: {
+        page: Number(page),
+        limit: Number(limit),
+        total,
+        totalPages,
+      },
+    };
+  },
+
+  countSuperAdmins() {
+    const users = readUsers();
+    return users.filter((u) => u.role === 'super_admin' && u.accountStatus === 'ACTIVE').length;
+  },
+
+  async updateUserStatus(userId, newStatus, currentAdminUser, ipAddress) {
+    const validStatuses = ['ACTIVE', 'SUSPENDED', 'INACTIVE', 'PENDING_VERIFICATION'];
+    if (!validStatuses.includes(newStatus)) {
+      const err = new Error('Invalid account status.');
+      err.statusCode = 400;
+      throw err;
+    }
+
+    if (userId === currentAdminUser.id) {
+      const err = new Error('You cannot change your own account status.');
+      err.statusCode = 403;
+      throw err;
+    }
+
+    const users = readUsers();
+    const userIndex = users.findIndex((u) => u.id === userId);
+    if (userIndex === -1) {
+      const err = new Error('User not found.');
+      err.statusCode = 404;
+      throw err;
+    }
+
+    const targetUser = users[userIndex];
+
+    // Prevent suspending the last super_admin
+    if (targetUser.role === 'super_admin' && newStatus !== 'ACTIVE') {
+      if (this.countSuperAdmins() <= 1) {
+        const err = new Error('Cannot suspend or deactivate the last remaining Super Admin.');
+        err.statusCode = 403;
+        throw err;
+      }
+    }
+
+    const oldStatus = targetUser.accountStatus;
+    targetUser.accountStatus = newStatus;
+    if (newStatus === 'INACTIVE' || newStatus === 'SUSPENDED') {
+      targetUser.isActive = false;
+    } else if (newStatus === 'ACTIVE') {
+      targetUser.isActive = true;
+    }
+
+    targetUser.updatedAt = new Date().toISOString();
+    writeUsers(users);
+
+    auditService.logAction({
+      userId: currentAdminUser.id,
+      userEmail: currentAdminUser.email,
+      action: 'USER_STATUS_CHANGED',
+      entityType: 'USER',
+      entityId: userId,
+      details: { oldStatus, newStatus },
+      ipAddress,
+    });
+
+    return this.getSafeUser(targetUser);
+  },
+
+  async updateUserRole(userId, newRole, currentAdminUser, ipAddress) {
+    const validRoles = ['super_admin', 'admin', 'planner', 'vendor', 'client'];
+    if (!validRoles.includes(newRole)) {
+      const err = new Error('Invalid role specified.');
+      err.statusCode = 400;
+      throw err;
+    }
+
+    const users = readUsers();
+    const userIndex = users.findIndex((u) => u.id === userId);
+    if (userIndex === -1) {
+      const err = new Error('User not found.');
+      err.statusCode = 404;
+      throw err;
+    }
+
+    const targetUser = users[userIndex];
+    const oldRole = targetUser.role;
+
+    // Prevent demoting the last super_admin
+    if (oldRole === 'super_admin' && newRole !== 'super_admin') {
+      if (this.countSuperAdmins() <= 1) {
+        const err = new Error('Cannot demote the last remaining Super Admin.');
+        err.statusCode = 403;
+        throw err;
+      }
+    }
+
+    targetUser.role = newRole;
+    targetUser.roles = [newRole];
+    targetUser.updatedAt = new Date().toISOString();
+    writeUsers(users);
+
+    auditService.logAction({
+      userId: currentAdminUser.id,
+      userEmail: currentAdminUser.email,
+      action: 'USER_ROLE_CHANGED',
+      entityType: 'USER',
+      entityId: userId,
+      details: { oldRole, newRole },
+      ipAddress,
+    });
+
+    return this.getSafeUser(targetUser);
+  }
 };

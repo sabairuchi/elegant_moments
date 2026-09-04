@@ -2,6 +2,7 @@ import express from 'express';
 import enquiryRoutes from './enquiryRoutes.js';
 import consultationRoutes from './consultationRoutes.js';
 import authRoutes from './authRoutes.js';
+import userRoutes from './userRoutes.js';
 
 const router = express.Router();
 
@@ -27,7 +28,7 @@ const placeholderHandler = (moduleName) => (req, res) => {
   });
 };
 
-router.use('/users', placeholderHandler('users'));
+router.use('/users', userRoutes);
 router.use('/weddings', placeholderHandler('weddings'));
 router.use('/services', placeholderHandler('services'));
 router.use('/venues', placeholderHandler('venues'));

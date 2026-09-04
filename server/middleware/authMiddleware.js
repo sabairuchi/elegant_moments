@@ -1,6 +1,7 @@
 import jwt from 'jsonwebtoken';
 import { config } from '../config/index.js';
 import { userService } from '../services/userService.js';
+import { getPermissionsForRoles } from '../config/permissions.js';
 
 export const authenticateUser = async (req, res, next) => {
   try {
@@ -40,6 +41,7 @@ export const authenticateUser = async (req, res, next) => {
     }
 
     req.user = userService.getSafeUser(user);
+    req.user.permissions = getPermissionsForRoles(req.user.roles || [req.user.role]);
     req.token = token;
     next();
   } catch (error) {
