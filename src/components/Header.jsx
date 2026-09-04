@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 import {
   Menu,
   X,
@@ -20,6 +21,7 @@ export default function Header({ onOpenEnquiry }) {
   const [searchQuery, setSearchQuery] = useState('');
   const location = useLocation();
   const navigate = useNavigate();
+  const { user, isAuthenticated, logout } = useAuth();
 
   // Scroll listener for sticky header styling
   useEffect(() => {
@@ -219,8 +221,68 @@ export default function Header({ onOpenEnquiry }) {
             />
           </Link>
 
-          {/* Right Action: BEGIN YOUR STORY CTA Button */}
-          <div>
+          {/* Right Action: Auth / Profile + BEGIN YOUR STORY CTA Button */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.8rem' }}>
+            {isAuthenticated ? (
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+                <Link
+                  to="/profile"
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.5rem',
+                    color: 'var(--color-ivory)',
+                    textDecoration: 'none',
+                    fontSize: '0.78rem',
+                    fontFamily: 'var(--font-sans)',
+                    letterSpacing: '0.15em',
+                    fontWeight: '600',
+                    background: 'rgba(212,175,55,0.15)',
+                    border: '1px solid rgba(212,175,55,0.4)',
+                    padding: '0.4rem 0.8rem',
+                    borderRadius: '3px',
+                  }}
+                  className="nav-btn-hover"
+                >
+                  <span style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#22C55E' }} />
+                  <span>{user.firstName?.toUpperCase()} ({user.role?.toUpperCase()})</span>
+                </Link>
+                <button
+                  onClick={logout}
+                  style={{
+                    background: 'none',
+                    border: '1px solid rgba(255,255,255,0.3)',
+                    color: 'var(--color-ivory)',
+                    padding: '0.4rem 0.7rem',
+                    fontSize: '0.7rem',
+                    letterSpacing: '0.15em',
+                    cursor: 'pointer',
+                    borderRadius: '2px',
+                  }}
+                >
+                  LOGOUT
+                </button>
+              </div>
+            ) : (
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+                <Link
+                  to="/login"
+                  style={{
+                    color: 'var(--color-ivory)',
+                    textDecoration: 'none',
+                    fontSize: '0.75rem',
+                    fontFamily: 'var(--font-sans)',
+                    letterSpacing: '0.18em',
+                    fontWeight: '500',
+                    padding: '0.4rem 0.6rem',
+                  }}
+                  className="nav-btn-hover"
+                >
+                  SIGN IN
+                </Link>
+              </div>
+            )}
+
             <button
               onClick={onOpenEnquiry}
               style={{

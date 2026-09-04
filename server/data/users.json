@@ -1,0 +1,121 @@
+[
+  {
+    "id": "usr-superadmin-001",
+    "email": "superadmin@elegantmoments.com",
+    "passwordHash": "$2b$10$vS1/AhzqPewRjmygEM4Mrep30I3Yq4SQ7JtqhVo1b9HO8EkYK760.",
+    "firstName": "Victoria",
+    "lastName": "Sterling",
+    "phone": "+1 (555) 999-0001",
+    "role": "super_admin",
+    "roles": [
+      "super_admin"
+    ],
+    "isActive": true,
+    "isVerified": true,
+    "accountStatus": "ACTIVE",
+    "createdAt": "2026-01-01T00:00:00.000Z",
+    "updatedAt": "2026-01-01T00:00:00.000Z"
+  },
+  {
+    "id": "usr-admin-002",
+    "email": "admin@elegantmoments.com",
+    "passwordHash": "$2b$10$VNA4kapNrxybQLTqGY8pR.DDXb4e0Al9dBiooWFKnC.B3FL0tfuqy",
+    "firstName": "Alexander",
+    "lastName": "Vance",
+    "phone": "+1 (555) 999-0002",
+    "role": "admin",
+    "roles": [
+      "admin"
+    ],
+    "isActive": true,
+    "isVerified": true,
+    "accountStatus": "ACTIVE",
+    "createdAt": "2026-01-01T00:00:00.000Z",
+    "updatedAt": "2026-01-01T00:00:00.000Z"
+  },
+  {
+    "id": "usr-planner-003",
+    "email": "planner@elegantmoments.com",
+    "passwordHash": "$2b$10$uwhlIpY.Jn.TnTNaUzC.ZuQE2dq0Kg4oWULXvAXjzFcITrC8Ndfgm",
+    "firstName": "Genevieve",
+    "lastName": "DuPont",
+    "phone": "+1 (555) 999-0003",
+    "role": "planner",
+    "roles": [
+      "planner"
+    ],
+    "isActive": true,
+    "isVerified": true,
+    "accountStatus": "ACTIVE",
+    "createdAt": "2026-01-01T00:00:00.000Z",
+    "updatedAt": "2026-01-01T00:00:00.000Z"
+  },
+  {
+    "id": "usr-vendor-004",
+    "email": "vendor@elegantmoments.com",
+    "passwordHash": "$2b$10$dqLfdfCSSBPmhXzNz9TBoev2E81HsDLZlstrgUy4v.ZfFWFOL5XL.",
+    "firstName": "Julian",
+    "lastName": "Rossi",
+    "phone": "+1 (555) 999-0004",
+    "role": "vendor",
+    "roles": [
+      "vendor"
+    ],
+    "isActive": true,
+    "isVerified": true,
+    "accountStatus": "ACTIVE",
+    "createdAt": "2026-01-01T00:00:00.000Z",
+    "updatedAt": "2026-01-01T00:00:00.000Z"
+  },
+  {
+    "id": "usr-client-005",
+    "email": "client@elegantmoments.com",
+    "passwordHash": "$2b$10$g.Ib6TkzjrD95mpW51YHa.T0KA82Vmqm58dZQnKKqRC.0FmIYQCIq",
+    "firstName": "Eleanor",
+    "lastName": "Vanderbilt",
+    "phone": "+1 (555) 999-0005",
+    "role": "client",
+    "roles": [
+      "client"
+    ],
+    "isActive": true,
+    "isVerified": true,
+    "accountStatus": "ACTIVE",
+    "createdAt": "2026-01-01T00:00:00.000Z",
+    "updatedAt": "2026-01-01T00:00:00.000Z"
+  },
+  {
+    "id": "usr-suspended-006",
+    "email": "suspended@elegantmoments.com",
+    "passwordHash": "$2b$10$c8kPyTlqYHxiC4bQj9tpZOfuSmIWa9CpaQXhqktY.zIavA3AlKWju",
+    "firstName": "Marcus",
+    "lastName": "Blackwood",
+    "phone": "+1 (555) 999-0006",
+    "role": "client",
+    "roles": [
+      "client"
+    ],
+    "isActive": false,
+    "isVerified": true,
+    "accountStatus": "SUSPENDED",
+    "createdAt": "2026-01-01T00:00:00.000Z",
+    "updatedAt": "2026-01-01T00:00:00.000Z"
+  },
+  {
+    "id": "usr-client-1788419304203-23277b",
+    "email": "test.client.1788419304046@example.com",
+    "passwordHash": "$2b$10$M9lqC0ATolSs8dqwGTQte.GSztt6xYJePMUias3nx5tG1XsyOqV3u",
+    "firstName": "Test",
+    "lastName": "User",
+    "phone": "+1 (555) 123-4567",
+    "role": "client",
+    "roles": [
+      "client"
+    ],
+    "isActive": true,
+    "isVerified": true,
+    "accountStatus": "ACTIVE",
+    "createdAt": "2026-09-03T07:08:24.204Z",
+    "updatedAt": "2026-09-03T07:08:24.422Z"
+  }
+]
