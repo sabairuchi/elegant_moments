@@ -4,73 +4,94 @@ import crypto from 'crypto';
 import bcrypt from 'bcryptjs';
 import { fileURLToPath } from 'url';
 
+import { createRequire } from 'module';
+
+const require = createRequire(import.meta.url);
+let seedUsers = [];
+let seedTokens = [];
+try {
+  seedUsers = require('../data/users.json');
+} catch {
+  seedUsers = [];
+}
+try {
+  seedTokens = require('../data/tokens.json');
+} catch {
+  seedTokens = [];
+}
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const USERS_FILE = path.join(__dirname, '..', 'data', 'users.json');
 const TOKENS_FILE = path.join(__dirname, '..', 'data', 'tokens.json');
 
-// Ensure data files exist
-const ensureFilesExist = () => {
-  const dir = path.dirname(USERS_FILE);
-  if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
-  if (!fs.existsSync(USERS_FILE)) fs.writeFileSync(USERS_FILE, JSON.stringify([], null, 2), 'utf-8');
-  if (!fs.existsSync(TOKENS_FILE)) fs.writeFileSync(TOKENS_FILE, JSON.stringify([], null, 2), 'utf-8');
-};
+let memoryUsers = null;
+let memoryTokens = null;
 
-const readUsers = () => {
-  ensureFilesExist();
+// Ensure data files exist (graceful in read-only environments)
+const ensureFilesExist = () => {
   try {
-    const raw = fs.readFileSync(USERS_FILE, 'utf-8');
-    const users = JSON.parse(raw);
-    let dirty = false;
-    // Self-heal plainPasswordTemp for seed users
-    users.forEach((u) => {
-      if (u.plainPasswordTemp) {
-        u.passwordHash = bcrypt.hashSync(u.plainPasswordTemp, 10);
-        delete u.plainPasswordTemp;
-        dirty = true;
-      }
-    });
-    if (dirty) {
-      writeUsers(users);
-    }
-    return users;
-  } catch (err) {
-    console.error('Error reading users file:', err);
-    return [];
+    const dir = path.dirname(USERS_FILE);
+    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+    if (!fs.existsSync(USERS_FILE)) fs.writeFileSync(USERS_FILE, JSON.stringify(seedUsers, null, 2), 'utf-8');
+    if (!fs.existsSync(TOKENS_FILE)) fs.writeFileSync(TOKENS_FILE, JSON.stringify(seedTokens, null, 2), 'utf-8');
+  } catch {
+    // Read-only filesystem (e.g. Vercel serverless lambda)
   }
 };
 
+const readUsers = () => {
+  if (memoryUsers) return memoryUsers;
+  ensureFilesExist();
+  try {
+    if (fs.existsSync(USERS_FILE)) {
+      const raw = fs.readFileSync(USERS_FILE, 'utf-8');
+      memoryUsers = JSON.parse(raw);
+    } else {
+      memoryUsers = [...seedUsers];
+    }
+  } catch (err) {
+    memoryUsers = [...seedUsers];
+  }
+  return memoryUsers;
+};
+
 const writeUsers = (users) => {
+  memoryUsers = users;
   ensureFilesExist();
   try {
     fs.writeFileSync(USERS_FILE, JSON.stringify(users, null, 2), 'utf-8');
     return true;
   } catch (err) {
-    console.error('Error writing users file:', err);
-    return false;
+    // In serverless / read-only filesystem environments, memory cache preserves changes during lambda lifecycle
+    return true;
   }
 };
 
 const readTokens = () => {
+  if (memoryTokens) return memoryTokens;
   ensureFilesExist();
   try {
-    const raw = fs.readFileSync(TOKENS_FILE, 'utf-8');
-    return JSON.parse(raw);
+    if (fs.existsSync(TOKENS_FILE)) {
+      const raw = fs.readFileSync(TOKENS_FILE, 'utf-8');
+      memoryTokens = JSON.parse(raw);
+    } else {
+      memoryTokens = [...seedTokens];
+    }
   } catch (err) {
-    console.error('Error reading tokens file:', err);
-    return [];
+    memoryTokens = [...seedTokens];
   }
+  return memoryTokens;
 };
 
 const writeTokens = (tokens) => {
+  memoryTokens = tokens;
   ensureFilesExist();
   try {
     fs.writeFileSync(TOKENS_FILE, JSON.stringify(tokens, null, 2), 'utf-8');
     return true;
   } catch (err) {
-    console.error('Error writing tokens file:', err);
-    return false;
+    return true;
   }
 };
 

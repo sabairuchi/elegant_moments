@@ -5,6 +5,21 @@ const AuthContext = createContext(null);
 const AUTH_STORAGE_KEY = 'elegant_moments_auth_token';
 const USER_STORAGE_KEY = 'elegant_moments_auth_user';
 
+const safeParseJson = async (res, defaultMessage = 'Request failed.') => {
+  const contentType = res.headers.get('content-type') || '';
+  if (contentType.includes('application/json')) {
+    try {
+      return await res.json();
+    } catch {
+      throw new Error('Invalid JSON response received from server.');
+    }
+  }
+  if (res.status === 404) {
+    throw new Error('API route not found (404). Please ensure server endpoints are deployed and running.');
+  }
+  throw new Error(`${defaultMessage} (HTTP ${res.status})`);
+};
+
 export const AuthProvider = ({ children }) => {
   const [token, setToken] = useState(() => localStorage.getItem(AUTH_STORAGE_KEY) || null);
   const [user, setUser] = useState(() => {
@@ -27,8 +42,8 @@ export const AuthProvider = ({ children }) => {
           },
         });
         if (res.ok) {
-          const data = await res.json();
-          if (data.success && data.user) {
+          const data = await safeParseJson(res, 'Authentication check failed');
+          if (data && data.success && data.user) {
             setUser(data.user);
             localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(data.user));
           } else {
@@ -53,7 +68,7 @@ export const AuthProvider = ({ children }) => {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, password }),
     });
-    const data = await res.json();
+    const data = await safeParseJson(res, 'Login failed');
     if (!res.ok || !data.success) {
       throw new Error(data.message || 'Login failed.');
     }
@@ -70,7 +85,7 @@ export const AuthProvider = ({ children }) => {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(formData),
     });
-    const data = await res.json();
+    const data = await safeParseJson(res, 'Registration failed');
     if (!res.ok || !data.success) {
       throw new Error(data.message || 'Registration failed.');
     }
@@ -97,7 +112,7 @@ export const AuthProvider = ({ children }) => {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ token: verificationToken }),
     });
-    const data = await res.json();
+    const data = await safeParseJson(res, 'Verification failed');
     if (!res.ok || !data.success) {
       throw new Error(data.message || 'Verification failed.');
     }
@@ -114,7 +129,7 @@ export const AuthProvider = ({ children }) => {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email }),
     });
-    const data = await res.json();
+    const data = await safeParseJson(res, 'Resend verification failed');
     if (!res.ok || !data.success) {
       throw new Error(data.message || 'Resend verification failed.');
     }
@@ -127,7 +142,7 @@ export const AuthProvider = ({ children }) => {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email }),
     });
-    const data = await res.json();
+    const data = await safeParseJson(res, 'Password reset request failed');
     if (!res.ok || !data.success) {
       throw new Error(data.message || 'Request failed.');
     }
@@ -140,7 +155,7 @@ export const AuthProvider = ({ children }) => {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ token: resetToken, newPassword, confirmPassword }),
     });
-    const data = await res.json();
+    const data = await safeParseJson(res, 'Password reset failed');
     if (!res.ok || !data.success) {
       throw new Error(data.message || 'Password reset failed.');
     }
