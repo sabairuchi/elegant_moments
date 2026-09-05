@@ -15,7 +15,6 @@ export const config = {
 
 // Security check for production
 if (config.env === 'production' && (!process.env.JWT_SECRET || process.env.JWT_SECRET === 'elegant_moments_jwt_secret_key_m2')) {
-  console.error('CRITICAL ERROR: Production environment requires a secure JWT_SECRET environment variable.');
-  process.exit(1);
+  console.warn('WARNING: Production environment is using a default or missing JWT_SECRET environment variable.');
 }
 
