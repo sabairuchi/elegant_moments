@@ -1,7 +1,7 @@
 import { enquiryService } from '../services/enquiryService.js';
 import { userService } from '../services/userService.js';
 import { auditService } from '../services/auditService.js';
-import bcrypt from 'bcrypt';
+import bcrypt from 'bcryptjs';
 
 export const getEnquiries = async (req, res, next) => {
   try {
