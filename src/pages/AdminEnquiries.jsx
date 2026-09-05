@@ -33,7 +33,7 @@ export default function AdminEnquiries() {
       });
       const data = await res.json();
       if (data.success) {
-        setEnquiries(data.enquiries);
+        setEnquiries(data.enquiries || []);
       } else {
         setError(data.message || 'Failed to load enquiries');
       }
@@ -115,141 +115,195 @@ export default function AdminEnquiries() {
       default: bg = '#F3E8FF'; color = '#6B21A8'; break;
     }
     return (
-      <span style={{ backgroundColor: bg, color, padding: '4px 8px', borderRadius: '12px', fontSize: '0.75rem', fontWeight: 'bold' }}>
-        {status}
+      <span style={{ backgroundColor: bg, color, padding: '6px 12px', borderRadius: '20px', fontSize: '0.75rem', fontWeight: '700', letterSpacing: '0.05em' }}>
+        {status.replace(/_/g, ' ')}
       </span>
     );
   };
 
   return (
-    <div style={{ padding: '40px 20px', maxWidth: '1200px', margin: '0 auto', fontFamily: 'Inter, sans-serif' }}>
-      <h1 style={{ fontFamily: 'Playfair Display, serif', color: 'var(--color-burgundy)', fontSize: '2.5rem', marginBottom: '20px' }}>
+    <div style={{ padding: '60px 20px', maxWidth: '1400px', margin: '0 auto', fontFamily: 'Inter, sans-serif' }}>
+      <h1 style={{ fontFamily: 'Playfair Display, serif', color: 'var(--color-burgundy)', fontSize: '3rem', marginBottom: '10px' }}>
         Enquiries Management
       </h1>
+      <p style={{ color: 'var(--color-charcoal-muted)', fontSize: '1.1rem', marginBottom: '40px' }}>
+        Review and qualify incoming leads for event planning.
+      </p>
 
-      <div style={{ display: 'flex', gap: '15px', marginBottom: '30px', flexWrap: 'wrap' }}>
-        <input 
-          type="text" 
-          placeholder="Search name or email..." 
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          style={{ padding: '10px 15px', borderRadius: '6px', border: '1px solid #ddd', minWidth: '250px' }}
-        />
-        <select 
-          value={statusFilter} 
-          onChange={(e) => setStatusFilter(e.target.value)}
-          style={{ padding: '10px 15px', borderRadius: '6px', border: '1px solid #ddd' }}
-        >
-          <option value="">All Statuses</option>
-          {ENQUIRY_STATUSES.map(s => <option key={s} value={s}>{s}</option>)}
-        </select>
+      {/* Filters Section */}
+      <div style={{ display: 'flex', gap: '20px', marginBottom: '35px', flexWrap: 'wrap', backgroundColor: '#fff', padding: '20px', borderRadius: '12px', boxShadow: '0 4px 20px rgba(0,0,0,0.04)' }}>
+        <div style={{ flex: 1, minWidth: '250px' }}>
+          <label style={{ display: 'block', fontSize: '0.8rem', color: '#888', textTransform: 'uppercase', marginBottom: '8px', fontWeight: '600', letterSpacing: '1px' }}>Search Leads</label>
+          <input 
+            type="text" 
+            placeholder="Search by name or email..." 
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            style={{ width: '100%', padding: '12px 18px', borderRadius: '8px', border: '1px solid #E5E7EB', outline: 'none', transition: 'border-color 0.3s ease' }}
+            onFocus={(e) => e.target.style.borderColor = 'var(--color-gold)'}
+            onBlur={(e) => e.target.style.borderColor = '#E5E7EB'}
+          />
+        </div>
+        <div style={{ minWidth: '200px' }}>
+          <label style={{ display: 'block', fontSize: '0.8rem', color: '#888', textTransform: 'uppercase', marginBottom: '8px', fontWeight: '600', letterSpacing: '1px' }}>Filter Status</label>
+          <select 
+            value={statusFilter} 
+            onChange={(e) => setStatusFilter(e.target.value)}
+            style={{ width: '100%', padding: '12px 18px', borderRadius: '8px', border: '1px solid #E5E7EB', outline: 'none', backgroundColor: '#fff', cursor: 'pointer', transition: 'border-color 0.3s ease' }}
+            onFocus={(e) => e.target.style.borderColor = 'var(--color-gold)'}
+            onBlur={(e) => e.target.style.borderColor = '#E5E7EB'}
+          >
+            <option value="">All Statuses</option>
+            {ENQUIRY_STATUSES.map(s => <option key={s} value={s}>{s.replace(/_/g, ' ')}</option>)}
+          </select>
+        </div>
       </div>
 
-      {error && <div style={{ color: 'red', marginBottom: '20px' }}>{error}</div>}
+      {error && <div style={{ backgroundColor: '#FEE2E2', border: '1px solid #FCA5A5', color: '#991B1B', padding: '15px', borderRadius: '8px', marginBottom: '25px' }}>{error}</div>}
 
-      <div style={{ display: 'flex', gap: '30px', alignItems: 'flex-start' }}>
+      <div style={{ display: 'flex', gap: '40px', alignItems: 'flex-start', flexWrap: 'wrap' }}>
         {/* Enquiries Table */}
-        <div style={{ flex: 1, backgroundColor: '#fff', borderRadius: '12px', boxShadow: '0 4px 15px rgba(0,0,0,0.05)', overflow: 'hidden' }}>
+        <div style={{ flex: '1 1 600px', backgroundColor: '#fff', borderRadius: '16px', boxShadow: '0 10px 40px rgba(0,0,0,0.06)', overflow: 'hidden' }}>
           {loading ? (
-            <div style={{ padding: '40px', textAlign: 'center' }}>Loading enquiries...</div>
+            <div style={{ padding: '60px', textAlign: 'center', color: '#888' }}>Loading enquiries...</div>
           ) : enquiries.length === 0 ? (
-            <div style={{ padding: '40px', textAlign: 'center', color: '#777' }}>No enquiries found.</div>
+            <div style={{ padding: '60px', textAlign: 'center', color: '#888', fontSize: '1.1rem' }}>No enquiries found matching your criteria.</div>
           ) : (
-            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-              <thead>
-                <tr style={{ backgroundColor: 'var(--color-ivory)', borderBottom: '2px solid var(--color-gold)' }}>
-                  <th style={{ padding: '15px', textAlign: 'left', color: 'var(--color-espresso)' }}>Name</th>
-                  <th style={{ padding: '15px', textAlign: 'left', color: 'var(--color-espresso)' }}>Event Type</th>
-                  <th style={{ padding: '15px', textAlign: 'left', color: 'var(--color-espresso)' }}>Date Submitted</th>
-                  <th style={{ padding: '15px', textAlign: 'left', color: 'var(--color-espresso)' }}>Status</th>
-                  <th style={{ padding: '15px', textAlign: 'center', color: 'var(--color-espresso)' }}>Action</th>
-                </tr>
-              </thead>
-              <tbody>
-                {enquiries.map((eq) => (
-                  <tr key={eq.id} style={{ borderBottom: '1px solid #eee', cursor: 'pointer', backgroundColor: selectedEnquiry?.id === eq.id ? '#FAF7F2' : 'transparent' }} onClick={() => setSelectedEnquiry(eq)}>
-                    <td style={{ padding: '15px' }}>
-                      <div style={{ fontWeight: '600', color: 'var(--color-burgundy)' }}>{eq.name}</div>
-                      <div style={{ fontSize: '0.8rem', color: '#666' }}>{eq.email}</div>
-                    </td>
-                    <td style={{ padding: '15px', fontSize: '0.9rem' }}>{eq.eventType}</td>
-                    <td style={{ padding: '15px', fontSize: '0.9rem' }}>{new Date(eq.createdAt).toLocaleDateString()}</td>
-                    <td style={{ padding: '15px' }}>{renderStatusBadge(eq.status)}</td>
-                    <td style={{ padding: '15px', textAlign: 'center' }}>
-                      <button className="btn btn-secondary" style={{ padding: '6px 12px', fontSize: '0.8rem' }} onClick={(e) => { e.stopPropagation(); setSelectedEnquiry(eq); }}>
-                        View
-                      </button>
-                    </td>
+            <div style={{ overflowX: 'auto' }}>
+              <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                <thead>
+                  <tr style={{ backgroundColor: 'var(--color-ivory)', borderBottom: '2px solid var(--color-gold)' }}>
+                    <th style={{ padding: '20px', textAlign: 'left', color: 'var(--color-espresso)', fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '1.5px', fontWeight: '600' }}>Lead</th>
+                    <th style={{ padding: '20px', textAlign: 'left', color: 'var(--color-espresso)', fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '1.5px', fontWeight: '600' }}>Event Details</th>
+                    <th style={{ padding: '20px', textAlign: 'left', color: 'var(--color-espresso)', fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '1.5px', fontWeight: '600' }}>Date Submitted</th>
+                    <th style={{ padding: '20px', textAlign: 'center', color: 'var(--color-espresso)', fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '1.5px', fontWeight: '600' }}>Status</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {enquiries.map((eq) => {
+                    const isSelected = selectedEnquiry?.id === eq.id;
+                    return (
+                      <tr 
+                        key={eq.id} 
+                        onClick={() => setSelectedEnquiry(eq)}
+                        style={{ 
+                          borderBottom: '1px solid #F3F4F6', 
+                          cursor: 'pointer', 
+                          backgroundColor: isSelected ? '#FAF7F2' : '#fff',
+                          transition: 'background-color 0.2s ease'
+                        }}
+                        onMouseEnter={(e) => { if(!isSelected) e.currentTarget.style.backgroundColor = '#F9FAFB'; }}
+                        onMouseLeave={(e) => { if(!isSelected) e.currentTarget.style.backgroundColor = '#fff'; }}
+                      >
+                        <td style={{ padding: '20px' }}>
+                          <div style={{ fontWeight: '600', color: 'var(--color-burgundy)', fontSize: '1.05rem', marginBottom: '4px' }}>{eq.name}</div>
+                          <div style={{ fontSize: '0.85rem', color: '#6B7280' }}>{eq.email}</div>
+                        </td>
+                        <td style={{ padding: '20px' }}>
+                          <div style={{ fontWeight: '500', color: '#374151' }}>{eq.eventType}</div>
+                          <div style={{ fontSize: '0.85rem', color: '#6B7280', marginTop: '4px' }}>Guests: {eq.guestCount || 'TBD'}</div>
+                        </td>
+                        <td style={{ padding: '20px', color: '#6B7280', fontSize: '0.9rem' }}>
+                          {new Date(eq.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
+                        </td>
+                        <td style={{ padding: '20px', textAlign: 'center' }}>
+                          {renderStatusBadge(eq.status)}
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
           )}
         </div>
 
         {/* Details Panel */}
         {selectedEnquiry && (
-          <div style={{ width: '400px', backgroundColor: '#fff', borderRadius: '12px', boxShadow: '0 4px 15px rgba(0,0,0,0.05)', padding: '25px', position: 'sticky', top: '120px' }}>
-            <h3 style={{ fontFamily: 'Playfair Display, serif', color: 'var(--color-burgundy)', fontSize: '1.5rem', margin: '0 0 15px 0' }}>Enquiry Details</h3>
+          <div style={{ 
+            flex: '1 1 450px', 
+            maxWidth: '550px', 
+            backgroundColor: '#fff', 
+            borderRadius: '16px', 
+            boxShadow: '0 20px 50px rgba(74, 32, 38, 0.08)', 
+            padding: '35px', 
+            position: 'sticky', 
+            top: '120px',
+            border: '1px solid var(--color-border)'
+          }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '25px' }}>
+              <h3 style={{ fontFamily: 'Playfair Display, serif', color: 'var(--color-burgundy)', fontSize: '1.8rem', margin: 0 }}>
+                Enquiry Details
+              </h3>
+              <button 
+                onClick={() => setSelectedEnquiry(null)}
+                style={{ background: 'none', border: 'none', fontSize: '1.5rem', color: '#9CA3AF', cursor: 'pointer', padding: '5px' }}
+                title="Close Panel"
+              >
+                &times;
+              </button>
+            </div>
             
             {updateMsg && (
-              <div style={{ padding: '10px', backgroundColor: '#E0F2FE', color: '#0369A1', borderRadius: '6px', marginBottom: '15px', fontSize: '0.85rem' }}>
+              <div style={{ padding: '12px 16px', backgroundColor: '#ECFDF5', color: '#065F46', borderRadius: '8px', marginBottom: '25px', fontSize: '0.9rem', border: '1px solid #A7F3D0' }}>
                 {updateMsg}
               </div>
             )}
 
-            <div style={{ marginBottom: '20px' }}>
-              <div style={{ fontSize: '0.8rem', color: '#888', textTransform: 'uppercase', marginBottom: '4px' }}>Status</div>
+            <div style={{ padding: '20px', backgroundColor: '#F9FAFB', borderRadius: '12px', border: '1px solid #F3F4F6', marginBottom: '25px' }}>
+              <label style={{ display: 'block', fontSize: '0.75rem', color: '#6B7280', textTransform: 'uppercase', marginBottom: '8px', fontWeight: '700', letterSpacing: '1px' }}>Current Status</label>
               <select 
                 value={selectedEnquiry.status}
                 onChange={(e) => handleUpdateStatus(selectedEnquiry.id, e.target.value)}
                 disabled={updating || selectedEnquiry.status === 'CONVERTED'}
-                style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid #ddd' }}
+                style={{ width: '100%', padding: '12px 15px', borderRadius: '8px', border: '1px solid #E5E7EB', outline: 'none', fontSize: '1rem', fontWeight: '500', color: 'var(--color-burgundy)', cursor: 'pointer', transition: 'border-color 0.3s ease' }}
+                onFocus={(e) => e.target.style.borderColor = 'var(--color-gold)'}
+                onBlur={(e) => e.target.style.borderColor = '#E5E7EB'}
               >
-                {ENQUIRY_STATUSES.map(s => <option key={s} value={s}>{s}</option>)}
+                {ENQUIRY_STATUSES.map(s => <option key={s} value={s}>{s.replace(/_/g, ' ')}</option>)}
               </select>
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px', marginBottom: '20px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '25px' }}>
                <div>
-                  <div style={{ fontSize: '0.8rem', color: '#888', textTransform: 'uppercase' }}>Name</div>
-                  <div style={{ fontWeight: '500' }}>{selectedEnquiry.name}</div>
+                  <div style={{ fontSize: '0.75rem', color: '#6B7280', textTransform: 'uppercase', marginBottom: '4px', fontWeight: '600' }}>Name</div>
+                  <div style={{ fontWeight: '500', color: '#111827' }}>{selectedEnquiry.name}</div>
                </div>
                <div>
-                  <div style={{ fontSize: '0.8rem', color: '#888', textTransform: 'uppercase' }}>Phone</div>
-                  <div style={{ fontWeight: '500' }}>{selectedEnquiry.phone || 'N/A'}</div>
+                  <div style={{ fontSize: '0.75rem', color: '#6B7280', textTransform: 'uppercase', marginBottom: '4px', fontWeight: '600' }}>Phone</div>
+                  <div style={{ fontWeight: '500', color: '#111827' }}>{selectedEnquiry.phone || 'N/A'}</div>
                </div>
                <div style={{ gridColumn: 'span 2' }}>
-                  <div style={{ fontSize: '0.8rem', color: '#888', textTransform: 'uppercase' }}>Email</div>
-                  <div style={{ fontWeight: '500' }}>{selectedEnquiry.email}</div>
+                  <div style={{ fontSize: '0.75rem', color: '#6B7280', textTransform: 'uppercase', marginBottom: '4px', fontWeight: '600' }}>Email</div>
+                  <div style={{ fontWeight: '500', color: '#111827' }}>{selectedEnquiry.email}</div>
                </div>
             </div>
 
-            <hr style={{ border: 'none', borderTop: '1px solid #eee', margin: '20px 0' }} />
+            <hr style={{ border: 'none', borderTop: '1px solid #E5E7EB', margin: '25px 0' }} />
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px', marginBottom: '20px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '25px' }}>
                <div>
-                  <div style={{ fontSize: '0.8rem', color: '#888', textTransform: 'uppercase' }}>Event Type</div>
-                  <div style={{ fontWeight: '500' }}>{selectedEnquiry.eventType}</div>
+                  <div style={{ fontSize: '0.75rem', color: '#6B7280', textTransform: 'uppercase', marginBottom: '4px', fontWeight: '600' }}>Event Type</div>
+                  <div style={{ fontWeight: '500', color: '#111827' }}>{selectedEnquiry.eventType}</div>
                </div>
                <div>
-                  <div style={{ fontSize: '0.8rem', color: '#888', textTransform: 'uppercase' }}>Event Date</div>
-                  <div style={{ fontWeight: '500' }}>{selectedEnquiry.eventDate || 'TBD'}</div>
+                  <div style={{ fontSize: '0.75rem', color: '#6B7280', textTransform: 'uppercase', marginBottom: '4px', fontWeight: '600' }}>Event Date</div>
+                  <div style={{ fontWeight: '500', color: '#111827' }}>{selectedEnquiry.eventDate || 'TBD'}</div>
                </div>
                <div>
-                  <div style={{ fontSize: '0.8rem', color: '#888', textTransform: 'uppercase' }}>Guest Count</div>
-                  <div style={{ fontWeight: '500' }}>{selectedEnquiry.guestCount || 'TBD'}</div>
+                  <div style={{ fontSize: '0.75rem', color: '#6B7280', textTransform: 'uppercase', marginBottom: '4px', fontWeight: '600' }}>Guest Count</div>
+                  <div style={{ fontWeight: '500', color: '#111827' }}>{selectedEnquiry.guestCount || 'TBD'}</div>
                </div>
                <div>
-                  <div style={{ fontSize: '0.8rem', color: '#888', textTransform: 'uppercase' }}>Budget</div>
-                  <div style={{ fontWeight: '500' }}>{selectedEnquiry.estimatedBudget || 'TBD'}</div>
+                  <div style={{ fontSize: '0.75rem', color: '#6B7280', textTransform: 'uppercase', marginBottom: '4px', fontWeight: '600' }}>Budget</div>
+                  <div style={{ fontWeight: '500', color: '#111827' }}>{selectedEnquiry.estimatedBudget || 'TBD'}</div>
                </div>
             </div>
 
-            <div style={{ marginBottom: '20px' }}>
-              <div style={{ fontSize: '0.8rem', color: '#888', textTransform: 'uppercase' }}>Vision / Details</div>
-              <div style={{ backgroundColor: '#FAF7F2', padding: '15px', borderRadius: '6px', fontSize: '0.9rem', color: '#444' }}>
-                {selectedEnquiry.vision || 'No specific vision provided.'}
+            <div style={{ marginBottom: '30px' }}>
+              <div style={{ fontSize: '0.75rem', color: '#6B7280', textTransform: 'uppercase', marginBottom: '10px', fontWeight: '600' }}>Vision / Details</div>
+              <div style={{ backgroundColor: '#F9FAFB', padding: '20px', borderRadius: '8px', fontSize: '0.95rem', color: '#4B5563', border: '1px solid #F3F4F6', lineHeight: '1.6' }}>
+                {selectedEnquiry.vision || 'No specific vision provided by the client.'}
               </div>
             </div>
 
@@ -257,14 +311,14 @@ export default function AdminEnquiries() {
               <button 
                 onClick={() => handleConvert(selectedEnquiry.id)}
                 disabled={updating}
-                className="btn btn-primary"
-                style={{ width: '100%', padding: '12px' }}
+                className="btn btn-gold"
+                style={{ width: '100%', padding: '14px', fontSize: '1rem', letterSpacing: '2px', fontWeight: '600' }}
               >
                 {updating ? 'Processing...' : 'Convert to Client'}
               </button>
             ) : (
-              <div style={{ textAlign: 'center', color: '#166534', fontWeight: 'bold', padding: '10px', backgroundColor: '#DCFCE7', borderRadius: '6px' }}>
-                Converted to Client
+              <div style={{ textAlign: 'center', color: '#166534', fontWeight: 'bold', padding: '15px', backgroundColor: '#DCFCE7', borderRadius: '8px', border: '1px solid #A7F3D0' }}>
+                ✓ Converted to Client
               </div>
             )}
           </div>

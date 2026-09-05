@@ -3,7 +3,7 @@ import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 
 const AdminUsers = () => {
-  const { authFetch } = useAuth();
+  const { token } = useAuth();
   const navigate = useNavigate();
 
   const [users, setUsers] = useState([]);
@@ -23,6 +23,7 @@ const AdminUsers = () => {
   const [editStatus, setEditStatus] = useState('');
   const [actionError, setActionError] = useState('');
   const [actionSuccess, setActionSuccess] = useState('');
+  const [updating, setUpdating] = useState(false);
 
   const fetchUsers = async () => {
     try {
@@ -37,15 +38,20 @@ const AdminUsers = () => {
         status: statusFilter
       });
 
-      const response = await authFetch(`/api/users?${params.toString()}`);
+      const response = await fetch(`/api/users?${params.toString()}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      
       if (!response.ok) {
         throw new Error('Failed to fetch users');
       }
 
       const data = await response.json();
       if (data.success) {
-        setUsers(data.data);
-        setTotalPages(data.pagination.totalPages);
+        setUsers(data.data || []);
+        setTotalPages(data.pagination?.totalPages || 1);
       } else {
         throw new Error(data.message || 'Error fetching users');
       }
@@ -59,7 +65,7 @@ const AdminUsers = () => {
   useEffect(() => {
     fetchUsers();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [page, search, roleFilter, statusFilter]);
+  }, [page, search, roleFilter, statusFilter, token]);
 
   const handleEditClick = (user) => {
     setEditingUser(user);
@@ -69,15 +75,21 @@ const AdminUsers = () => {
     setActionSuccess('');
   };
 
-  const handleUpdate = async () => {
+  const handleUpdate = async (e) => {
+    e.preventDefault();
     setActionError('');
     setActionSuccess('');
+    setUpdating(true);
 
     try {
       // Update Role if changed
       if (editRole !== editingUser.role) {
-        const roleRes = await authFetch(`/api/users/${editingUser.id}/role`, {
+        const roleRes = await fetch(`/api/users/${editingUser.id}/role`, {
           method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
           body: JSON.stringify({ role: editRole })
         });
         const roleData = await roleRes.json();
@@ -86,8 +98,12 @@ const AdminUsers = () => {
 
       // Update Status if changed
       if (editStatus !== editingUser.accountStatus) {
-        const statusRes = await authFetch(`/api/users/${editingUser.id}/status`, {
+        const statusRes = await fetch(`/api/users/${editingUser.id}/status`, {
           method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
           body: JSON.stringify({ status: editStatus })
         });
         const statusData = await statusRes.json();
@@ -102,39 +118,75 @@ const AdminUsers = () => {
 
     } catch (err) {
       setActionError(err.message);
+    } finally {
+      setUpdating(false);
     }
   };
 
+  const renderStatusBadge = (status) => {
+    let bg = '#eee';
+    let color = '#333';
+    switch(status) {
+      case 'ACTIVE': bg = '#DCFCE7'; color = '#166534'; break;
+      case 'INACTIVE': bg = '#F3F4F6'; color = '#4B5563'; break;
+      case 'SUSPENDED': bg = '#FEE2E2'; color = '#991B1B'; break;
+      case 'PENDING_VERIFICATION': bg = '#FEF3C7'; color = '#92400E'; break;
+      default: bg = '#F3E8FF'; color = '#6B21A8'; break;
+    }
+    return (
+      <span style={{ backgroundColor: bg, color, padding: '4px 8px', borderRadius: '12px', fontSize: '0.75rem', fontWeight: 'bold' }}>
+        {status}
+      </span>
+    );
+  };
+
+  const renderRoleBadge = (role) => {
+    let bg = '#E0F2FE';
+    let color = '#0369A1';
+    if (role === 'super_admin' || role === 'admin') {
+      bg = '#FCE7F3';
+      color = '#9D174D';
+    } else if (role === 'vendor' || role === 'planner') {
+      bg = '#Fef3c7';
+      color = '#92400e';
+    }
+    return (
+      <span style={{ backgroundColor: bg, color, padding: '4px 8px', borderRadius: '12px', fontSize: '0.75rem', fontWeight: 'bold' }}>
+        {role}
+      </span>
+    );
+  };
+
   return (
-    <div className="container mx-auto px-4 py-8 max-w-7xl">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold text-gray-800">User Management</h1>
-      </div>
+    <div style={{ padding: '40px 20px', maxWidth: '1200px', margin: '0 auto', fontFamily: 'Inter, sans-serif' }}>
+      <h1 style={{ fontFamily: 'Playfair Display, serif', color: 'var(--color-burgundy)', fontSize: '2.5rem', marginBottom: '20px' }}>
+        User Management
+      </h1>
 
       {error && (
-        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+        <div style={{ backgroundColor: '#FEE2E2', border: '1px solid #FCA5A5', color: '#991B1B', padding: '15px', borderRadius: '6px', marginBottom: '20px' }}>
           {error}
         </div>
       )}
 
       {/* Filters */}
-      <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-100 mb-6 flex flex-wrap gap-4 items-end">
-        <div className="flex-1 min-w-[200px]">
-          <label className="block text-sm font-medium text-gray-700 mb-1">Search</label>
+      <div style={{ backgroundColor: '#fff', padding: '20px', borderRadius: '12px', boxShadow: '0 4px 15px rgba(0,0,0,0.05)', marginBottom: '30px', display: 'flex', gap: '20px', flexWrap: 'wrap', alignItems: 'flex-end' }}>
+        <div style={{ flex: 1, minWidth: '200px' }}>
+          <label style={{ display: 'block', fontSize: '0.8rem', color: '#888', textTransform: 'uppercase', marginBottom: '8px', fontWeight: '600' }}>Search</label>
           <input
             type="text"
-            className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-[#CBA052]"
             placeholder="Search by name or email..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
+            style={{ width: '100%', padding: '10px 15px', border: '1px solid #ddd', borderRadius: '6px', fontSize: '0.9rem' }}
           />
         </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Role</label>
+        <div style={{ minWidth: '150px' }}>
+          <label style={{ display: 'block', fontSize: '0.8rem', color: '#888', textTransform: 'uppercase', marginBottom: '8px', fontWeight: '600' }}>Role</label>
           <select
-            className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-[#CBA052]"
             value={roleFilter}
             onChange={(e) => setRoleFilter(e.target.value)}
+            style={{ width: '100%', padding: '10px 15px', border: '1px solid #ddd', borderRadius: '6px', fontSize: '0.9rem' }}
           >
             <option value="All">All Roles</option>
             <option value="super_admin">Super Admin</option>
@@ -144,12 +196,12 @@ const AdminUsers = () => {
             <option value="client">Client</option>
           </select>
         </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
+        <div style={{ minWidth: '150px' }}>
+          <label style={{ display: 'block', fontSize: '0.8rem', color: '#888', textTransform: 'uppercase', marginBottom: '8px', fontWeight: '600' }}>Status</label>
           <select
-            className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-[#CBA052]"
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
+            style={{ width: '100%', padding: '10px 15px', border: '1px solid #ddd', borderRadius: '6px', fontSize: '0.9rem' }}
           >
             <option value="All">All Statuses</option>
             <option value="ACTIVE">Active</option>
@@ -161,55 +213,44 @@ const AdminUsers = () => {
       </div>
 
       {/* Users Table */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-100 overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">User</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Role</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+      <div style={{ backgroundColor: '#fff', borderRadius: '12px', boxShadow: '0 4px 15px rgba(0,0,0,0.05)', overflow: 'hidden' }}>
+        <div style={{ overflowX: 'auto' }}>
+          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+            <thead>
+              <tr style={{ backgroundColor: 'var(--color-ivory)', borderBottom: '2px solid var(--color-gold)' }}>
+                <th style={{ padding: '15px', textAlign: 'left', color: 'var(--color-espresso)', fontSize: '0.9rem', textTransform: 'uppercase', letterSpacing: '1px' }}>User</th>
+                <th style={{ padding: '15px', textAlign: 'left', color: 'var(--color-espresso)', fontSize: '0.9rem', textTransform: 'uppercase', letterSpacing: '1px' }}>Role</th>
+                <th style={{ padding: '15px', textAlign: 'left', color: 'var(--color-espresso)', fontSize: '0.9rem', textTransform: 'uppercase', letterSpacing: '1px' }}>Status</th>
+                <th style={{ padding: '15px', textAlign: 'right', color: 'var(--color-espresso)', fontSize: '0.9rem', textTransform: 'uppercase', letterSpacing: '1px' }}>Actions</th>
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
+            <tbody>
               {loading ? (
                 <tr>
-                  <td colSpan="4" className="px-6 py-4 text-center text-sm text-gray-500">Loading users...</td>
+                  <td colSpan="4" style={{ padding: '40px', textAlign: 'center', color: '#666' }}>Loading users...</td>
                 </tr>
               ) : users.length === 0 ? (
                 <tr>
-                  <td colSpan="4" className="px-6 py-4 text-center text-sm text-gray-500">No users found.</td>
+                  <td colSpan="4" style={{ padding: '40px', textAlign: 'center', color: '#666' }}>No users found.</td>
                 </tr>
               ) : (
                 users.map((user) => (
-                  <tr key={user.id}>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="flex items-center">
-                        <div>
-                          <div className="text-sm font-medium text-gray-900">{user.firstName} {user.lastName}</div>
-                          <div className="text-sm text-gray-500">{user.email}</div>
-                        </div>
-                      </div>
+                  <tr key={user.id} style={{ borderBottom: '1px solid #eee' }}>
+                    <td style={{ padding: '15px' }}>
+                      <div style={{ fontWeight: '600', color: 'var(--color-burgundy)' }}>{user.firstName} {user.lastName}</div>
+                      <div style={{ fontSize: '0.85rem', color: '#666' }}>{user.email}</div>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
-                        {user.role}
-                      </span>
+                    <td style={{ padding: '15px' }}>
+                      {renderRoleBadge(user.role)}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                        user.accountStatus === 'ACTIVE' ? 'bg-green-100 text-green-800' :
-                        user.accountStatus === 'SUSPENDED' ? 'bg-red-100 text-red-800' :
-                        'bg-gray-100 text-gray-800'
-                      }`}>
-                        {user.accountStatus}
-                      </span>
+                    <td style={{ padding: '15px' }}>
+                      {renderStatusBadge(user.accountStatus)}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                    <td style={{ padding: '15px', textAlign: 'right' }}>
                       <button
                         onClick={() => handleEditClick(user)}
-                        className="text-[#CBA052] hover:text-[#b08842] transition-colors"
+                        className="btn btn-secondary"
+                        style={{ padding: '6px 12px', fontSize: '0.8rem' }}
                       >
                         Edit
                       </button>
@@ -222,22 +263,22 @@ const AdminUsers = () => {
         </div>
         
         {/* Pagination Controls */}
-        <div className="bg-gray-50 px-6 py-3 border-t border-gray-200 flex items-center justify-between">
-          <div className="text-sm text-gray-700">
-            Page <span className="font-medium">{page}</span> of <span className="font-medium">{totalPages || 1}</span>
+        <div style={{ backgroundColor: 'var(--color-ivory)', padding: '15px 20px', borderTop: '1px solid #eee', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <div style={{ fontSize: '0.9rem', color: '#666' }}>
+            Page <span style={{ fontWeight: '600', color: 'var(--color-espresso)' }}>{page}</span> of <span style={{ fontWeight: '600', color: 'var(--color-espresso)' }}>{totalPages || 1}</span>
           </div>
-          <div className="flex gap-2">
+          <div style={{ display: 'flex', gap: '10px' }}>
             <button
               onClick={() => setPage(p => Math.max(1, p - 1))}
               disabled={page === 1}
-              className="px-3 py-1 border border-gray-300 rounded text-sm disabled:opacity-50 hover:bg-gray-100"
+              style={{ padding: '6px 12px', border: '1px solid #ddd', borderRadius: '4px', backgroundColor: page === 1 ? '#f9f9f9' : '#fff', color: page === 1 ? '#aaa' : '#333', cursor: page === 1 ? 'not-allowed' : 'pointer' }}
             >
               Previous
             </button>
             <button
               onClick={() => setPage(p => Math.min(totalPages, p + 1))}
               disabled={page >= totalPages}
-              className="px-3 py-1 border border-gray-300 rounded text-sm disabled:opacity-50 hover:bg-gray-100"
+              style={{ padding: '6px 12px', border: '1px solid #ddd', borderRadius: '4px', backgroundColor: page >= totalPages ? '#f9f9f9' : '#fff', color: page >= totalPages ? '#aaa' : '#333', cursor: page >= totalPages ? 'not-allowed' : 'pointer' }}
             >
               Next
             </button>
@@ -247,56 +288,67 @@ const AdminUsers = () => {
 
       {/* Edit Modal */}
       {editingUser && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg shadow-xl w-full max-w-md p-6">
-            <h2 className="text-xl font-bold mb-4">Edit User: {editingUser.email}</h2>
-            
-            {actionError && <div className="bg-red-100 text-red-700 px-3 py-2 rounded text-sm mb-4">{actionError}</div>}
-            {actionSuccess && <div className="bg-green-100 text-green-700 px-3 py-2 rounded text-sm mb-4">{actionSuccess}</div>}
-
-            <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700 mb-1">Role</label>
-              <select
-                className="w-full border border-gray-300 rounded px-3 py-2"
-                value={editRole}
-                onChange={(e) => setEditRole(e.target.value)}
-              >
-                <option value="super_admin">Super Admin</option>
-                <option value="admin">Admin</option>
-                <option value="planner">Planner</option>
-                <option value="vendor">Vendor</option>
-                <option value="client">Client</option>
-              </select>
+        <div style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000, padding: '20px' }}>
+          <div style={{ backgroundColor: '#fff', borderRadius: '12px', boxShadow: '0 10px 25px rgba(0,0,0,0.1)', width: '100%', maxWidth: '450px', padding: '30px' }}>
+            <h2 style={{ fontFamily: 'Playfair Display, serif', color: 'var(--color-burgundy)', fontSize: '1.5rem', marginBottom: '20px' }}>
+              Edit User
+            </h2>
+            <div style={{ marginBottom: '20px', fontSize: '0.9rem', color: '#555' }}>
+              Updating role and status for <strong>{editingUser.email}</strong>
             </div>
             
-            <div className="mb-6">
-              <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
-              <select
-                className="w-full border border-gray-300 rounded px-3 py-2"
-                value={editStatus}
-                onChange={(e) => setEditStatus(e.target.value)}
-              >
-                <option value="ACTIVE">Active</option>
-                <option value="INACTIVE">Inactive</option>
-                <option value="SUSPENDED">Suspended</option>
-                <option value="PENDING_VERIFICATION">Pending Verification</option>
-              </select>
-            </div>
+            {actionError && <div style={{ backgroundColor: '#FEE2E2', color: '#991B1B', padding: '10px', borderRadius: '6px', fontSize: '0.85rem', marginBottom: '15px' }}>{actionError}</div>}
+            {actionSuccess && <div style={{ backgroundColor: '#DCFCE7', color: '#166534', padding: '10px', borderRadius: '6px', fontSize: '0.85rem', marginBottom: '15px' }}>{actionSuccess}</div>}
 
-            <div className="flex justify-end gap-3">
-              <button
-                onClick={() => setEditingUser(null)}
-                className="px-4 py-2 text-gray-600 hover:text-gray-800 border border-gray-300 rounded"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleUpdate}
-                className="px-4 py-2 bg-[#CBA052] text-white rounded hover:bg-[#b08842]"
-              >
-                Save Changes
-              </button>
-            </div>
+            <form onSubmit={handleUpdate}>
+              <div style={{ marginBottom: '15px' }}>
+                <label style={{ display: 'block', fontSize: '0.8rem', color: '#888', textTransform: 'uppercase', marginBottom: '6px', fontWeight: '600' }}>Role</label>
+                <select
+                  style={{ width: '100%', padding: '10px', border: '1px solid #ddd', borderRadius: '6px' }}
+                  value={editRole}
+                  onChange={(e) => setEditRole(e.target.value)}
+                >
+                  <option value="super_admin">Super Admin</option>
+                  <option value="admin">Admin</option>
+                  <option value="planner">Planner</option>
+                  <option value="vendor">Vendor</option>
+                  <option value="client">Client</option>
+                </select>
+              </div>
+              
+              <div style={{ marginBottom: '25px' }}>
+                <label style={{ display: 'block', fontSize: '0.8rem', color: '#888', textTransform: 'uppercase', marginBottom: '6px', fontWeight: '600' }}>Account Status</label>
+                <select
+                  style={{ width: '100%', padding: '10px', border: '1px solid #ddd', borderRadius: '6px' }}
+                  value={editStatus}
+                  onChange={(e) => setEditStatus(e.target.value)}
+                >
+                  <option value="ACTIVE">Active</option>
+                  <option value="INACTIVE">Inactive</option>
+                  <option value="SUSPENDED">Suspended</option>
+                  <option value="PENDING_VERIFICATION">Pending Verification</option>
+                </select>
+              </div>
+
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
+                <button
+                  type="button"
+                  onClick={() => setEditingUser(null)}
+                  className="btn btn-secondary"
+                  style={{ padding: '10px 20px' }}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={updating}
+                  className="btn btn-primary"
+                  style={{ padding: '10px 20px' }}
+                >
+                  {updating ? 'Saving...' : 'Save Changes'}
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}

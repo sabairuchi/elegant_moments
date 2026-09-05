@@ -9,9 +9,9 @@ export default function AdminConsultations() {
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
   const [selectedConsultation, setSelectedConsultation] = useState(null);
-  
+
   const [updating, setUpdating] = useState(false);
-  const [updateMsg, setUpdateMsg] = useState('');
+
 
   const CONSULTATION_STATUSES = [
     'REQUESTED', 'SCHEDULED', 'CONFIRMED', 'COMPLETED', 'CANCELLED', 'NO_SHOW'
@@ -84,11 +84,11 @@ export default function AdminConsultations() {
   const renderStatusBadge = (status) => {
     let bg = '#eee';
     let color = '#333';
-    switch(status) {
+    switch (status) {
       case 'REQUESTED': bg = '#FEF3C7'; color = '#92400E'; break;
       case 'SCHEDULED': bg = '#DBEAFE'; color = '#1E40AF'; break;
       case 'CONFIRMED': bg = '#DCFCE7'; color = '#166534'; break;
-      case 'CANCELLED': 
+      case 'CANCELLED':
       case 'NO_SHOW': bg = '#FEE2E2'; color = '#991B1B'; break;
       default: bg = '#F3E8FF'; color = '#6B21A8'; break;
     }
@@ -106,15 +106,15 @@ export default function AdminConsultations() {
       </h1>
 
       <div style={{ display: 'flex', gap: '15px', marginBottom: '30px', flexWrap: 'wrap' }}>
-        <input 
-          type="text" 
-          placeholder="Search name or email..." 
+        <input
+          type="text"
+          placeholder="Search name or email..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           style={{ padding: '10px 15px', borderRadius: '6px', border: '1px solid #ddd', minWidth: '250px' }}
         />
-        <select 
-          value={statusFilter} 
+        <select
+          value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value)}
           style={{ padding: '10px 15px', borderRadius: '6px', border: '1px solid #ddd' }}
         >
@@ -171,7 +171,7 @@ export default function AdminConsultations() {
         {selectedConsultation && (
           <div style={{ width: '400px', backgroundColor: '#fff', borderRadius: '12px', boxShadow: '0 4px 15px rgba(0,0,0,0.05)', padding: '25px', position: 'sticky', top: '120px' }}>
             <h3 style={{ fontFamily: 'Playfair Display, serif', color: 'var(--color-burgundy)', fontSize: '1.5rem', margin: '0 0 15px 0' }}>Manage Consultation</h3>
-            
+
             {updateMsg && (
               <div style={{ padding: '10px', backgroundColor: '#E0F2FE', color: '#0369A1', borderRadius: '6px', marginBottom: '15px', fontSize: '0.85rem' }}>
                 {updateMsg}
@@ -181,7 +181,7 @@ export default function AdminConsultations() {
             <form onSubmit={handleUpdate}>
               <div style={{ marginBottom: '15px' }}>
                 <label style={{ display: 'block', fontSize: '0.8rem', color: '#888', textTransform: 'uppercase', marginBottom: '4px' }}>Status</label>
-                <select 
+                <select
                   name="status"
                   value={selectedConsultation.status}
                   onChange={handleChange}
