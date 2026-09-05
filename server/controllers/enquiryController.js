@@ -116,9 +116,20 @@ export const convertEnquiryToClient = async (req, res, next) => {
       
       // Override status to ACTIVE since we are converting them manually
       await userService.updateUser(user.id, { accountStatus: 'ACTIVE', isVerified: true });
-    } else {
-      // Ensure they have the client role if they were something else? Or just link it.
     }
+
+    // Create a new Wedding record
+    const { weddingService } = await import('../services/weddingService.js');
+    const wedding = await weddingService.createWedding({
+      clientId: user.id,
+      clientName: `${user.firstName} ${user.lastName}`,
+      weddingName: `${user.firstName}'s ${enquiry.eventType || 'Wedding'}`,
+      weddingDate: enquiry.eventDate || null,
+      eventType: enquiry.eventType || 'Wedding',
+      guestCount: enquiry.guestCount || null,
+      budget: enquiry.estimatedBudget || null,
+      notes: enquiry.vision || ''
+    });
 
     // Mark Enquiry as converted
     const updatedEnquiry = await enquiryService.updateEnquiry(id, { 
@@ -131,14 +142,15 @@ export const convertEnquiryToClient = async (req, res, next) => {
       entityType: 'enquiry',
       entityId: id,
       actorId: req.user.id,
-      details: { newUserId: user.id },
+      details: { newUserId: user.id, weddingId: wedding.id },
     });
 
     res.json({
       success: true,
-      message: 'Enquiry converted to client successfully.',
+      message: 'Enquiry converted to client successfully and Wedding created.',
       enquiry: updatedEnquiry,
       user: { id: user.id, email: user.email },
+      wedding: { id: wedding.id },
       generatedPasswordDevOnly: generatedPassword // DEV ONLY: Expose password so admin can see it to send manually
     });
   } catch (error) {

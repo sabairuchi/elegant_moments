@@ -22,6 +22,9 @@ import TermsOfService from './pages/TermsOfService';
 import AdminUsers from './pages/AdminUsers';
 import AdminEnquiries from './pages/AdminEnquiries';
 import AdminConsultations from './pages/AdminConsultations';
+import AdminWeddings from './pages/AdminWeddings';
+import AdminWeddingDetails from './pages/AdminWeddingDetails';
+import ClientWedding from './pages/ClientWedding';
 
 // Auth Pages (M2.2)
 import Login from './pages/Login';
@@ -123,7 +126,7 @@ export default function App() {
                 path="/dashboard"
                 element={
                   <ProtectedRoute allowedRoles={['client', 'admin', 'super_admin']}>
-                    <ClientDashboardPlaceholder />
+                    <ClientWedding />
                   </ProtectedRoute>
                 }
               />
@@ -173,6 +176,23 @@ export default function App() {
                 element={
                   <ProtectedRoute requiredPermissions={['consultations.view']}>
                     <AdminConsultations />
+                  </ProtectedRoute>
+                } 
+              />
+              {/* M2.5 Wedding Management Routes */}
+              <Route 
+                path="/admin/weddings" 
+                element={
+                  <ProtectedRoute requiredPermissions={['weddings.view']}>
+                    <AdminWeddings />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/admin/weddings/:id" 
+                element={
+                  <ProtectedRoute requiredPermissions={['weddings.view']}>
+                    <AdminWeddingDetails />
                   </ProtectedRoute>
                 } 
               />

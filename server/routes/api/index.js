@@ -3,6 +3,7 @@ import enquiryRoutes from './enquiryRoutes.js';
 import consultationRoutes from './consultationRoutes.js';
 import authRoutes from './authRoutes.js';
 import userRoutes from './userRoutes.js';
+import weddingRoutes from './weddingRoutes.js';
 
 const router = express.Router();
 
@@ -19,6 +20,8 @@ router.get('/health', (req, res) => {
 router.use('/auth', authRoutes);
 router.use('/enquiries', enquiryRoutes);
 router.use('/consultations', consultationRoutes);
+router.use('/users', userRoutes);
+router.use('/weddings', weddingRoutes);
 
 // Placeholder endpoints for Milestone 2 modules (M2.3 onwards)
 const placeholderHandler = (moduleName) => (req, res) => {
@@ -27,9 +30,6 @@ const placeholderHandler = (moduleName) => (req, res) => {
     message: `Module '/api/${moduleName}' architecture is ready. Implementation arrives in Milestone 2.3+.`,
   });
 };
-
-router.use('/users', userRoutes);
-router.use('/weddings', placeholderHandler('weddings'));
 router.use('/services', placeholderHandler('services'));
 router.use('/venues', placeholderHandler('venues'));
 router.use('/proposals', placeholderHandler('proposals'));
