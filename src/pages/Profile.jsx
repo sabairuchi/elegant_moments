@@ -75,12 +75,12 @@ export default function Profile() {
           </div>
 
           {/* User Details Grid */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '25px', marginBottom: '35px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '25px', marginBottom: '35px' }}>
             <div>
               <div style={{ fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '1px', color: '#888', marginBottom: '4px', fontWeight: '600' }}>
                 Email Address
               </div>
-              <div style={{ color: 'var(--color-espresso)', fontWeight: '500', fontSize: '1.05rem' }}>
+              <div style={{ color: 'var(--color-espresso)', fontWeight: '500', fontSize: '1.05rem', wordBreak: 'break-all' }}>
                 {user.email}
               </div>
             </div>
@@ -89,7 +89,7 @@ export default function Profile() {
               <div style={{ fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '1px', color: '#888', marginBottom: '4px', fontWeight: '600' }}>
                 Phone Number
               </div>
-              <div style={{ color: 'var(--color-espresso)', fontWeight: '500', fontSize: '1.05rem' }}>
+              <div style={{ color: 'var(--color-espresso)', fontWeight: '500', fontSize: '1.05rem', wordBreak: 'break-word' }}>
                 {user.phone || 'Not provided'}
               </div>
             </div>
