@@ -1,7 +1,7 @@
 import fs from 'fs/promises';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { v4 as uuidv4 } from 'uuid';
+import crypto from 'crypto';
 import { auditService } from './auditService.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -81,7 +81,7 @@ class WeddingService {
     }
 
     const newWedding = {
-      id: uuidv4(),
+      id: crypto.randomUUID(),
       clientId: weddingData.clientId,
       clientName: weddingData.clientName,
       weddingName: weddingData.weddingName || `${weddingData.clientName}'s Wedding`,
