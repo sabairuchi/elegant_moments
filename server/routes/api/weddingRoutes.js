@@ -6,11 +6,14 @@ import {
   updateWedding,
   deleteWedding
 } from '../../controllers/weddingController.js';
+import { authenticateUser } from '../../middleware/authMiddleware.js';
 import { requirePermission, checkResourceOwnership } from '../../middleware/rbacMiddleware.js';
 import { weddingService } from '../../services/weddingService.js';
 import { PERMISSIONS } from '../../config/permissions.js';
 
 const router = express.Router();
+
+router.use(authenticateUser);
 
 // Helper to determine if user is authorized to access the wedding
 const getWeddingOwner = async (req) => {
