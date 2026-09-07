@@ -303,6 +303,60 @@ export default function Header({ onOpenEnquiry }) {
                     >
                       CONSULTATIONS
                     </Link>
+                    <Link
+                      to="/admin/weddings"
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '0.5rem',
+                        color: 'var(--color-gold-light)',
+                        textDecoration: 'none',
+                        fontSize: '0.78rem',
+                        fontFamily: 'var(--font-sans)',
+                        letterSpacing: '0.15em',
+                        fontWeight: '600',
+                        padding: '0.4rem 0.8rem',
+                      }}
+                      className="nav-btn-hover"
+                    >
+                      WEDDINGS
+                    </Link>
+                    <Link
+                      to="/admin/services"
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '0.5rem',
+                        color: 'var(--color-gold-light)',
+                        textDecoration: 'none',
+                        fontSize: '0.78rem',
+                        fontFamily: 'var(--font-sans)',
+                        letterSpacing: '0.15em',
+                        fontWeight: '600',
+                        padding: '0.4rem 0.8rem',
+                      }}
+                      className="nav-btn-hover"
+                    >
+                      SERVICES
+                    </Link>
+                    <Link
+                      to="/admin/venues"
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '0.5rem',
+                        color: 'var(--color-gold-light)',
+                        textDecoration: 'none',
+                        fontSize: '0.78rem',
+                        fontFamily: 'var(--font-sans)',
+                        letterSpacing: '0.15em',
+                        fontWeight: '600',
+                        padding: '0.4rem 0.8rem',
+                      }}
+                      className="nav-btn-hover"
+                    >
+                      VENUES
+                    </Link>
                   </>
                 )}
                 <button
