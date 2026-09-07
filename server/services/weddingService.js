@@ -3,7 +3,8 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import crypto from 'crypto';
 import { auditService } from './auditService.js';
-
+import { venueService } from './venueService.js';
+import { serviceService } from './serviceService.js';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const DB_PATH = path.join(__dirname, '../data/weddings.json');
@@ -80,6 +81,27 @@ class WeddingService {
       throw err;
     }
 
+    if (weddingData.selectedVenueId) {
+      try {
+        await venueService.getVenueById(weddingData.selectedVenueId);
+      } catch (err) {
+        const error = new Error('Invalid venue selected');
+        error.status = 400;
+        throw error;
+      }
+    }
+
+    const selectedServices = Array.isArray(weddingData.selectedServices) ? weddingData.selectedServices : [];
+    for (const serviceId of selectedServices) {
+      try {
+        await serviceService.getServiceById(serviceId);
+      } catch (err) {
+        const error = new Error(`Invalid service selected: ${serviceId}`);
+        error.status = 400;
+        throw error;
+      }
+    }
+
     const newWedding = {
       id: crypto.randomUUID(),
       clientId: weddingData.clientId,
@@ -90,6 +112,8 @@ class WeddingService {
       guestCount: weddingData.guestCount || null,
       budget: weddingData.budget || null,
       venueReference: weddingData.venueReference || null,
+      selectedVenueId: weddingData.selectedVenueId || null,
+      selectedServices: selectedServices,
       assignedPlannerId: weddingData.assignedPlannerId || null,
       status: status,
       notes: weddingData.notes || '',
@@ -132,6 +156,33 @@ class WeddingService {
       if ((existingWedding.status === 'COMPLETED' || existingWedding.status === 'CANCELLED') && 
           ['PLANNING', 'CONFIRMED', 'IN_PROGRESS'].includes(updates.status)) {
         // Just a warning or block. Let's allow it for Super Admins (enforced in controller)
+      }
+    }
+
+    if (updates.selectedVenueId && updates.selectedVenueId !== existingWedding.selectedVenueId) {
+      try {
+        await venueService.getVenueById(updates.selectedVenueId);
+      } catch (err) {
+        const error = new Error('Invalid venue selected');
+        error.status = 400;
+        throw error;
+      }
+    }
+
+    if (updates.selectedServices !== undefined) {
+      if (!Array.isArray(updates.selectedServices)) {
+        const error = new Error('selectedServices must be an array');
+        error.status = 400;
+        throw error;
+      }
+      for (const serviceId of updates.selectedServices) {
+        try {
+          await serviceService.getServiceById(serviceId);
+        } catch (err) {
+          const error = new Error(`Invalid service selected: ${serviceId}`);
+          error.status = 400;
+          throw error;
+        }
       }
     }
 

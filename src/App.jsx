@@ -24,7 +24,13 @@ import AdminEnquiries from './pages/AdminEnquiries';
 import AdminConsultations from './pages/AdminConsultations';
 import AdminWeddings from './pages/AdminWeddings';
 import AdminWeddingDetails from './pages/AdminWeddingDetails';
+import AdminServices from './pages/AdminServices';
+import AdminServiceDetails from './pages/AdminServiceDetails';
+import AdminVenues from './pages/AdminVenues';
+import AdminVenueDetails from './pages/AdminVenueDetails';
 import ClientWedding from './pages/ClientWedding';
+import ClientServices from './pages/ClientServices';
+import ClientVenues from './pages/ClientVenues';
 
 // Auth Pages (M2.2)
 import Login from './pages/Login';
@@ -131,6 +137,22 @@ export default function App() {
                 }
               />
               <Route
+                path="/client/services"
+                element={
+                  <ProtectedRoute requiredPermissions={['services.view']}>
+                    <ClientServices />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/client/venues"
+                element={
+                  <ProtectedRoute requiredPermissions={['venues.view']}>
+                    <ClientVenues />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
                 path="/planner"
                 element={
                   <ProtectedRoute allowedRoles={['planner', 'admin', 'super_admin']}>
@@ -193,6 +215,38 @@ export default function App() {
                 element={
                   <ProtectedRoute requiredPermissions={['weddings.view']}>
                     <AdminWeddingDetails />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/admin/services" 
+                element={
+                  <ProtectedRoute requiredPermissions={['services.view']}>
+                    <AdminServices />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/admin/services/:id" 
+                element={
+                  <ProtectedRoute requiredPermissions={['services.view']}>
+                    <AdminServiceDetails />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/admin/venues" 
+                element={
+                  <ProtectedRoute requiredPermissions={['venues.view']}>
+                    <AdminVenues />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/admin/venues/:id" 
+                element={
+                  <ProtectedRoute requiredPermissions={['venues.view']}>
+                    <AdminVenueDetails />
                   </ProtectedRoute>
                 } 
               />

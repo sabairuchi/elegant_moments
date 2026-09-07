@@ -7,6 +7,8 @@ export default function ClientWedding() {
   const navigate = useNavigate();
   
   const [weddings, setWeddings] = useState([]);
+  const [venues, setVenues] = useState([]);
+  const [services, setServices] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -14,15 +16,23 @@ export default function ClientWedding() {
     const fetchMyWeddings = async () => {
       setLoading(true);
       try {
-        const res = await fetch('/api/weddings', {
-          headers: { 'Authorization': `Bearer ${token}` }
-        });
-        const data = await res.json();
+        const [weddingsRes, venuesRes, servicesRes] = await Promise.all([
+          fetch('/api/weddings', { headers: { 'Authorization': `Bearer ${token}` } }),
+          fetch('/api/venues', { headers: { 'Authorization': `Bearer ${token}` } }),
+          fetch('/api/services', { headers: { 'Authorization': `Bearer ${token}` } })
+        ]);
+        
+        const data = await weddingsRes.json();
+        const venuesData = await venuesRes.json();
+        const servicesData = await servicesRes.json();
+        
         if (data.success) {
           setWeddings(data.weddings || []);
         } else {
           setError(data.message || 'Failed to load your wedding.');
         }
+        if (venuesData.success) setVenues(venuesData.data || []);
+        if (servicesData.success) setServices(servicesData.data || []);
       } catch (err) {
         setError(err.message);
       } finally {
@@ -50,6 +60,8 @@ export default function ClientWedding() {
 
   // Assuming a client typically has one active wedding. We'll display the first one.
   const wedding = weddings[0];
+  const assignedVenue = venues.find(v => v.id === wedding.selectedVenueId);
+  const assignedServices = services.filter(s => (wedding.selectedServices || []).includes(s.id));
 
   const renderStatusBadge = (status) => {
     let bg = '#eee';
@@ -95,7 +107,7 @@ export default function ClientWedding() {
           <div>
             <label style={{ display: 'block', fontSize: '0.75rem', color: '#9CA3AF', textTransform: 'uppercase', marginBottom: '8px', fontWeight: '700', letterSpacing: '1px' }}>Venue</label>
             <div style={{ fontSize: '1.2rem', color: '#374151', fontWeight: '500' }}>
-              {wedding.venueReference || 'To be determined'}
+              {assignedVenue ? `${assignedVenue.name} (${assignedVenue.location})` : (wedding.venueReference || 'To be determined')}
             </div>
           </div>
         </div>
@@ -114,6 +126,20 @@ export default function ClientWedding() {
             </div>
           </div>
         </div>
+
+        {assignedServices.length > 0 && (
+          <div style={{ marginBottom: '40px' }}>
+            <label style={{ display: 'block', fontSize: '0.75rem', color: '#9CA3AF', textTransform: 'uppercase', marginBottom: '12px', fontWeight: '700', letterSpacing: '1px' }}>Curated Services</label>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '15px' }}>
+              {assignedServices.map(s => (
+                <div key={s.id} style={{ padding: '15px', backgroundColor: '#F9FAFB', borderRadius: '12px', border: '1px solid #E5E7EB' }}>
+                  <strong style={{ color: 'var(--color-espresso)', display: 'block', fontSize: '1.05rem' }}>{s.name}</strong>
+                  <span style={{ fontSize: '0.85rem', color: '#6B7280' }}>{s.category}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         {wedding.notes && (
           <div style={{ marginBottom: '40px', backgroundColor: '#F9FAFB', padding: '25px', borderRadius: '12px' }}>

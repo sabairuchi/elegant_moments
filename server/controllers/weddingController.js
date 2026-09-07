@@ -116,6 +116,32 @@ export const updateWedding = async (req, res, next) => {
       });
     }
 
+    // Specific Venue Audit
+    if (updates.selectedVenueId !== undefined && oldWedding && updates.selectedVenueId !== oldWedding.selectedVenueId) {
+      await auditService.logAction({
+        actionType: 'UPDATE_WEDDING_VENUE',
+        entityType: 'wedding',
+        entityId: id,
+        actorId: req.user.id,
+        details: { oldVenueId: oldWedding.selectedVenueId, newVenueId: updates.selectedVenueId },
+      });
+    }
+
+    // Specific Services Audit
+    if (updates.selectedServices !== undefined && oldWedding) {
+      const oldServices = oldWedding.selectedServices || [];
+      const newServices = updates.selectedServices || [];
+      if (oldServices.length !== newServices.length || !oldServices.every(s => newServices.includes(s))) {
+        await auditService.logAction({
+          actionType: 'UPDATE_WEDDING_SERVICES',
+          entityType: 'wedding',
+          entityId: id,
+          actorId: req.user.id,
+          details: { oldServices, newServices },
+        });
+      }
+    }
+
     res.json({
       success: true,
       message: 'Wedding updated successfully.',

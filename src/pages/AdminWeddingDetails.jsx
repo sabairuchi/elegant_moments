@@ -13,8 +13,20 @@ export default function AdminWeddingDetails() {
   const [updating, setUpdating] = useState(false);
   const [updateMsg, setUpdateMsg] = useState('');
 
-  // Planners typically can be assigned. In a real app we'd fetch users where role=planner
   const [planners, setPlanners] = useState([]);
+  const [venues, setVenues] = useState([]);
+  const [services, setServices] = useState([]);
+
+  const toggleService = (serviceId) => {
+    const currentServices = wedding.selectedServices || [];
+    let newServices;
+    if (currentServices.includes(serviceId)) {
+      newServices = currentServices.filter(id => id !== serviceId);
+    } else {
+      newServices = [...currentServices, serviceId];
+    }
+    setWedding({ ...wedding, selectedServices: newServices });
+  };
 
   const WEDDING_STATUSES = [
     'PLANNING', 'CONFIRMED', 'IN_PROGRESS', 'COMPLETED', 'CANCELLED'
@@ -55,7 +67,24 @@ export default function AdminWeddingDetails() {
       }
     };
 
+    const fetchVenuesAndServices = async () => {
+      try {
+        const [venuesRes, servicesRes] = await Promise.all([
+          fetch('/api/venues', { headers: { 'Authorization': `Bearer ${token}` } }),
+          fetch('/api/services', { headers: { 'Authorization': `Bearer ${token}` } })
+        ]);
+        const venuesData = await venuesRes.json();
+        const servicesData = await servicesRes.json();
+        
+        if (venuesData.success) setVenues(venuesData.data || []);
+        if (servicesData.success) setServices(servicesData.data || []);
+      } catch (err) {
+        console.error("Failed to load venues/services", err);
+      }
+    };
+
     fetchWedding();
+    fetchVenuesAndServices();
     
     // Only admins/super_admins can assign planners, so only fetch if they have access
     if (['admin', 'super_admin'].includes(user?.role)) {
@@ -165,8 +194,55 @@ export default function AdminWeddingDetails() {
           </div>
 
           <div style={{ marginBottom: '30px' }}>
-            <label style={{ display: 'block', fontSize: '0.75rem', color: '#6B7280', textTransform: 'uppercase', marginBottom: '8px', fontWeight: '700', letterSpacing: '1px' }}>Venue Reference</label>
+            <label style={{ display: 'block', fontSize: '0.75rem', color: '#6B7280', textTransform: 'uppercase', marginBottom: '8px', fontWeight: '700', letterSpacing: '1px' }}>Venue External Reference (Fallback)</label>
             <input type="text" name="venueReference" placeholder="e.g. The Grand Ritz" value={wedding.venueReference || ''} onChange={handleChange} style={{ width: '100%', padding: '12px 15px', borderRadius: '8px', border: '1px solid #E5E7EB', outline: 'none' }} />
+          </div>
+
+          <div style={{ padding: '20px', backgroundColor: '#FFFBEB', borderRadius: '12px', border: '1px solid #FDE68A', marginBottom: '30px' }}>
+            <label style={{ display: 'block', fontSize: '0.75rem', color: '#92400E', textTransform: 'uppercase', marginBottom: '8px', fontWeight: '700', letterSpacing: '1px' }}>Assigned Venue</label>
+            <select 
+              name="selectedVenueId"
+              value={wedding.selectedVenueId || ''}
+              onChange={handleChange}
+              style={{ width: '100%', padding: '12px 15px', borderRadius: '8px', border: '1px solid #FCD34D', outline: 'none', backgroundColor: '#fff', cursor: 'pointer' }}
+            >
+              <option value="">-- Unassigned --</option>
+              {venues.map(v => (
+                <option key={v.id} value={v.id}>{v.name} ({v.location})</option>
+              ))}
+            </select>
+          </div>
+
+          <div style={{ padding: '20px', backgroundColor: '#F9FAFB', borderRadius: '12px', border: '1px solid #E5E7EB', marginBottom: '30px' }}>
+            <label style={{ display: 'block', fontSize: '0.75rem', color: '#374151', textTransform: 'uppercase', marginBottom: '15px', fontWeight: '700', letterSpacing: '1px' }}>Attached Services</label>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '10px' }}>
+              {services.map(s => {
+                const isSelected = (wedding.selectedServices || []).includes(s.id);
+                return (
+                  <div 
+                    key={s.id} 
+                    onClick={() => toggleService(s.id)}
+                    style={{ 
+                      padding: '10px', 
+                      borderRadius: '8px', 
+                      border: `1px solid ${isSelected ? 'var(--color-gold)' : '#ddd'}`,
+                      backgroundColor: isSelected ? '#FFFDF5' : '#fff',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '10px'
+                    }}
+                  >
+                    <input type="checkbox" checked={isSelected} readOnly style={{ accentColor: 'var(--color-gold)' }} />
+                    <div style={{ fontSize: '0.9rem', color: '#333' }}>
+                      <strong>{s.name}</strong>
+                      <div style={{ fontSize: '0.75rem', color: '#666' }}>{s.category}</div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+            {services.length === 0 && <p style={{ fontSize: '0.9rem', color: '#888' }}>No services available in the system.</p>}
           </div>
 
           <div style={{ marginBottom: '30px' }}>
