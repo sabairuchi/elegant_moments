@@ -14,6 +14,7 @@ export default function AdminWeddingDetails() {
   const [updateMsg, setUpdateMsg] = useState('');
 
   const [planners, setPlanners] = useState([]);
+  const [clients, setClients] = useState([]);
   const [venues, setVenues] = useState([]);
   const [services, setServices] = useState([]);
 
@@ -34,6 +35,24 @@ export default function AdminWeddingDetails() {
 
   useEffect(() => {
     const fetchWedding = async () => {
+      if (id === 'new') {
+        setWedding({
+          weddingName: '',
+          clientName: '',
+          weddingDate: '',
+          status: 'PLANNING',
+          guestCount: '',
+          budget: '',
+          notes: '',
+          venueReference: '',
+          selectedVenueId: '',
+          selectedServices: [],
+          assignedPlannerId: ''
+        });
+        setLoading(false);
+        return;
+      }
+
       setLoading(true);
       try {
         const res = await fetch(`/api/weddings/${id}`, {
@@ -52,18 +71,19 @@ export default function AdminWeddingDetails() {
       }
     };
 
-    const fetchPlanners = async () => {
+    const fetchPlannersAndClients = async () => {
       try {
-        // Fetch users where role=planner. (Assuming /api/users supports role filtering)
-        const res = await fetch('/api/users?role=planner&limit=50', {
-          headers: { 'Authorization': `Bearer ${token}` }
-        });
-        const data = await res.json();
-        if (data.success) {
-          setPlanners(data.data || []);
-        }
+        const [plannersRes, clientsRes] = await Promise.all([
+          fetch('/api/users?role=planner&limit=100', { headers: { 'Authorization': `Bearer ${token}` } }),
+          fetch('/api/users?role=client&limit=100', { headers: { 'Authorization': `Bearer ${token}` } })
+        ]);
+        const plannersData = await plannersRes.json();
+        const clientsData = await clientsRes.json();
+        
+        if (plannersData.success) setPlanners(plannersData.data || []);
+        if (clientsData.success) setClients(clientsData.data || []);
       } catch (err) {
-        console.error("Failed to load planners", err);
+        console.error("Failed to load users", err);
       }
     };
 
@@ -88,14 +108,25 @@ export default function AdminWeddingDetails() {
     
     // Only admins/super_admins can assign planners, so only fetch if they have access
     if (['admin', 'super_admin'].includes(user?.role)) {
-      fetchPlanners();
+      fetchPlannersAndClients();
     }
   }, [id, token, user?.role]);
 
   const handleChange = (e) => {
+    const { name, value } = e.target;
+    let extraUpdates = {};
+    
+    if (name === 'clientId') {
+      const selectedClient = clients.find(c => c.id === value);
+      if (selectedClient) {
+        extraUpdates.clientName = `${selectedClient.firstName} ${selectedClient.lastName}`;
+      }
+    }
+
     setWedding({
       ...wedding,
-      [e.target.name]: e.target.value
+      [name]: value,
+      ...extraUpdates
     });
   };
 
@@ -104,8 +135,11 @@ export default function AdminWeddingDetails() {
     setUpdating(true);
     setUpdateMsg('');
     try {
-      const res = await fetch(`/api/weddings/${id}`, {
-        method: 'PATCH',
+      const url = id === 'new' ? '/api/weddings' : `/api/weddings/${id}`;
+      const method = id === 'new' ? 'POST' : 'PATCH';
+
+      const res = await fetch(url, {
+        method,
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
@@ -114,10 +148,14 @@ export default function AdminWeddingDetails() {
       });
       const data = await res.json();
       if (data.success) {
-        setUpdateMsg('Wedding details updated successfully.');
-        setWedding(data.wedding);
+        setUpdateMsg(`Wedding ${id === 'new' ? 'created' : 'updated'} successfully.`);
+        if (id === 'new' && data.wedding.id) {
+          navigate(`/admin/weddings/${data.wedding.id}`, { replace: true });
+        } else {
+          setWedding(data.wedding);
+        }
       } else {
-        setUpdateMsg(data.message || 'Failed to update wedding.');
+        setUpdateMsg(data.message || 'Failed to save wedding.');
       }
     } catch (err) {
       setUpdateMsg(err.message);
@@ -142,10 +180,10 @@ export default function AdminWeddingDetails() {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '40px' }}>
         <div>
           <h1 style={{ fontFamily: 'Playfair Display, serif', color: 'var(--color-burgundy)', fontSize: '3rem', margin: '0 0 10px 0' }}>
-            {wedding.weddingName}
+            {wedding.weddingName || 'New Wedding'}
           </h1>
           <p style={{ color: 'var(--color-charcoal-muted)', fontSize: '1.1rem', margin: 0 }}>
-            Client: {wedding.clientName}
+            Client: {wedding.clientName || 'Unassigned'}
           </p>
         </div>
       </div>
@@ -159,16 +197,35 @@ export default function AdminWeddingDetails() {
       <div style={{ backgroundColor: '#fff', borderRadius: '16px', boxShadow: '0 10px 40px rgba(0,0,0,0.04)', padding: '40px' }}>
         <form onSubmit={handleUpdate}>
           
-          <div style={{ padding: '20px', backgroundColor: '#F9FAFB', borderRadius: '12px', border: '1px solid #F3F4F6', marginBottom: '30px' }}>
-            <label style={{ display: 'block', fontSize: '0.75rem', color: '#6B7280', textTransform: 'uppercase', marginBottom: '8px', fontWeight: '700', letterSpacing: '1px' }}>Wedding Status</label>
-            <select 
-              name="status"
-              value={wedding.status}
-              onChange={handleChange}
-              style={{ width: '100%', padding: '12px 15px', borderRadius: '8px', border: '1px solid #E5E7EB', outline: 'none', fontSize: '1rem', fontWeight: '500', color: 'var(--color-burgundy)', cursor: 'pointer' }}
-            >
-              {WEDDING_STATUSES.map(s => <option key={s} value={s}>{s.replace(/_/g, ' ')}</option>)}
-            </select>
+          <div style={{ padding: '20px', backgroundColor: '#F9FAFB', borderRadius: '12px', border: '1px solid #F3F4F6', marginBottom: '30px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '30px' }}>
+            <div>
+              <label style={{ display: 'block', fontSize: '0.75rem', color: '#6B7280', textTransform: 'uppercase', marginBottom: '8px', fontWeight: '700', letterSpacing: '1px' }}>Wedding Status</label>
+              <select 
+                name="status"
+                value={wedding.status}
+                onChange={handleChange}
+                style={{ width: '100%', padding: '12px 15px', borderRadius: '8px', border: '1px solid #E5E7EB', outline: 'none', fontSize: '1rem', fontWeight: '500', color: 'var(--color-burgundy)', cursor: 'pointer' }}
+              >
+                {WEDDING_STATUSES.map(s => <option key={s} value={s}>{s.replace(/_/g, ' ')}</option>)}
+              </select>
+            </div>
+            
+            {['super_admin', 'admin'].includes(user?.role) && (
+              <div>
+                <label style={{ display: 'block', fontSize: '0.75rem', color: '#6B7280', textTransform: 'uppercase', marginBottom: '8px', fontWeight: '700', letterSpacing: '1px' }}>Assigned Client</label>
+                <select 
+                  name="clientId"
+                  value={wedding.clientId || ''}
+                  onChange={handleChange}
+                  style={{ width: '100%', padding: '12px 15px', borderRadius: '8px', border: '1px solid #E5E7EB', outline: 'none', backgroundColor: '#fff', cursor: 'pointer' }}
+                >
+                  <option value="">-- Select Client --</option>
+                  {clients.map(c => (
+                    <option key={c.id} value={c.id}>{c.firstName} {c.lastName} ({c.email})</option>
+                  ))}
+                </select>
+              </div>
+            )}
           </div>
 
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '30px', marginBottom: '30px' }}>

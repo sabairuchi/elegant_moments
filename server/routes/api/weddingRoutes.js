@@ -36,6 +36,28 @@ const getWeddingOwner = async (req) => {
 // List weddings. Controller filters based on role.
 router.get('/', requirePermission(PERMISSIONS.WEDDINGS_VIEW), getWeddings);
 
+// GET /api/weddings/new
+// Explicitly handle "new" route to prevent 404 errors when frontend requests it
+router.get('/new', requirePermission(PERMISSIONS.WEDDINGS_VIEW), (req, res) => {
+  res.json({
+    success: true,
+    wedding: {
+      weddingName: '',
+      clientName: '',
+      weddingDate: '',
+      status: 'PLANNING',
+      guestCount: '',
+      budget: '',
+      notes: '',
+      venueReference: '',
+      selectedVenueId: '',
+      selectedServices: [],
+      assignedPlannerId: '',
+      clientId: ''
+    }
+  });
+});
+
 // GET /api/weddings/:id
 // Get details. Owners only (or admin/super_admin via middleware bypass).
 router.get('/:id', 
