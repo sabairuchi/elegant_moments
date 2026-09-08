@@ -17,7 +17,6 @@ class ServiceService {
       return JSON.parse(data);
     } catch (error) {
       if (error.code === 'ENOENT' || error instanceof SyntaxError) {
-        await this._writeDB([]);
         return [];
       }
       throw error;

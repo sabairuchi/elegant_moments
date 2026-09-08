@@ -18,7 +18,6 @@ class WeddingService {
       return JSON.parse(data);
     } catch (error) {
       if (error.code === 'ENOENT') {
-        await this._writeDB([]);
         return [];
       }
       throw error;
