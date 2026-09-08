@@ -47,28 +47,8 @@ export default function AdminVenues() {
     }
   }, [token, search, status]);
 
-  const handleCreateVenue = async () => {
-    try {
-      const res = await fetch('/api/venues', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({
-          name: 'New Venue',
-          location: 'TBD'
-        })
-      });
-      const data = await res.json();
-      if (data.success) {
-        navigate(`/admin/venues/${data.data.id}`);
-      } else {
-        alert(data.message || 'Failed to create venue.');
-      }
-    } catch (err) {
-      alert('Error creating venue.');
-    }
+  const handleCreateVenue = () => {
+    navigate('/admin/venues/new');
   };
 
   const getStatusColor = (st) => {

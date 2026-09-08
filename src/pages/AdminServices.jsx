@@ -50,28 +50,8 @@ export default function AdminServices() {
     }
   }, [token, search, category, status]);
 
-  const handleCreateService = async () => {
-    try {
-      const res = await fetch('/api/services', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({
-          name: 'New Service',
-          category: 'Other'
-        })
-      });
-      const data = await res.json();
-      if (data.success) {
-        navigate(`/admin/services/${data.data.id}`);
-      } else {
-        alert(data.message || 'Failed to create service.');
-      }
-    } catch (err) {
-      alert('Error creating service.');
-    }
+  const handleCreateService = () => {
+    navigate('/admin/services/new');
   };
 
   const getStatusColor = (st) => {
