@@ -1,5 +1,6 @@
+import { describe, it, expect, beforeAll } from 'vitest';
 import request from 'supertest';
-import { app } from '../server/index.js'; // Assuming you have exported the app
+import app from '../server/index.js';
 import { enquiryService } from '../server/services/enquiryService.js';
 import { consultationService } from '../server/services/consultationService.js';
 import { userService } from '../server/services/userService.js';

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
+import ClientSubNav from '../components/ClientSubNav';
 import { Sparkles, Tag, Check } from '../components/Icons';
 
 export default function ClientServices() {
@@ -38,8 +39,9 @@ export default function ClientServices() {
   }, [token, category]);
 
   return (
-    <div style={{ backgroundColor: 'var(--color-ivory)', minHeight: '100vh', padding: '60px 20px', fontFamily: 'Inter, sans-serif' }}>
-      <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+    <div style={{ backgroundColor: 'var(--color-ivory)', minHeight: '100vh', fontFamily: 'Inter, sans-serif' }}>
+      <ClientSubNav />
+      <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '60px 20px' }}>
         
         <div style={{ textAlign: 'center', marginBottom: '50px' }}>
           <span style={{ fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '2px', color: 'var(--color-gold)', fontWeight: '600', display: 'block', marginBottom: '10px' }}>

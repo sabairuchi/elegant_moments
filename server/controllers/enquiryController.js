@@ -6,7 +6,14 @@ import bcrypt from 'bcryptjs';
 export const getEnquiries = async (req, res, next) => {
   try {
     const { page, limit, search, status } = req.query;
-    const result = await enquiryService.getAllEnquiries({ page, limit, search, status });
+    const { role, email } = req.user || {};
+    const filterOptions = { page, limit, search, status };
+
+    if (role === 'client') {
+      filterOptions.email = email;
+    }
+
+    const result = await enquiryService.getAllEnquiries(filterOptions);
     res.json({
       success: true,
       ...result,
@@ -20,6 +27,16 @@ export const getEnquiryById = async (req, res, next) => {
   try {
     const { id } = req.params;
     const enquiry = await enquiryService.getEnquiryById(id);
+
+    if (req.user && req.user.role === 'client') {
+      if (!enquiry.email || enquiry.email.toLowerCase() !== req.user.email.toLowerCase()) {
+        return res.status(403).json({
+          success: false,
+          message: 'Access forbidden. You can only view your own enquiries.',
+        });
+      }
+    }
+
     res.json({ success: true, enquiry });
   } catch (error) {
     next(error);

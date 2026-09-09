@@ -40,8 +40,13 @@ export const CONSULTATION_STATUSES = [
 
 export const consultationService = {
   async getAllConsultations(options = {}) {
-    const { page = 1, limit = 10, search = '', status = '' } = options;
+    const { page = 1, limit = 10, search = '', status = '', email = '' } = options;
     let consultations = readData();
+
+    if (email) {
+      const lowerEmail = email.toLowerCase();
+      consultations = consultations.filter((c) => c.email && c.email.toLowerCase() === lowerEmail);
+    }
 
     if (search) {
       const lowerSearch = search.toLowerCase();

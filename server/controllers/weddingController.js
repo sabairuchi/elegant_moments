@@ -70,11 +70,18 @@ export const createWedding = async (req, res, next) => {
 export const updateWedding = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const updates = req.body;
+    let updates = req.body;
 
-    // Prevent direct status override by planners/clients to COMPLETED or CANCELLED if desired.
-    // For now, rely on service validation and permission middleware.
-    
+    // Security check: Clients can only update allowed fields (guestCount, budget, notes, weddingName)
+    if (req.user.role === 'client') {
+      const allowedKeys = ['guestCount', 'budget', 'notes', 'weddingName'];
+      const filtered = {};
+      allowedKeys.forEach((key) => {
+        if (updates[key] !== undefined) filtered[key] = updates[key];
+      });
+      updates = filtered;
+    }
+
     // Track assignment changes
     let oldWedding = null;
     try {

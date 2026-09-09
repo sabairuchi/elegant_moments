@@ -4,7 +4,14 @@ import { auditService } from '../services/auditService.js';
 export const getConsultations = async (req, res, next) => {
   try {
     const { page, limit, search, status } = req.query;
-    const result = await consultationService.getAllConsultations({ page, limit, search, status });
+    const { role, email } = req.user || {};
+    const filterOptions = { page, limit, search, status };
+
+    if (role === 'client') {
+      filterOptions.email = email;
+    }
+
+    const result = await consultationService.getAllConsultations(filterOptions);
     res.json({
       success: true,
       ...result,
@@ -18,6 +25,16 @@ export const getConsultationById = async (req, res, next) => {
   try {
     const { id } = req.params;
     const consultation = await consultationService.getConsultationById(id);
+
+    if (req.user && req.user.role === 'client') {
+      if (!consultation.email || consultation.email.toLowerCase() !== req.user.email.toLowerCase()) {
+        return res.status(403).json({
+          success: false,
+          message: 'Access forbidden. You can only view your own consultations.',
+        });
+      }
+    }
+
     res.json({ success: true, consultation });
   } catch (error) {
     next(error);

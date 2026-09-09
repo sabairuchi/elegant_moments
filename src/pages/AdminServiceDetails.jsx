@@ -19,6 +19,18 @@ export default function AdminServiceDetails() {
 
   useEffect(() => {
     const fetchService = async () => {
+      if (id === 'new') {
+        setService({
+          name: '',
+          category: categories[0],
+          description: '',
+          startingPrice: 0,
+          imageUrl: '',
+          status: 'ACTIVE'
+        });
+        setLoading(false);
+        return;
+      }
       try {
         const res = await fetch(`/api/services/${id}`, {
           headers: { 'Authorization': `Bearer ${token}` }
@@ -50,8 +62,11 @@ export default function AdminServiceDetails() {
     setSuccess('');
 
     try {
-      const res = await fetch(`/api/services/${id}`, {
-        method: 'PATCH',
+      const url = id === 'new' ? '/api/services' : `/api/services/${id}`;
+      const method = id === 'new' ? 'POST' : 'PATCH';
+
+      const res = await fetch(url, {
+        method,
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
@@ -61,8 +76,12 @@ export default function AdminServiceDetails() {
       const data = await res.json();
       
       if (data.success) {
-        setSuccess('Service updated successfully');
-        setService(data.data);
+        setSuccess(`Service ${id === 'new' ? 'created' : 'updated'} successfully`);
+        if (id === 'new' && data.data && data.data.id) {
+          navigate(`/admin/services/${data.data.id}`, { replace: true });
+        } else {
+          setService(data.data);
+        }
       } else {
         setError(data.message || 'Failed to update service');
       }
@@ -105,16 +124,18 @@ export default function AdminServiceDetails() {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '30px' }}>
         <div>
           <h1 style={{ fontFamily: 'Playfair Display, serif', color: 'var(--color-burgundy)', fontSize: '2.2rem', margin: '0 0 10px 0' }}>
-            Edit Service
+            {id === 'new' ? 'Create Service' : 'Edit Service'}
           </h1>
-          <p style={{ color: '#666', margin: 0, fontSize: '0.9rem' }}>ID: {service.id}</p>
+          {id !== 'new' && <p style={{ color: '#666', margin: 0, fontSize: '0.9rem' }}>ID: {service.id}</p>}
         </div>
-        <button 
-          onClick={handleDelete}
-          style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 16px', backgroundColor: '#FDF2F2', color: '#C53030', border: '1px solid #FEB2B2', borderRadius: '6px', cursor: 'pointer', fontWeight: '500' }}
-        >
-          <Trash2 size={16} /> Delete Service
-        </button>
+        {id !== 'new' && (
+          <button 
+            onClick={handleDelete}
+            style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 16px', backgroundColor: '#FDF2F2', color: '#C53030', border: '1px solid #FEB2B2', borderRadius: '6px', cursor: 'pointer', fontWeight: '500' }}
+          >
+            <Trash2 size={16} /> Delete Service
+          </button>
+        )}
       </div>
 
       {error && <div style={{ padding: '15px', backgroundColor: '#FDF2F2', borderLeft: '4px solid #9B2C2C', color: '#9B2C2C', marginBottom: '25px', borderRadius: '4px' }}>{error}</div>}

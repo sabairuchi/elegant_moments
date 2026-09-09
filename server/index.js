@@ -20,17 +20,19 @@ app.use('/api', apiRouter);
 // Central Error Handler
 app.use(errorHandler);
 
-const server = app.listen(PORT, () => {
-  console.log(`✨ Elegant Moments API (Milestone 2.1) running on http://localhost:${PORT}`);
-});
+let server;
+if (process.env.NODE_ENV !== 'test') {
+  server = app.listen(PORT, () => {
+    console.log(`✨ Elegant Moments API (Milestone 2.1) running on http://localhost:${PORT}`);
+  });
 
-server.on('error', (err) => {
-  if (err.code === 'EADDRINUSE') {
-    console.log(`✨ Elegant Moments API is already running on http://localhost:${PORT} (active instance attached).`);
-    process.exit(0);
-  } else {
-    console.error('Server error:', err);
-  }
-});
+  server.on('error', (err) => {
+    if (err.code === 'EADDRINUSE') {
+      console.log(`✨ Elegant Moments API is already running on http://localhost:${PORT} (active instance attached).`);
+    } else {
+      console.error('Server error:', err);
+    }
+  });
+}
 
 export default app;

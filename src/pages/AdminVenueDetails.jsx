@@ -19,6 +19,20 @@ export default function AdminVenueDetails() {
 
   useEffect(() => {
     const fetchVenue = async () => {
+      if (id === 'new') {
+        setVenue({
+          name: '',
+          location: '',
+          capacity: 0,
+          pricing: 0,
+          imageUrl: '',
+          amenities: [],
+          description: '',
+          status: 'ACTIVE'
+        });
+        setLoading(false);
+        return;
+      }
       try {
         const res = await fetch(`/api/venues/${id}`, {
           headers: { 'Authorization': `Bearer ${token}` }
@@ -67,8 +81,11 @@ export default function AdminVenueDetails() {
     setSuccess('');
 
     try {
-      const res = await fetch(`/api/venues/${id}`, {
-        method: 'PATCH',
+      const url = id === 'new' ? '/api/venues' : `/api/venues/${id}`;
+      const method = id === 'new' ? 'POST' : 'PATCH';
+
+      const res = await fetch(url, {
+        method,
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
@@ -78,8 +95,12 @@ export default function AdminVenueDetails() {
       const data = await res.json();
       
       if (data.success) {
-        setSuccess('Venue updated successfully');
-        setVenue(data.data);
+        setSuccess(`Venue ${id === 'new' ? 'created' : 'updated'} successfully`);
+        if (id === 'new' && data.data && data.data.id) {
+          navigate(`/admin/venues/${data.data.id}`, { replace: true });
+        } else {
+          setVenue(data.data);
+        }
       } else {
         setError(data.message || 'Failed to update venue');
       }
@@ -122,16 +143,18 @@ export default function AdminVenueDetails() {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '30px' }}>
         <div>
           <h1 style={{ fontFamily: 'Playfair Display, serif', color: 'var(--color-burgundy)', fontSize: '2.2rem', margin: '0 0 10px 0' }}>
-            Edit Venue
+            {id === 'new' ? 'Create Venue' : 'Edit Venue'}
           </h1>
-          <p style={{ color: '#666', margin: 0, fontSize: '0.9rem' }}>ID: {venue.id}</p>
+          {id !== 'new' && <p style={{ color: '#666', margin: 0, fontSize: '0.9rem' }}>ID: {venue.id}</p>}
         </div>
-        <button 
-          onClick={handleDelete}
-          style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 16px', backgroundColor: '#FDF2F2', color: '#C53030', border: '1px solid #FEB2B2', borderRadius: '6px', cursor: 'pointer', fontWeight: '500' }}
-        >
-          <Trash2 size={16} /> Delete Venue
-        </button>
+        {id !== 'new' && (
+          <button 
+            onClick={handleDelete}
+            style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 16px', backgroundColor: '#FDF2F2', color: '#C53030', border: '1px solid #FEB2B2', borderRadius: '6px', cursor: 'pointer', fontWeight: '500' }}
+          >
+            <Trash2 size={16} /> Delete Venue
+          </button>
+        )}
       </div>
 
       {error && <div style={{ padding: '15px', backgroundColor: '#FDF2F2', borderLeft: '4px solid #9B2C2C', color: '#9B2C2C', marginBottom: '25px', borderRadius: '4px' }}>{error}</div>}

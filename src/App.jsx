@@ -28,7 +28,9 @@ import AdminServices from './pages/AdminServices';
 import AdminServiceDetails from './pages/AdminServiceDetails';
 import AdminVenues from './pages/AdminVenues';
 import AdminVenueDetails from './pages/AdminVenueDetails';
+import ClientDashboard from './pages/ClientDashboard';
 import ClientWedding from './pages/ClientWedding';
+import ClientEnquiries from './pages/ClientEnquiries';
 import ClientServices from './pages/ClientServices';
 import ClientVenues from './pages/ClientVenues';
 
@@ -127,12 +129,28 @@ export default function App() {
                 }
               />
 
-              {/* Role-Protected Route Foundations (M2.2) */}
+              {/* Role-Protected Route Foundations (M2.2 & M2.7) */}
               <Route
                 path="/dashboard"
                 element={
                   <ProtectedRoute allowedRoles={['client', 'admin', 'super_admin']}>
+                    <ClientDashboard />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/dashboard/wedding"
+                element={
+                  <ProtectedRoute allowedRoles={['client', 'admin', 'super_admin']}>
                     <ClientWedding />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/dashboard/enquiries"
+                element={
+                  <ProtectedRoute allowedRoles={['client', 'admin', 'super_admin']}>
+                    <ClientEnquiries />
                   </ProtectedRoute>
                 }
               />

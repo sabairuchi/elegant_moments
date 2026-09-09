@@ -10,7 +10,7 @@ let regularUserToken = '';
 test('Seed Super Admin Login', async () => {
   const res = await request(app)
     .post('/api/auth/login')
-    .send({ email: 'saba@elegantmoments.com', password: 'Password123!' });
+    .send({ email: 'superadmin@elegantmoments.com', password: 'Password123!' });
     
   expect(res.status).toBe(200);
   superAdminToken = res.body.token;
@@ -20,7 +20,7 @@ test('Seed Super Admin Login', async () => {
 test('Regular User Login', async () => {
   const res = await request(app)
     .post('/api/auth/login')
-    .send({ email: 'john@example.com', password: 'Password123!' });
+    .send({ email: 'client@elegantmoments.com', password: 'Password123!' });
     
   expect(res.status).toBe(200);
   regularUserToken = res.body.token;

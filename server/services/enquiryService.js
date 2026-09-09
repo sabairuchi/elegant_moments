@@ -42,8 +42,13 @@ export const ENQUIRY_STATUSES = [
 
 export const enquiryService = {
   async getAllEnquiries(options = {}) {
-    const { page = 1, limit = 10, search = '', status = '' } = options;
+    const { page = 1, limit = 10, search = '', status = '', email = '' } = options;
     let enquiries = readData();
+
+    if (email) {
+      const lowerEmail = email.toLowerCase();
+      enquiries = enquiries.filter((eq) => eq.email && eq.email.toLowerCase() === lowerEmail);
+    }
 
     if (search) {
       const lowerSearch = search.toLowerCase();

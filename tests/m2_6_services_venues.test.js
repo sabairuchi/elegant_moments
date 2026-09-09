@@ -1,5 +1,6 @@
+import { describe, it, expect } from 'vitest';
 import request from 'supertest';
-import app from '../server/index.js'; // Ensure the app export is the express instance
+import app from '../server/index.js';
 import { venueService } from '../server/services/venueService.js';
 import { serviceService } from '../server/services/serviceService.js';
 import { weddingService } from '../server/services/weddingService.js';
