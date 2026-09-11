@@ -17,6 +17,15 @@ export const getWeddings = async (req, res, next) => {
     // Admins and super_admins see everything
 
     const result = await weddingService.getAllWeddings(filterOptions);
+    
+    // Sanitize internalNotes for client role
+    if (role === 'client' && result.weddings) {
+      result.weddings = result.weddings.map((w) => {
+        const { internalNotes, adminNotes, ...rest } = w;
+        return rest;
+      });
+    }
+
     res.json({
       success: true,
       ...result,
@@ -29,7 +38,13 @@ export const getWeddings = async (req, res, next) => {
 export const getWeddingById = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const wedding = await weddingService.getWeddingById(id);
+    let wedding = await weddingService.getWeddingById(id);
+
+    if (req.user && req.user.role === 'client') {
+      const { internalNotes, adminNotes, ...rest } = wedding;
+      wedding = rest;
+    }
+
     res.json({ success: true, wedding });
   } catch (error) {
     next(error);

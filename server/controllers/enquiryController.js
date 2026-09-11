@@ -14,6 +14,15 @@ export const getEnquiries = async (req, res, next) => {
     }
 
     const result = await enquiryService.getAllEnquiries(filterOptions);
+    
+    // Sanitize internalNotes for client role
+    if (role === 'client' && result.enquiries) {
+      result.enquiries = result.enquiries.map((e) => {
+        const { internalNotes, adminNotes, ...rest } = e;
+        return rest;
+      });
+    }
+
     res.json({
       success: true,
       ...result,
@@ -26,7 +35,7 @@ export const getEnquiries = async (req, res, next) => {
 export const getEnquiryById = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const enquiry = await enquiryService.getEnquiryById(id);
+    let enquiry = await enquiryService.getEnquiryById(id);
 
     if (req.user && req.user.role === 'client') {
       if (!enquiry.email || enquiry.email.toLowerCase() !== req.user.email.toLowerCase()) {
@@ -35,6 +44,8 @@ export const getEnquiryById = async (req, res, next) => {
           message: 'Access forbidden. You can only view your own enquiries.',
         });
       }
+      const { internalNotes, adminNotes, ...rest } = enquiry;
+      enquiry = rest;
     }
 
     res.json({ success: true, enquiry });

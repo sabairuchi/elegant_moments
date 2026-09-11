@@ -20,11 +20,29 @@ Build the Client / Couple Dashboard for Elegant Moments, providing a personalize
 3. **Routing & Protected Foundations**
    - Configured protected routes under `/dashboard`, `/dashboard/wedding`, and `/dashboard/enquiries` using `ProtectedRoute` mapped to `['client', 'admin', 'super_admin']`.
 
+## Entity Relationships (Client Dashboard → Wedding → Venue → Services)
+
+- **Client Account (`req.user.id` & `req.user.email`)**:
+  - The client account anchors all portal interactions.
+  - Linked to weddings via `wedding.clientId = user.id`.
+  - Linked to historical enquiries & consultations via `email = user.email`.
+
+- **Wedding Profile (`wedding`)**:
+  - Represents the client's central event workspace.
+  - Contains `selectedVenueId` linking to a single selected `Venue`.
+  - Contains `selectedServices` array linking to curated `Service` records.
+  - Contains `assignedPlannerId` linking to the matched lead planner.
+
+- **Venue (`venue`) & Services (`service`)**:
+  - Clients browse active venues (`/client/venues`) and active services (`/client/services`).
+  - Selection and administrative updates to `selectedVenueId` and `selectedServices` are managed via concierge/planner workflows, while client view components render assigned venue details and service chips dynamically.
+  - Admin/internal notes are strictly stripped server-side prior to API response delivery.
+
 ## Key Learnings & Nuances
 
-- **Multi-tenant Email Scoping**: Since enquiries can precede user account creation, matching logged-in client accounts to historical enquiries via verified email address ensures seamless data access without complex schema changes.
-- **Backend Field-Level Sanitization**: Rather than trusting frontend route protection, stripping administrative fields (`status`, `assignedPlannerId`) inside `weddingController.js` when `req.user.role === 'client'` guarantees backend security against tampered payload requests.
-- **Unit & Integration Testing**: Created `tests/m2_7_client_dashboard.test.js` to verify enquiry submission, email-scoped filtering, single enquiry ownership protection, and administrative field sanitization on wedding updates.
+- **Multi-tenant Email Scoping**: Matching logged-in client accounts to historical enquiries via verified email address ensures seamless data access without complex schema changes.
+- **Backend Field-Level & Note Sanitization**: Stripping administrative fields (`status`, `assignedPlannerId`) and hiding `internalNotes`/`adminNotes` when `req.user.role === 'client'` guarantees backend data security against tampered payload requests.
+- **Unit & Integration Testing**: `tests/m2_7_client_dashboard.test.js` verifies enquiry submission, email-scoped filtering, single resource ownership protection (403), internal notes stripping, and administrative field sanitization.
 
 ## Status
-Milestone 2.7 is fully completed, tested with 100% test suite pass rate (21/21 tests passing across all 4 test files), and verified with a clean production bundle build (`vite build`).
+Milestone 2.7 is fully completed, tested with 100% test suite pass rate (22/22 tests passing across all 4 test files), and verified with a clean production bundle build (`vite build`).

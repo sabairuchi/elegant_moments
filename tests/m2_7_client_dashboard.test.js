@@ -165,5 +165,26 @@ describe('M2.7 Client Dashboard & Data Ownership Tests', () => {
 
     expect(deleteRes.status).toBe(403);
   });
+
+  test('Internal and admin notes are NEVER exposed to client role in API responses', async () => {
+    const { consultationService } = await import('../server/services/consultationService.js');
+    if (!client1User || !client1Token) return;
+
+    const consultation = await consultationService.createConsultation({
+      name: `${client1User.firstName} ${client1User.lastName}`,
+      email: client1User.email,
+      meetingType: 'Video Call',
+      internalNotes: 'TOP SECRET ADMIN NOTE - DO NOT EXPOSE TO CLIENT'
+    });
+
+    const res = await request(app)
+      .get(`/api/consultations/${consultation.id}`)
+      .set('Authorization', `Bearer ${client1Token}`);
+
+    expect(res.status).toBe(200);
+    expect(res.body.success).toBe(true);
+    expect(res.body.consultation.internalNotes).toBeUndefined();
+    expect(res.body.consultation.adminNotes).toBeUndefined();
+  });
 });
 

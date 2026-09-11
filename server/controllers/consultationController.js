@@ -12,6 +12,15 @@ export const getConsultations = async (req, res, next) => {
     }
 
     const result = await consultationService.getAllConsultations(filterOptions);
+    
+    // Sanitize internalNotes for client role
+    if (role === 'client' && result.consultations) {
+      result.consultations = result.consultations.map((c) => {
+        const { internalNotes, adminNotes, ...rest } = c;
+        return rest;
+      });
+    }
+
     res.json({
       success: true,
       ...result,
@@ -24,7 +33,7 @@ export const getConsultations = async (req, res, next) => {
 export const getConsultationById = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const consultation = await consultationService.getConsultationById(id);
+    let consultation = await consultationService.getConsultationById(id);
 
     if (req.user && req.user.role === 'client') {
       if (!consultation.email || consultation.email.toLowerCase() !== req.user.email.toLowerCase()) {
@@ -33,6 +42,8 @@ export const getConsultationById = async (req, res, next) => {
           message: 'Access forbidden. You can only view your own consultations.',
         });
       }
+      const { internalNotes, adminNotes, ...rest } = consultation;
+      consultation = rest;
     }
 
     res.json({ success: true, consultation });
