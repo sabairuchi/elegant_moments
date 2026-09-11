@@ -119,4 +119,51 @@ describe('M2.7 Client Dashboard & Data Ownership Tests', () => {
     expect(updateRes.body.wedding.status).toBe('PLANNING');
     expect(updateRes.body.wedding.assignedPlannerId).not.toBe('hacked-planner-id');
   });
+
+  test('Client 2 CANNOT view Client 1 single wedding profile', async () => {
+    if (!client2Token || !client1WeddingId) return;
+
+    const res = await request(app)
+      .get(`/api/weddings/${client1WeddingId}`)
+      .set('Authorization', `Bearer ${client2Token}`);
+
+    expect(res.status).toBe(403);
+    expect(res.body.success).toBe(false);
+  });
+
+  test('Client 2 CANNOT view Client 1 single consultation', async () => {
+    const { consultationService } = await import('../server/services/consultationService.js');
+    if (!client1User || !client2Token) return;
+
+    const consultation = await consultationService.createConsultation({
+      name: `${client1User.firstName} ${client1User.lastName}`,
+      email: client1User.email,
+      meetingType: 'Video Call'
+    });
+
+    const res = await request(app)
+      .get(`/api/consultations/${consultation.id}`)
+      .set('Authorization', `Bearer ${client2Token}`);
+
+    expect(res.status).toBe(403);
+    expect(res.body.success).toBe(false);
+  });
+
+  test('Client CANNOT create or delete services (admin-only operations restricted)', async () => {
+    if (!client1Token) return;
+
+    const createRes = await request(app)
+      .post('/api/services')
+      .set('Authorization', `Bearer ${client1Token}`)
+      .send({ name: 'Hacked Service', category: 'Photography' });
+
+    expect(createRes.status).toBe(403);
+
+    const deleteRes = await request(app)
+      .delete('/api/services/SRV-000001')
+      .set('Authorization', `Bearer ${client1Token}`);
+
+    expect(deleteRes.status).toBe(403);
+  });
 });
+

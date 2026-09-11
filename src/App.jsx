@@ -158,7 +158,7 @@ export default function App() {
                 path="/client/services"
                 element={
                   <ProtectedRoute requiredPermissions={['services.view']}>
-                    <ClientServices />
+                    <ClientServices onOpenEnquiry={handleOpenEnquiry} />
                   </ProtectedRoute>
                 }
               />
@@ -166,7 +166,7 @@ export default function App() {
                 path="/client/venues"
                 element={
                   <ProtectedRoute requiredPermissions={['venues.view']}>
-                    <ClientVenues />
+                    <ClientVenues onOpenEnquiry={handleOpenEnquiry} />
                   </ProtectedRoute>
                 }
               />

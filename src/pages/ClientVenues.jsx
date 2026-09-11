@@ -2,10 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import ClientSubNav from '../components/ClientSubNav';
 import { MapPin, Users, Sparkles } from '../components/Icons';
+import VenueModal from '../components/VenueModal';
 
-export default function ClientVenues() {
+export default function ClientVenues({ onOpenEnquiry }) {
   const { token } = useAuth();
   const [venues, setVenues] = useState([]);
+  const [selectedVenue, setSelectedVenue] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
@@ -31,6 +33,13 @@ export default function ClientVenues() {
     };
     if (token) fetchVenues();
   }, [token]);
+
+  const handleInquire = (e, venue) => {
+    e.stopPropagation();
+    if (onOpenEnquiry) {
+      onOpenEnquiry();
+    }
+  };
 
   return (
     <div style={{ backgroundColor: 'var(--color-ivory)', minHeight: '100vh', fontFamily: 'Inter, sans-serif' }}>
@@ -65,7 +74,11 @@ export default function ClientVenues() {
         ) : (
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(400px, 1fr))', gap: '50px' }}>
             {venues.map(venue => (
-              <div key={venue.id} style={{ backgroundColor: '#fff', borderRadius: '0', overflow: 'hidden', boxShadow: '0 20px 40px rgba(44,24,16,0.06)', display: 'flex', flexDirection: 'column', border: '1px solid #f5f5f5' }}>
+              <div 
+                key={venue.id} 
+                onClick={() => setSelectedVenue(venue)}
+                style={{ backgroundColor: '#fff', borderRadius: '0', overflow: 'hidden', boxShadow: '0 20px 40px rgba(44,24,16,0.06)', display: 'flex', flexDirection: 'column', border: '1px solid #f5f5f5', cursor: 'pointer' }}
+              >
                 <div style={{ height: '300px', backgroundColor: '#f9f9f9', backgroundImage: `url(${venue.imageUrl || 'https://images.unsplash.com/photo-1519225421980-715cb0215aed?auto=format&fit=crop&w=800&q=80'})`, backgroundSize: 'cover', backgroundPosition: 'center' }} />
                 
                 <div style={{ padding: '35px', flex: 1, display: 'flex', flexDirection: 'column' }}>
@@ -111,7 +124,11 @@ export default function ClientVenues() {
                       </span>
                     </div>
                     
-                    <button className="btn-gold" style={{ padding: '10px 24px', fontSize: '0.85rem' }}>
+                    <button 
+                      onClick={(e) => handleInquire(e, venue)} 
+                      className="btn-gold" 
+                      style={{ padding: '10px 24px', fontSize: '0.85rem' }}
+                    >
                       Inquire
                     </button>
                   </div>
@@ -120,7 +137,21 @@ export default function ClientVenues() {
             ))}
           </div>
         )}
+
+        {/* Venue Modal */}
+        {selectedVenue && (
+          <VenueModal
+            venue={{
+              ...selectedVenue,
+              image: selectedVenue.imageUrl || 'https://images.unsplash.com/photo-1519225421980-715cb0215aed?auto=format&fit=crop&w=800&q=80',
+              highlights: selectedVenue.amenities || []
+            }}
+            onClose={() => setSelectedVenue(null)}
+            onOpenEnquiry={onOpenEnquiry || (() => {})}
+          />
+        )}
       </div>
     </div>
   );
 }
+

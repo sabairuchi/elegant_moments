@@ -27,4 +27,4 @@ Build the Client / Couple Dashboard for Elegant Moments, providing a personalize
 - **Unit & Integration Testing**: Created `tests/m2_7_client_dashboard.test.js` to verify enquiry submission, email-scoped filtering, single enquiry ownership protection, and administrative field sanitization on wedding updates.
 
 ## Status
-Milestone 2.7 is fully completed, tested with 100% test suite pass rate (18/18 tests passing), and verified with a clean production bundle build (`vite build`).
+Milestone 2.7 is fully completed, tested with 100% test suite pass rate (21/21 tests passing across all 4 test files), and verified with a clean production bundle build (`vite build`).
