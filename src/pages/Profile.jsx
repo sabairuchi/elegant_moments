@@ -69,9 +69,16 @@ export default function Profile() {
               </div>
             </div>
 
-            <button onClick={logout} className="btn btn-secondary" style={{ padding: '8px 16px', fontSize: '0.9rem' }}>
-              Sign Out
-            </button>
+            <div style={{ display: 'flex', gap: '10px' }}>
+              {user.role === 'client' && (
+                <Link to="/dashboard" className="btn btn-primary" style={{ padding: '8px 18px', fontSize: '0.9rem' }}>
+                  ✨ My Client Dashboard
+                </Link>
+              )}
+              <button onClick={logout} className="btn btn-secondary" style={{ padding: '8px 16px', fontSize: '0.9rem' }}>
+                Sign Out
+              </button>
+            </div>
           </div>
 
           {/* User Details Grid */}

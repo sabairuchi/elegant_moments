@@ -226,7 +226,7 @@ export default function Header({ onOpenEnquiry }) {
             {isAuthenticated ? (
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
                 <Link
-                  to="/profile"
+                  to={user.role === 'client' ? '/dashboard' : '/profile'}
                   style={{
                     display: 'flex',
                     alignItems: 'center',
@@ -247,6 +247,26 @@ export default function Header({ onOpenEnquiry }) {
                   <span style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#22C55E' }} />
                   <span>{user.firstName?.toUpperCase()} ({user.role?.toUpperCase()})</span>
                 </Link>
+                {user.role === 'client' && (
+                  <Link
+                    to="/dashboard"
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '0.5rem',
+                      color: 'var(--color-gold-light)',
+                      textDecoration: 'none',
+                      fontSize: '0.78rem',
+                      fontFamily: 'var(--font-sans)',
+                      letterSpacing: '0.15em',
+                      fontWeight: '600',
+                      padding: '0.4rem 0.8rem',
+                    }}
+                    className="nav-btn-hover"
+                  >
+                    MY DASHBOARD
+                  </Link>
+                )}
                 {(user.role === 'admin' || user.role === 'super_admin') && (
                   <>
                     <Link

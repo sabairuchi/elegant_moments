@@ -1,5 +1,24 @@
 [
   {
+    "id": "ENQ-934900",
+    "name": "Test Client",
+    "email": "testclient@example.com",
+    "phone": "",
+    "eventType": "Wedding",
+    "eventDate": "",
+    "location": "",
+    "guestCount": "100-200",
+    "estimatedBudget": "",
+    "servicesRequired": [],
+    "vision": "",
+    "status": "NEW",
+    "internalNotes": "",
+    "assignedTo": null,
+    "convertedUserId": null,
+    "createdAt": "2026-09-11T07:32:14.900Z",
+    "updatedAt": "2026-09-11T07:32:14.900Z"
+  },
+  {
     "id": "ENQ-434578",
     "name": "Test Client",
     "email": "testclient@example.com",

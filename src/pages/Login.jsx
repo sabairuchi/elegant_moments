@@ -14,16 +14,21 @@ export default function Login() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const from = location.state?.from?.pathname || '/profile';
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
     setLoading(true);
 
     try {
-      await login(email, password);
-      navigate(from, { replace: true });
+      const data = await login(email, password);
+      const targetRole = data?.user?.role || 'client';
+      let defaultDestination = '/dashboard';
+      if (['admin', 'super_admin'].includes(targetRole)) defaultDestination = '/admin/weddings';
+      else if (targetRole === 'planner') defaultDestination = '/planner';
+      else if (targetRole === 'vendor') defaultDestination = '/vendor';
+
+      const destination = location.state?.from?.pathname || defaultDestination;
+      navigate(destination, { replace: true });
     } catch (err) {
       setError(err.message || 'Failed to authenticate.');
     } finally {
