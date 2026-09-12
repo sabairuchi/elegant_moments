@@ -1,9 +1,8 @@
-import crypto from 'crypto';
-import { query } from '../db/index.js';
+import { query, DEFAULT_VENUES } from '../db/index.js';
 
 export const ALLOWED_VENUE_STATUSES = ['ACTIVE', 'INACTIVE', 'ARCHIVED'];
 
-let memoryVenues = [];
+let memoryVenues = [...DEFAULT_VENUES];
 
 const mapRowToVenue = (row) => ({
   id: row.id,

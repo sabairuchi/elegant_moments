@@ -1,10 +1,9 @@
-import crypto from 'crypto';
-import { query } from '../db/index.js';
+import { query, DEFAULT_SERVICES } from '../db/index.js';
 
 export const ALLOWED_SERVICE_STATUSES = ['ACTIVE', 'INACTIVE', 'ARCHIVED'];
 export const ALLOWED_SERVICE_CATEGORIES = ['Photography', 'Videography', 'Catering', 'Decor', 'Florist', 'Music/Entertainment', 'Cake', 'Makeup & Hair', 'Other'];
 
-let memoryServices = [];
+let memoryServices = [...DEFAULT_SERVICES];
 
 const mapRowToService = (row) => ({
   id: row.id,
