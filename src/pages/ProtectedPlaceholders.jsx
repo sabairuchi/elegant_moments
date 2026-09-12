@@ -39,9 +39,6 @@ const BasePlaceholder = ({ title, roleName, roleBadgeColor, description }) => {
 
         <div style={{ color: '#666', lineHeight: 1.6, marginBottom: '30px' }}>
           <p>{description}</p>
-          <div style={{ background: '#FFFBEB', padding: '15px 20px', borderRadius: '6px', borderLeft: '4px solid var(--color-gold)', marginTop: '20px', fontSize: '0.9rem' }}>
-            📌 <strong>Milestone 2.2 Scope Notice:</strong> Full interactive dashboard capabilities, analytics, tools, and operational workflows will be built in subsequent milestones.
-          </div>
         </div>
 
         <div style={{ borderTop: '1px solid #eee', paddingTop: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>

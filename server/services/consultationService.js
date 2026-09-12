@@ -6,31 +6,42 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const CONSULTATIONS_FILE = path.join(__dirname, '..', 'data', 'consultations.json');
 
-const ensureFileExists = () => {
-  const dir = path.dirname(CONSULTATIONS_FILE);
-  if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
-  if (!fs.existsSync(CONSULTATIONS_FILE)) fs.writeFileSync(CONSULTATIONS_FILE, JSON.stringify([], null, 2), 'utf-8');
-};
+let memoryConsultations = null;
 
-const readData = () => {
-  ensureFileExists();
+const ensureFileExists = () => {
   try {
-    const raw = fs.readFileSync(CONSULTATIONS_FILE, 'utf-8');
-    return JSON.parse(raw);
+    const dir = path.dirname(CONSULTATIONS_FILE);
+    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+    if (!fs.existsSync(CONSULTATIONS_FILE)) fs.writeFileSync(CONSULTATIONS_FILE, JSON.stringify([], null, 2), 'utf-8');
   } catch (err) {
-    console.error('Error reading consultations file:', err);
-    return [];
+    // Read-only environment
   }
 };
 
+const readData = () => {
+  if (memoryConsultations) return memoryConsultations;
+  ensureFileExists();
+  try {
+    if (fs.existsSync(CONSULTATIONS_FILE)) {
+      const raw = fs.readFileSync(CONSULTATIONS_FILE, 'utf-8');
+      memoryConsultations = JSON.parse(raw);
+    } else {
+      memoryConsultations = [];
+    }
+  } catch (err) {
+    memoryConsultations = [];
+  }
+  return memoryConsultations;
+};
+
 const writeData = (data) => {
+  memoryConsultations = data;
   ensureFileExists();
   try {
     fs.writeFileSync(CONSULTATIONS_FILE, JSON.stringify(data, null, 2), 'utf-8');
     return true;
   } catch (err) {
-    console.error('Error writing consultations file:', err);
-    return false;
+    return true;
   }
 };
 

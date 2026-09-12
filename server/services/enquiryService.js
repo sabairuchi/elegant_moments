@@ -6,31 +6,42 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const ENQUIRIES_FILE = path.join(__dirname, '..', 'data', 'enquiries.json');
 
-const ensureFileExists = () => {
-  const dir = path.dirname(ENQUIRIES_FILE);
-  if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
-  if (!fs.existsSync(ENQUIRIES_FILE)) fs.writeFileSync(ENQUIRIES_FILE, JSON.stringify([], null, 2), 'utf-8');
-};
+let memoryEnquiries = null;
 
-const readData = () => {
-  ensureFileExists();
+const ensureFileExists = () => {
   try {
-    const raw = fs.readFileSync(ENQUIRIES_FILE, 'utf-8');
-    return JSON.parse(raw);
+    const dir = path.dirname(ENQUIRIES_FILE);
+    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+    if (!fs.existsSync(ENQUIRIES_FILE)) fs.writeFileSync(ENQUIRIES_FILE, JSON.stringify([], null, 2), 'utf-8');
   } catch (err) {
-    console.error('Error reading enquiries file:', err);
-    return [];
+    // Read-only environment
   }
 };
 
+const readData = () => {
+  if (memoryEnquiries) return memoryEnquiries;
+  ensureFileExists();
+  try {
+    if (fs.existsSync(ENQUIRIES_FILE)) {
+      const raw = fs.readFileSync(ENQUIRIES_FILE, 'utf-8');
+      memoryEnquiries = JSON.parse(raw);
+    } else {
+      memoryEnquiries = [];
+    }
+  } catch (err) {
+    memoryEnquiries = [];
+  }
+  return memoryEnquiries;
+};
+
 const writeData = (data) => {
+  memoryEnquiries = data;
   ensureFileExists();
   try {
     fs.writeFileSync(ENQUIRIES_FILE, JSON.stringify(data, null, 2), 'utf-8');
     return true;
   } catch (err) {
-    console.error('Error writing enquiries file:', err);
-    return false;
+    return true;
   }
 };
 

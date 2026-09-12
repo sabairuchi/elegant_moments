@@ -4,6 +4,8 @@ import { config } from './config/index.js';
 import apiRouter from './routes/api/index.js';
 import { errorHandler } from './middleware/errorHandler.js';
 
+import { initDb } from './db/index.js';
+
 const app = express();
 const PORT = config.port;
 
@@ -22,6 +24,7 @@ app.use(errorHandler);
 
 let server;
 if (process.env.NODE_ENV !== 'test') {
+  initDb().catch((err) => console.warn('DB Init error:', err.message));
   server = app.listen(PORT, () => {
     console.log(`✨ Elegant Moments API (Milestone 2.1) running on http://localhost:${PORT}`);
   });

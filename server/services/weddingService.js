@@ -1,78 +1,127 @@
-import fs from 'fs/promises';
-import path from 'path';
-import { fileURLToPath } from 'url';
 import crypto from 'crypto';
-import { auditService } from './auditService.js';
+import { query } from '../db/index.js';
 import { venueService } from './venueService.js';
 import { serviceService } from './serviceService.js';
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-const DB_PATH = path.join(__dirname, '../data/weddings.json');
 
 const ALLOWED_STATUSES = ['PLANNING', 'CONFIRMED', 'IN_PROGRESS', 'COMPLETED', 'CANCELLED'];
 
+let memoryWeddings = [];
+
+const fetchJunctionData = async (weddingId) => {
+  let selectedVenueId = null;
+  let selectedServices = [];
+
+  try {
+    const venueRes = await query('SELECT venue_id FROM wedding_venues WHERE wedding_id = $1 LIMIT 1', [weddingId]);
+    if (venueRes.rows.length > 0) {
+      selectedVenueId = venueRes.rows[0].venue_id;
+    }
+
+    const serviceRes = await query('SELECT service_id FROM wedding_services WHERE wedding_id = $1', [weddingId]);
+    selectedServices = serviceRes.rows.map(r => r.service_id);
+  } catch (err) {
+    // If DB is offline, junction fallback is handled in memory
+  }
+
+  return { selectedVenueId, selectedServices };
+};
+
+const mapRowToWedding = (row, selectedVenueId = null, selectedServices = []) => ({
+  id: row.id,
+  clientId: row.client_id || '',
+  clientName: row.client_name || '',
+  weddingName: row.wedding_title || row.wedding_name || (row.client_name ? `${row.client_name}'s Wedding` : 'Untitled Wedding'),
+  weddingDate: row.wedding_date ? new Date(row.wedding_date).toISOString().split('T')[0] : null,
+  guestCount: row.guest_count ? Number(row.guest_count) : null,
+  budget: row.budget ? Number(row.budget) : (row.estimated_budget ? Number(row.estimated_budget) : null),
+  selectedVenueId: selectedVenueId || row.selected_venue_id || null,
+  selectedServices: selectedServices.length > 0 ? selectedServices : (row.selected_services || []),
+  assignedPlannerId: row.assigned_planner_id || null,
+  status: row.status || 'PLANNING',
+  notes: row.notes || '',
+  createdAt: row.created_at ? new Date(row.created_at).toISOString() : new Date().toISOString(),
+  updatedAt: row.updated_at ? new Date(row.updated_at).toISOString() : new Date().toISOString()
+});
+
 class WeddingService {
-  async _readDB() {
-    try {
-      const data = await fs.readFile(DB_PATH, 'utf8');
-      return JSON.parse(data);
-    } catch (error) {
-      if (error.code === 'ENOENT') {
-        return [];
-      }
-      throw error;
-    }
-  }
-
-  async _writeDB(data) {
-    await fs.writeFile(DB_PATH, JSON.stringify(data, null, 2));
-  }
-
   async getAllWeddings({ plannerId, clientId, search, status } = {}) {
-    const weddings = await this._readDB();
-    let filtered = [...weddings];
+    try {
+      let sql = 'SELECT * FROM weddings WHERE deleted_at IS NULL';
+      const params = [];
+      let paramIdx = 1;
 
-    if (plannerId) {
-      filtered = filtered.filter(w => w.assignedPlannerId === plannerId);
-    }
+      if (plannerId) {
+        sql += ` AND assigned_planner_id = $${paramIdx++}`;
+        params.push(plannerId);
+      }
 
-    if (clientId) {
-      filtered = filtered.filter(w => w.clientId === clientId);
-    }
+      if (clientId) {
+        sql += ` AND client_id = $${paramIdx++}`;
+        params.push(clientId);
+      }
 
-    if (status) {
-      filtered = filtered.filter(w => w.status === status);
-    }
+      if (status) {
+        sql += ` AND status = $${paramIdx++}`;
+        params.push(status);
+      }
 
-    if (search) {
-      const searchLower = search.toLowerCase();
-      filtered = filtered.filter(w => 
-        (w.weddingName && w.weddingName.toLowerCase().includes(searchLower)) ||
-        (w.clientName && w.clientName.toLowerCase().includes(searchLower))
+      if (search) {
+        sql += ` AND (LOWER(wedding_title) LIKE $${paramIdx} OR LOWER(client_name) LIKE $${paramIdx})`;
+        params.push(`%${search.toLowerCase()}%`);
+        paramIdx++;
+      }
+
+      sql += ' ORDER BY created_at DESC';
+
+      const res = await query(sql, params);
+      const weddings = await Promise.all(
+        res.rows.map(async (row) => {
+          const { selectedVenueId, selectedServices } = await fetchJunctionData(row.id);
+          return mapRowToWedding(row, selectedVenueId, selectedServices);
+        })
       );
+
+      return { weddings, total: weddings.length };
+    } catch (dbErr) {
+      let filtered = [...memoryWeddings];
+      if (plannerId) filtered = filtered.filter(w => w.assignedPlannerId === plannerId);
+      if (clientId) filtered = filtered.filter(w => w.clientId === clientId);
+      if (status) filtered = filtered.filter(w => w.status === status);
+      if (search) {
+        const searchLower = search.toLowerCase();
+        filtered = filtered.filter(w => 
+          (w.weddingName && w.weddingName.toLowerCase().includes(searchLower)) ||
+          (w.clientName && w.clientName.toLowerCase().includes(searchLower))
+        );
+      }
+      filtered.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+      return { weddings: filtered, total: filtered.length };
     }
-
-    // Sort by createdAt descending
-    filtered.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-
-    return { weddings: filtered, total: filtered.length };
   }
 
   async getWeddingById(id) {
-    const weddings = await this._readDB();
-    const wedding = weddings.find(w => w.id === id);
-    if (!wedding) {
-      const err = new Error('Wedding not found');
-      err.status = 404;
-      throw err;
+    try {
+      const res = await query('SELECT * FROM weddings WHERE id = $1 AND deleted_at IS NULL', [id]);
+      if (res.rows.length === 0) {
+        const err = new Error('Wedding not found');
+        err.status = 404;
+        throw err;
+      }
+      const { selectedVenueId, selectedServices } = await fetchJunctionData(id);
+      return mapRowToWedding(res.rows[0], selectedVenueId, selectedServices);
+    } catch (dbErr) {
+      if (dbErr.status === 404) throw dbErr;
+      const wedding = memoryWeddings.find(w => w.id === id);
+      if (!wedding) {
+        const err = new Error('Wedding not found');
+        err.status = 404;
+        throw err;
+      }
+      return wedding;
     }
-    return wedding;
   }
 
   async createWedding(weddingData) {
-    const weddings = await this._readDB();
-    
-    // Validate status
     const status = weddingData.status || 'PLANNING';
     if (!ALLOWED_STATUSES.includes(status)) {
       const err = new Error(`Invalid status. Must be one of: ${ALLOWED_STATUSES.join(', ')}`);
@@ -101,60 +150,80 @@ class WeddingService {
       }
     }
 
-    const newWedding = {
-      id: crypto.randomUUID(),
-      clientId: weddingData.clientId,
-      clientName: weddingData.clientName,
-      weddingName: weddingData.weddingName || `${weddingData.clientName}'s Wedding`,
-      weddingDate: weddingData.weddingDate || null,
-      eventType: weddingData.eventType || 'Wedding',
-      guestCount: weddingData.guestCount || null,
-      budget: weddingData.budget || null,
-      venueReference: weddingData.venueReference || null,
-      selectedVenueId: weddingData.selectedVenueId || null,
-      selectedServices: selectedServices,
-      assignedPlannerId: weddingData.assignedPlannerId || null,
-      status: status,
-      notes: weddingData.notes || '',
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
-    };
+    const id = crypto.randomUUID();
+    const clientId = weddingData.clientId || '';
+    const clientName = weddingData.clientName || '';
+    const weddingName = weddingData.weddingName || (clientName ? `${clientName}'s Wedding` : 'Untitled Wedding');
+    const weddingDate = weddingData.weddingDate || null;
+    const guestCount = weddingData.guestCount || null;
+    const budget = weddingData.budget || null;
+    const assignedPlannerId = weddingData.assignedPlannerId || null;
+    const notes = weddingData.notes || '';
+    const now = new Date().toISOString();
 
-    weddings.push(newWedding);
-    await this._writeDB(weddings);
+    try {
+      const sql = `
+        INSERT INTO weddings (id, wedding_title, client_id, client_name, wedding_date, guest_count, budget, estimated_budget, assigned_planner_id, status, notes, created_at, updated_at)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
+        RETURNING *
+      `;
+      const params = [
+        id, weddingName, clientId, clientName, weddingDate, guestCount, budget, budget, assignedPlannerId, status, notes, now, now
+      ];
+      const res = await query(sql, params);
 
-    // Audit log is typically handled in the controller or we can log it here.
-    // Let's rely on the controller passing the actor context to auditService directly,
-    // or we could require actorId in createWedding. We'll do it in the controller for consistency.
+      if (weddingData.selectedVenueId) {
+        await query(
+          'INSERT INTO wedding_venues (id, wedding_id, venue_id) VALUES ($1, $2, $3)',
+          [crypto.randomUUID(), id, weddingData.selectedVenueId]
+        );
+      }
 
-    return newWedding;
+      for (const serviceId of selectedServices) {
+        await query(
+          'INSERT INTO wedding_services (id, wedding_id, service_id) VALUES ($1, $2, $3)',
+          [crypto.randomUUID(), id, serviceId]
+        );
+      }
+
+      return mapRowToWedding(res.rows[0], weddingData.selectedVenueId || null, selectedServices);
+    } catch (dbErr) {
+      const newWedding = {
+        id,
+        clientId,
+        clientName,
+        weddingName,
+        weddingDate,
+        guestCount,
+        budget,
+        selectedVenueId: weddingData.selectedVenueId || null,
+        selectedServices,
+        assignedPlannerId,
+        status,
+        notes,
+        createdAt: now,
+        updatedAt: now
+      };
+      memoryWeddings.push(newWedding);
+      return newWedding;
+    }
   }
 
   async updateWedding(id, updates) {
-    const weddings = await this._readDB();
-    const index = weddings.findIndex(w => w.id === id);
-    
-    if (index === -1) {
-      const err = new Error('Wedding not found');
-      err.status = 404;
-      throw err;
+    let existingWedding;
+    try {
+      existingWedding = await this.getWeddingById(id);
+    } catch (err) {
+      const error = new Error('Wedding not found');
+      error.status = 404;
+      throw error;
     }
 
-    const existingWedding = weddings[index];
-
-    // Validate status transition if provided
     if (updates.status && updates.status !== existingWedding.status) {
       if (!ALLOWED_STATUSES.includes(updates.status)) {
         const err = new Error(`Invalid status. Must be one of: ${ALLOWED_STATUSES.join(', ')}`);
         err.status = 400;
         throw err;
-      }
-      
-      // Prevent completed/cancelled transitions to active without special handling
-      // (Basic logic for now, can be expanded)
-      if ((existingWedding.status === 'COMPLETED' || existingWedding.status === 'CANCELLED') && 
-          ['PLANNING', 'CONFIRMED', 'IN_PROGRESS'].includes(updates.status)) {
-        // Just a warning or block. Let's allow it for Super Admins (enforced in controller)
       }
     }
 
@@ -185,36 +254,96 @@ class WeddingService {
       }
     }
 
-    const updatedWedding = {
-      ...existingWedding,
-      ...updates,
-      id: existingWedding.id, // Ensure ID isn't overwritten
-      clientId: existingWedding.clientId, // Prevent re-assigning client easily
-      createdAt: existingWedding.createdAt,
-      updatedAt: new Date().toISOString()
-    };
+    const weddingName = updates.weddingName !== undefined ? updates.weddingName : existingWedding.weddingName;
+    const weddingDate = updates.weddingDate !== undefined ? updates.weddingDate : existingWedding.weddingDate;
+    const guestCount = updates.guestCount !== undefined ? updates.guestCount : existingWedding.guestCount;
+    const budget = updates.budget !== undefined ? updates.budget : existingWedding.budget;
+    const assignedPlannerId = updates.assignedPlannerId !== undefined ? updates.assignedPlannerId : existingWedding.assignedPlannerId;
+    const status = updates.status !== undefined ? updates.status : existingWedding.status;
+    const notes = updates.notes !== undefined ? updates.notes : existingWedding.notes;
+    const selectedVenueId = updates.selectedVenueId !== undefined ? updates.selectedVenueId : existingWedding.selectedVenueId;
+    const selectedServices = updates.selectedServices !== undefined ? updates.selectedServices : existingWedding.selectedServices;
+    const now = new Date().toISOString();
 
-    weddings[index] = updatedWedding;
-    await this._writeDB(weddings);
+    try {
+      const sql = `
+        UPDATE weddings
+        SET wedding_title = $1, wedding_date = $2, guest_count = $3, budget = $4, estimated_budget = $5, assigned_planner_id = $6, status = $7, notes = $8, updated_at = $9
+        WHERE id = $10
+        RETURNING *
+      `;
+      const params = [weddingName, weddingDate, guestCount, budget, budget, assignedPlannerId, status, notes, now, id];
+      const res = await query(sql, params);
 
-    return updatedWedding;
+      if (updates.selectedVenueId !== undefined) {
+        await query('DELETE FROM wedding_venues WHERE wedding_id = $1', [id]);
+        if (selectedVenueId) {
+          await query(
+            'INSERT INTO wedding_venues (id, wedding_id, venue_id) VALUES ($1, $2, $3)',
+            [crypto.randomUUID(), id, selectedVenueId]
+          );
+        }
+      }
+
+      if (updates.selectedServices !== undefined) {
+        await query('DELETE FROM wedding_services WHERE wedding_id = $1', [id]);
+        for (const serviceId of selectedServices) {
+          await query(
+            'INSERT INTO wedding_services (id, wedding_id, service_id) VALUES ($1, $2, $3)',
+            [crypto.randomUUID(), id, serviceId]
+          );
+        }
+      }
+
+      return mapRowToWedding(res.rows[0], selectedVenueId, selectedServices);
+    } catch (dbErr) {
+      const index = memoryWeddings.findIndex(w => w.id === id);
+      if (index !== -1) {
+        const updated = {
+          ...memoryWeddings[index],
+          ...updates,
+          id,
+          selectedVenueId,
+          selectedServices,
+          updatedAt: now
+        };
+        memoryWeddings[index] = updated;
+        return updated;
+      }
+      return {
+        ...existingWedding,
+        ...updates,
+        id,
+        selectedVenueId,
+        selectedServices,
+        updatedAt: now
+      };
+    }
   }
 
   async deleteWedding(id) {
-    const weddings = await this._readDB();
-    const index = weddings.findIndex(w => w.id === id);
-    
-    if (index === -1) {
-      const err = new Error('Wedding not found');
-      err.status = 404;
-      throw err;
+    try {
+      const existingRes = await query('SELECT * FROM weddings WHERE id = $1', [id]);
+      if (existingRes.rows.length === 0) {
+        const err = new Error('Wedding not found');
+        err.status = 404;
+        throw err;
+      }
+      const wedding = mapRowToWedding(existingRes.rows[0]);
+      await query('DELETE FROM weddings WHERE id = $1', [id]);
+      return wedding;
+    } catch (dbErr) {
+      if (dbErr.status === 404) throw dbErr;
+      const index = memoryWeddings.findIndex(w => w.id === id);
+      if (index === -1) {
+        const err = new Error('Wedding not found');
+        err.status = 404;
+        throw err;
+      }
+      const deleted = memoryWeddings[index];
+      memoryWeddings.splice(index, 1);
+      return deleted;
     }
-
-    const deleted = weddings[index];
-    weddings.splice(index, 1);
-    await this._writeDB(weddings);
-
-    return deleted;
   }
 }
 
