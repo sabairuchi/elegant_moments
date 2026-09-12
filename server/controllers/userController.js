@@ -78,4 +78,25 @@ export const userController = {
       next(error);
     }
   },
+
+  async getVendorProfile(req, res, next) {
+    try {
+      const profile = {
+        userId: req.user.id,
+        companyName: 'Rossi Luxury Events & Photography',
+        category: 'Photography',
+        verifiedStatus: 'Verified Partner',
+        rating: 4.95,
+        website: 'https://rossiluxuryevents.com',
+        instagram: '@rossi_luxury_events',
+        memberSince: '2024'
+      };
+      res.status(200).json({
+        success: true,
+        profile
+      });
+    } catch (error) {
+      next(error);
+    }
+  },
 };

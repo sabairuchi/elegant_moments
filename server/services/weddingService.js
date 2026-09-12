@@ -44,7 +44,7 @@ const mapRowToWedding = (row, selectedVenueId = null, selectedServices = []) => 
 });
 
 class WeddingService {
-  async getAllWeddings({ plannerId, clientId, search, status } = {}) {
+  async getAllWeddings({ plannerId, clientId, vendorId, search, status } = {}) {
     try {
       let sql = 'SELECT * FROM weddings WHERE deleted_at IS NULL';
       const params = [];
@@ -58,6 +58,10 @@ class WeddingService {
       if (clientId) {
         sql += ` AND client_id = $${paramIdx++}`;
         params.push(clientId);
+      }
+
+      if (vendorId) {
+        sql += ` AND id IN (SELECT wedding_id FROM wedding_services)`;
       }
 
       if (status) {
@@ -86,6 +90,7 @@ class WeddingService {
       let filtered = [...memoryWeddings];
       if (plannerId) filtered = filtered.filter(w => w.assignedPlannerId === plannerId);
       if (clientId) filtered = filtered.filter(w => w.clientId === clientId);
+      if (vendorId) filtered = filtered.filter(w => w.selectedServices && w.selectedServices.length > 0);
       if (status) filtered = filtered.filter(w => w.status === status);
       if (search) {
         const searchLower = search.toLowerCase();

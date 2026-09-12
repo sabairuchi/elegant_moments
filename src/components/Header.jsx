@@ -267,6 +267,46 @@ export default function Header({ onOpenEnquiry }) {
                     MY DASHBOARD
                   </Link>
                 )}
+                {user.role === 'planner' && (
+                  <Link
+                    to="/planner"
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '0.5rem',
+                      color: 'var(--color-gold-light)',
+                      textDecoration: 'none',
+                      fontSize: '0.78rem',
+                      fontFamily: 'var(--font-sans)',
+                      letterSpacing: '0.15em',
+                      fontWeight: '600',
+                      padding: '0.4rem 0.8rem',
+                    }}
+                    className="nav-btn-hover"
+                  >
+                    PLANNER PORTAL
+                  </Link>
+                )}
+                {user.role === 'vendor' && (
+                  <Link
+                    to="/vendor"
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '0.5rem',
+                      color: 'var(--color-gold-light)',
+                      textDecoration: 'none',
+                      fontSize: '0.78rem',
+                      fontFamily: 'var(--font-sans)',
+                      letterSpacing: '0.15em',
+                      fontWeight: '600',
+                      padding: '0.4rem 0.8rem',
+                    }}
+                    className="nav-btn-hover"
+                  >
+                    VENDOR PORTAL
+                  </Link>
+                )}
                 {(user.role === 'admin' || user.role === 'super_admin') && (
                   <>
                     <Link

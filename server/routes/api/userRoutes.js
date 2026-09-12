@@ -9,6 +9,9 @@ const router = express.Router();
 // All user routes require authentication
 router.use(authenticateUser);
 
+// GET /api/users/vendor-profile (returns vendor business info for logged-in vendor)
+router.get('/vendor-profile', userController.getVendorProfile);
+
 // GET /api/users (requires users.view permission)
 router.get('/', requirePermission(PERMISSIONS.USERS_VIEW), userController.listUsers);
 

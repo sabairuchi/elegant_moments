@@ -42,11 +42,13 @@ import ForgotPassword from './pages/ForgotPassword';
 import ResetPassword from './pages/ResetPassword';
 import Profile from './pages/Profile';
 
+// Real Role Dashboards (M2.7 & M2.8)
+import PlannerDashboard from './pages/PlannerDashboard';
+import VendorDashboard from './pages/VendorDashboard';
+
 // Protected Route Placeholders (M2.2)
 import {
   ClientDashboardPlaceholder,
-  PlannerDashboardPlaceholder,
-  VendorDashboardPlaceholder,
   AdminDashboardPlaceholder,
   SuperAdminDashboardPlaceholder,
 } from './pages/ProtectedPlaceholders';
@@ -174,7 +176,7 @@ export default function App() {
                 path="/planner"
                 element={
                   <ProtectedRoute allowedRoles={['planner', 'admin', 'super_admin']}>
-                    <PlannerDashboardPlaceholder />
+                    <PlannerDashboard />
                   </ProtectedRoute>
                 }
               />
@@ -182,7 +184,7 @@ export default function App() {
                 path="/vendor"
                 element={
                   <ProtectedRoute allowedRoles={['vendor', 'admin', 'super_admin']}>
-                    <VendorDashboardPlaceholder />
+                    <VendorDashboard />
                   </ProtectedRoute>
                 }
               />

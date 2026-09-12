@@ -13,15 +13,24 @@ export const getWeddings = async (req, res, next) => {
       filterOptions.clientId = id;
     } else if (['planner'].includes(role)) {
       filterOptions.plannerId = id;
+    } else if (['vendor'].includes(role)) {
+      filterOptions.vendorId = id;
     }
     // Admins and super_admins see everything
 
     const result = await weddingService.getAllWeddings(filterOptions);
     
-    // Sanitize internalNotes for client role
-    if (role === 'client' && result.weddings) {
+    // Sanitize internalNotes and private info for client/vendor role
+    if ((role === 'client' || role === 'vendor') && result.weddings) {
       result.weddings = result.weddings.map((w) => {
-        const { internalNotes, adminNotes, ...rest } = w;
+        const { internalNotes, adminNotes, notes, ...rest } = w;
+        if (role === 'vendor') {
+          return {
+            ...rest,
+            clientName: w.clientName ? `${w.clientName.split(' ')[0]} (Client)` : 'Private Client',
+            assignmentStatus: 'CONFIRMED'
+          };
+        }
         return rest;
       });
     }
