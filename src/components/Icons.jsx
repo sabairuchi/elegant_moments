@@ -133,6 +133,8 @@ export const Shield = ({ size = 20, color = 'currentColor', className = '', styl
   </svg>
 );
 
+export const ShieldCheck = Shield;
+
 export const Award = ({ size = 20, color = 'currentColor', className = '', style = {} }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className} style={style}>
     <circle cx="12" cy="8" r="6"/>
@@ -368,6 +370,8 @@ export const Edit3 = ({ size = 20, color = 'currentColor', className = '', style
     <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
   </svg>
 );
+
+export const Edit = Edit3;
 
 export const Video = ({ size = 20, color = 'currentColor', className = '', style = {} }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className} style={style}>

@@ -273,7 +273,8 @@ export default function Home({ onOpenEnquiry }) {
             <div
               className="image-reveal-wrapper"
               style={{
-                height: '540px',
+                height: 'clamp(320px, 50vh, 540px)',
+                width: '100%',
                 borderRadius: '2px',
                 border: '1px solid var(--color-gold)',
                 position: 'relative',
