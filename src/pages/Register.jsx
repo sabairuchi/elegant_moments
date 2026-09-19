@@ -76,7 +76,7 @@ export default function Register() {
               Welcome to Elegant Moments!
             </h3>
             <p style={{ color: '#15803D', fontSize: '0.95rem', marginBottom: '20px', lineHeight: 1.5 }}>
-              Your client account has been created successfully. A verification link has been generated.
+              Your client account has been created and authenticated successfully.
             </p>
             {successInfo.verificationUrlDevOnly && (
               <div style={{ background: '#ffffff', padding: '15px', borderRadius: '6px', border: '1px dashed #22C55E', marginBottom: '20px', textAlign: 'left', wordBreak: 'break-all' }}>
@@ -88,9 +88,12 @@ export default function Register() {
                 </a>
               </div>
             )}
-            <div style={{ display: 'flex', gap: '10px', justifyContent: 'center' }}>
-              <button onClick={() => navigate('/profile')} className="btn btn-primary">
-                Go to Profile
+            <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap' }}>
+              <button onClick={() => navigate('/dashboard')} className="btn btn-primary">
+                Go to Client Dashboard
+              </button>
+              <button onClick={() => navigate('/login')} className="btn btn-secondary" style={{ backgroundColor: '#fff', border: '1px solid #ddd', color: '#333' }}>
+                Sign In to Another Account
               </button>
             </div>
           </div>
@@ -167,7 +170,7 @@ export default function Register() {
                   required
                   value={formData.password}
                   onChange={handleChange}
-                  placeholder="At least 8 chars (1 upper, 1 lower, 1 num, 1 spec)"
+                  placeholder="Min 8 chars with Uppercase, Lowercase, Number & Special char"
                   style={{ width: '100%', padding: '12px 14px', borderRadius: '6px', border: '1px solid #ddd', fontSize: '0.95rem', paddingRight: '40px' }}
                 />
                 <button
@@ -179,6 +182,27 @@ export default function Register() {
                   {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                 </button>
               </div>
+
+              {/* Live Password Policy Helper Pills */}
+              {formData.password && (
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginTop: '8px', fontSize: '0.75rem' }}>
+                  <span style={{ padding: '3px 8px', borderRadius: '12px', backgroundColor: formData.password.length >= 8 ? '#DEF7EC' : '#FDE8E8', color: formData.password.length >= 8 ? '#03543F' : '#9B1C1C' }}>
+                    {formData.password.length >= 8 ? '✓ 8+ chars' : '✗ 8+ chars'}
+                  </span>
+                  <span style={{ padding: '3px 8px', borderRadius: '12px', backgroundColor: /[A-Z]/.test(formData.password) ? '#DEF7EC' : '#FDE8E8', color: /[A-Z]/.test(formData.password) ? '#03543F' : '#9B1C1C' }}>
+                    {/[A-Z]/.test(formData.password) ? '✓ Uppercase' : '✗ Uppercase'}
+                  </span>
+                  <span style={{ padding: '3px 8px', borderRadius: '12px', backgroundColor: /[a-z]/.test(formData.password) ? '#DEF7EC' : '#FDE8E8', color: /[a-z]/.test(formData.password) ? '#03543F' : '#9B1C1C' }}>
+                    {/[a-z]/.test(formData.password) ? '✓ Lowercase' : '✗ Lowercase'}
+                  </span>
+                  <span style={{ padding: '3px 8px', borderRadius: '12px', backgroundColor: /[0-9]/.test(formData.password) ? '#DEF7EC' : '#FDE8E8', color: /[0-9]/.test(formData.password) ? '#03543F' : '#9B1C1C' }}>
+                    {/[0-9]/.test(formData.password) ? '✓ Number' : '✗ Number'}
+                  </span>
+                  <span style={{ padding: '3px 8px', borderRadius: '12px', backgroundColor: /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(formData.password) ? '#DEF7EC' : '#FDE8E8', color: /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(formData.password) ? '#03543F' : '#9B1C1C' }}>
+                    {/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(formData.password) ? '✓ Special char' : '✗ Special char'}
+                  </span>
+                </div>
+              )}
             </div>
 
             <div style={{ marginBottom: '24px' }}>

@@ -168,5 +168,22 @@
     "accountStatus": "PENDING_VERIFICATION",
     "createdAt": "2026-09-04T11:26:29.872Z",
     "updatedAt": "2026-09-04T11:26:29.872Z"
+  },
+  {
+    "id": "usr-client-pankaj-001",
+    "email": "pankaj@gmail.com",
+    "passwordHash": "$2b$10$g.Ib6TkzjrD95mpW51YHa.T0KA82Vmqm58dZQnKKqRC.0FmIYQCIq",
+    "firstName": "Pankaj",
+    "lastName": "Kumar",
+    "phone": "+1 (555) 123-4567",
+    "role": "client",
+    "roles": [
+      "client"
+    ],
+    "isActive": true,
+    "isVerified": true,
+    "accountStatus": "ACTIVE",
+    "createdAt": "2026-09-19T15:00:00.000Z",
+    "updatedAt": "2026-09-19T15:00:00.000Z"
   }
 ]

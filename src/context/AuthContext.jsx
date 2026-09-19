@@ -63,10 +63,11 @@ export const AuthProvider = ({ children }) => {
   }, [token]);
 
   const login = async (email, password) => {
+    const cleanEmail = (email || '').trim().toLowerCase();
     const res = await fetch('/api/auth/login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, password }),
+      body: JSON.stringify({ email: cleanEmail, password }),
     });
     const data = await safeParseJson(res, 'Login failed');
     if (!res.ok || !data.success) {
@@ -80,10 +81,16 @@ export const AuthProvider = ({ children }) => {
   };
 
   const register = async (formData) => {
+    const cleanedData = {
+      ...formData,
+      email: (formData.email || '').trim().toLowerCase(),
+      firstName: (formData.firstName || '').trim(),
+      lastName: (formData.lastName || '').trim(),
+    };
     const res = await fetch('/api/auth/register', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(formData),
+      body: JSON.stringify(cleanedData),
     });
     const data = await safeParseJson(res, 'Registration failed');
     if (!res.ok || !data.success) {
@@ -124,10 +131,11 @@ export const AuthProvider = ({ children }) => {
   };
 
   const resendVerification = async (email) => {
+    const cleanEmail = (email || '').trim().toLowerCase();
     const res = await fetch('/api/auth/resend-verification', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email }),
+      body: JSON.stringify({ email: cleanEmail }),
     });
     const data = await safeParseJson(res, 'Resend verification failed');
     if (!res.ok || !data.success) {
@@ -137,10 +145,11 @@ export const AuthProvider = ({ children }) => {
   };
 
   const forgotPassword = async (email) => {
+    const cleanEmail = (email || '').trim().toLowerCase();
     const res = await fetch('/api/auth/forgot-password', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email }),
+      body: JSON.stringify({ email: cleanEmail }),
     });
     const data = await safeParseJson(res, 'Password reset request failed');
     if (!res.ok || !data.success) {

@@ -19,7 +19,7 @@ export const authController = {
   // 1. POST /api/auth/register
   async register(req, res, next) {
     try {
-      const { firstName, lastName, email, phone, password, confirmPassword } = req.body;
+      let { firstName, lastName, email, phone, password, confirmPassword } = req.body;
 
       if (!firstName || !lastName || !email || !password) {
         return res.status(400).json({
@@ -27,6 +27,11 @@ export const authController = {
           message: 'First name, last name, email, and password are required.',
         });
       }
+
+      email = email ? email.trim().toLowerCase() : '';
+      firstName = firstName ? firstName.trim() : '';
+      lastName = lastName ? lastName.trim() : '';
+      phone = phone ? phone.trim() : '';
 
       if (password !== confirmPassword) {
         return res.status(400).json({
@@ -63,7 +68,7 @@ export const authController = {
   // 2. POST /api/auth/login
   async login(req, res, next) {
     try {
-      const { email, password } = req.body;
+      let { email, password } = req.body;
 
       if (!email || !password) {
         return res.status(400).json({
@@ -71,6 +76,8 @@ export const authController = {
           message: 'Email and password are required.',
         });
       }
+
+      email = email ? email.trim().toLowerCase() : '';
 
       const user = await userService.findByEmail(email);
       if (!user) {
