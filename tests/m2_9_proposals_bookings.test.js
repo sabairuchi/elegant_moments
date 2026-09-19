@@ -16,33 +16,50 @@ describe('M2.9 Proposals & Bookings Workflows', () => {
     const adminRes = await request(app)
       .post('/api/auth/login')
       .send({ email: 'admin@elegantmoments.com', password: 'Password123!' });
-    if (adminRes.status === 200) adminToken = adminRes.body.token;
+    adminToken = adminRes.body.token;
 
     // 2. Login as Planner
     const plannerRes = await request(app)
       .post('/api/auth/login')
       .send({ email: 'planner@elegantmoments.com', password: 'Password123!' });
-    if (plannerRes.status === 200) plannerToken = plannerRes.body.token;
+    plannerToken = plannerRes.body.token;
 
     // 3. Login as Client
     const clientRes = await request(app)
       .post('/api/auth/login')
       .send({ email: 'client@elegantmoments.com', password: 'Password123!' });
-    if (clientRes.status === 200) clientToken = clientRes.body.token;
+    clientToken = clientRes.body.token;
 
     // 4. Login as Vendor
     const vendorRes = await request(app)
       .post('/api/auth/login')
       .send({ email: 'vendor@elegantmoments.com', password: 'Password123!' });
-    if (vendorRes.status === 200) vendorToken = vendorRes.body.token;
+    vendorToken = vendorRes.body.token;
 
-    // 5. Fetch or create a test wedding
+    // 5. Fetch or create a test wedding for M2.9 suite
     const weddingsRes = await request(app)
       .get('/api/weddings')
       .set('Authorization', `Bearer ${adminToken}`);
     
     if (weddingsRes.body.weddings && weddingsRes.body.weddings.length > 0) {
-      weddingId = weddingsRes.body.weddings[0].id;
+      const match = weddingsRes.body.weddings.find(w => w.clientId === clientRes.body.user?.id);
+      if (match) weddingId = match.id;
+    }
+
+    if (!weddingId) {
+      const createRes = await request(app)
+        .post('/api/weddings')
+        .set('Authorization', `Bearer ${adminToken}`)
+        .send({
+          clientId: clientRes.body.user?.id || 'usr-client-005',
+          clientName: 'Eleanor Vanderbilt',
+          weddingName: 'Eleanor Vanderbilt Luxury Wedding',
+          assignedPlannerId: plannerRes.body.user?.id || 'usr-planner-003',
+          status: 'PLANNING'
+        });
+      if (createRes.body.wedding) {
+        weddingId = createRes.body.wedding.id;
+      }
     }
   });
 

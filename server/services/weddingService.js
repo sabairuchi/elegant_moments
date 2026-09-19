@@ -5,7 +5,56 @@ import { serviceService } from './serviceService.js';
 
 const ALLOWED_STATUSES = ['PLANNING', 'CONFIRMED', 'IN_PROGRESS', 'COMPLETED', 'CANCELLED'];
 
-let memoryWeddings = [];
+let memoryWeddings = [
+  {
+    id: 'wed-001',
+    clientId: 'usr-client-005',
+    clientName: 'Eleanor & Harrison Vanderbilt',
+    weddingName: 'Eleanor & Harrison Luxury Villa Wedding',
+    weddingDate: '2027-06-15',
+    guestCount: 150,
+    budget: 150000,
+    selectedVenueId: 'c8d4e201-6932-5f23-a742-02b2c3d4e5f1',
+    selectedServices: ['b7c3d101-5821-4f12-9c31-01a1b2c3d4e1', 'b7c3d102-5821-4f12-9c31-01a1b2c3d4e2'],
+    assignedPlannerId: 'usr-planner-003',
+    status: 'PLANNING',
+    notes: 'Lake Como Villa Celebration',
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString()
+  },
+  {
+    id: 'wed-002',
+    clientId: 'usr-client-005',
+    clientName: 'Eleanor & Harrison Vanderbilt',
+    weddingName: 'Eleanor & Harrison Grand Chateau Celebration',
+    weddingDate: '2027-09-20',
+    guestCount: 200,
+    budget: 250000,
+    selectedVenueId: 'c8d4e202-6932-5f23-a742-02b2c3d4e5f2',
+    selectedServices: ['b7c3d101-5821-4f12-9c31-01a1b2c3d4e1', 'b7c3d103-5821-4f12-9c31-01a1b2c3d4e3'],
+    assignedPlannerId: 'usr-planner-003',
+    status: 'CONFIRMED',
+    notes: 'French Riviera Luxury Gala',
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString()
+  },
+  {
+    id: 'wed-003',
+    clientId: 'usr-client-005',
+    clientName: 'Eleanor & Harrison Vanderbilt',
+    weddingName: 'Eleanor & Harrison Coastal Estate Wedding',
+    weddingDate: '2027-11-12',
+    guestCount: 120,
+    budget: 180000,
+    selectedVenueId: 'c8d4e203-6932-5f23-a742-02b2c3d4e5f3',
+    selectedServices: ['b7c3d102-5821-4f12-9c31-01a1b2c3d4e2', 'b7c3d104-5821-4f12-9c31-01a1b2c3d4e4'],
+    assignedPlannerId: 'usr-planner-003',
+    status: 'IN_PROGRESS',
+    notes: 'Amalfi Coast Executive Retreat',
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString()
+  }
+];
 
 const fetchJunctionData = async (weddingId) => {
   let selectedVenueId = null;

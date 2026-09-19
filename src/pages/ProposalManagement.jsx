@@ -57,9 +57,9 @@ export default function ProposalManagement() {
       ]);
 
       if (propData.success) setProposals(propData.proposals || []);
-      if (wedData.success) setWeddings(wedData.weddings || []);
-      if (srvData.success) setServices(srvData.services || []);
-      if (venData.success) setVenues(venData.venues || []);
+      if (wedData.success) setWeddings(wedData.weddings || wedData.data || []);
+      if (srvData.success) setServices(srvData.data || srvData.services || []);
+      if (venData.success) setVenues(venData.data || venData.venues || []);
     } catch (err) {
       setError('Failed to load proposals data.');
     } finally {
