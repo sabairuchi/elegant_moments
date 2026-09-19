@@ -4,7 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import { Sparkles, Check, Search, Calendar, MapPin, Tag, Edit, ShieldCheck, CheckCircle2 } from '../components/Icons';
 
 export default function BookingManagement() {
-  const { user, token } = useAuth();
+  const { user, token, logout } = useAuth();
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -27,6 +27,10 @@ export default function BookingManagement() {
     try {
       const headers = { 'Authorization': `Bearer ${token}` };
       const res = await fetch('/api/bookings', { headers });
+      if (res.status === 401) {
+        logout();
+        return;
+      }
       const data = await res.json();
       if (data.success) {
         setBookings(data.bookings || []);

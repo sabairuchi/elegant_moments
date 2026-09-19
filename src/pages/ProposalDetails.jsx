@@ -5,7 +5,7 @@ import { Sparkles, CheckCircle, X, ArrowLeft, MessageSquare, Check, Calendar, Fi
 
 export default function ProposalDetails() {
   const { id } = useParams();
-  const { user, token } = useAuth();
+  const { user, token, logout } = useAuth();
   const navigate = useNavigate();
 
   const [proposal, setProposal] = useState(null);
@@ -25,6 +25,10 @@ export default function ProposalDetails() {
       const res = await fetch(`/api/proposals/${id}`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
+      if (res.status === 401) {
+        logout();
+        return;
+      }
       const data = await res.json();
       if (data.success) {
         setProposal(data.proposal);

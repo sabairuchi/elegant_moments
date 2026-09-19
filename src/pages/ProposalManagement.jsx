@@ -35,12 +35,19 @@ export default function ProposalManagement() {
     setLoading(true);
     try {
       const headers = { 'Authorization': `Bearer ${token}` };
-      const [propRes, wedRes, srvRes, venRes] = await Promise.all([
+      const responses = await Promise.all([
         fetch('/api/proposals', { headers }),
         fetch('/api/weddings', { headers }),
         fetch('/api/services', { headers }),
         fetch('/api/venues', { headers })
       ]);
+
+      if (responses.some(r => r.status === 401)) {
+        logout();
+        return;
+      }
+
+      const [propRes, wedRes, srvRes, venRes] = responses;
 
       const [propData, wedData, srvData, venData] = await Promise.all([
         propRes.json(),

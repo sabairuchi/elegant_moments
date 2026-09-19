@@ -5,7 +5,7 @@ import ClientSubNav from '../components/ClientSubNav';
 import { Sparkles, Calendar, MapPin, Users, Phone, Clock, FileText, CheckCircle } from '../components/Icons';
 
 export default function ClientDashboard() {
-  const { user, token } = useAuth();
+  const { user, token, logout } = useAuth();
   const navigate = useNavigate();
 
   const [weddings, setWeddings] = useState([]);
@@ -26,7 +26,7 @@ export default function ClientDashboard() {
       setLoading(true);
       setError(null);
       try {
-        const [weddingsRes, consultationsRes, enquiriesRes, venuesRes, servicesRes, bookingsRes, proposalsRes] = await Promise.all([
+        const responses = await Promise.all([
           fetch('/api/weddings', { headers: { 'Authorization': `Bearer ${token}` } }),
           fetch('/api/consultations', { headers: { 'Authorization': `Bearer ${token}` } }),
           fetch('/api/enquiries', { headers: { 'Authorization': `Bearer ${token}` } }),
@@ -35,6 +35,13 @@ export default function ClientDashboard() {
           fetch('/api/bookings', { headers: { 'Authorization': `Bearer ${token}` } }),
           fetch('/api/proposals', { headers: { 'Authorization': `Bearer ${token}` } })
         ]);
+
+        if (responses.some(r => r.status === 401)) {
+          logout();
+          return;
+        }
+
+        const [weddingsRes, consultationsRes, enquiriesRes, venuesRes, servicesRes, bookingsRes, proposalsRes] = responses;
 
         const weddingsData = await weddingsRes.json();
         const consultationsData = await consultationsRes.json();
