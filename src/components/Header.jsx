@@ -247,6 +247,42 @@ export default function Header({ onOpenEnquiry }) {
                   <span style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#22C55E' }} />
                   <span>{user.firstName?.toUpperCase()} ({user.role?.toUpperCase()})</span>
                 </Link>
+                <Link
+                  to="/proposals"
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.5rem',
+                    color: 'var(--color-gold-light)',
+                    textDecoration: 'none',
+                    fontSize: '0.78rem',
+                    fontFamily: 'var(--font-sans)',
+                    letterSpacing: '0.15em',
+                    fontWeight: '600',
+                    padding: '0.4rem 0.6rem',
+                  }}
+                  className="nav-btn-hover"
+                >
+                  PROPOSALS
+                </Link>
+                <Link
+                  to="/bookings"
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.5rem',
+                    color: 'var(--color-gold-light)',
+                    textDecoration: 'none',
+                    fontSize: '0.78rem',
+                    fontFamily: 'var(--font-sans)',
+                    letterSpacing: '0.15em',
+                    fontWeight: '600',
+                    padding: '0.4rem 0.6rem',
+                  }}
+                  className="nav-btn-hover"
+                >
+                  BOOKINGS
+                </Link>
                 {user.role === 'client' && (
                   <Link
                     to="/dashboard"

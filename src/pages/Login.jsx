@@ -26,8 +26,9 @@ export default function Login() {
       if (['admin', 'super_admin'].includes(targetRole)) defaultDestination = '/admin/weddings';
       else if (targetRole === 'planner') defaultDestination = '/planner';
       else if (targetRole === 'vendor') defaultDestination = '/vendor';
+      else if (targetRole === 'client') defaultDestination = '/dashboard';
 
-      const destination = location.state?.from?.pathname || defaultDestination;
+      const destination = (targetRole === 'client') ? '/dashboard' : (location.state?.from?.pathname || defaultDestination);
       navigate(destination, { replace: true });
     } catch (err) {
       setError(err.message || 'Failed to authenticate.');
@@ -132,9 +133,6 @@ export default function Login() {
             Quick Demo Login (Development Only)
           </div>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px', justifyContent: 'center' }}>
-            <button type="button" onClick={() => fillDemoCredentials('client@elegantmoments.com')} style={{ padding: '8px 14px', fontSize: '0.8rem', borderRadius: '6px', background: 'transparent', border: '1px solid var(--color-gold)', color: 'var(--color-burgundy)', fontWeight: '500', cursor: 'pointer', transition: 'all 0.2s ease' }} onMouseEnter={(e) => {e.target.style.background = 'rgba(212,175,55,0.1)'}} onMouseLeave={(e) => {e.target.style.background = 'transparent'}}>
-              Client
-            </button>
             <button type="button" onClick={() => fillDemoCredentials('planner@elegantmoments.com')} style={{ padding: '8px 14px', fontSize: '0.8rem', borderRadius: '6px', background: 'transparent', border: '1px solid var(--color-gold)', color: 'var(--color-burgundy)', fontWeight: '500', cursor: 'pointer', transition: 'all 0.2s ease' }} onMouseEnter={(e) => {e.target.style.background = 'rgba(212,175,55,0.1)'}} onMouseLeave={(e) => {e.target.style.background = 'transparent'}}>
               Planner
             </button>

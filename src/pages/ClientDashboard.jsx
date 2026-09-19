@@ -13,6 +13,8 @@ export default function ClientDashboard() {
   const [enquiries, setEnquiries] = useState([]);
   const [venues, setVenues] = useState([]);
   const [services, setServices] = useState([]);
+  const [bookings, setBookings] = useState([]);
+  const [proposals, setProposals] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -24,12 +26,14 @@ export default function ClientDashboard() {
       setLoading(true);
       setError(null);
       try {
-        const [weddingsRes, consultationsRes, enquiriesRes, venuesRes, servicesRes] = await Promise.all([
+        const [weddingsRes, consultationsRes, enquiriesRes, venuesRes, servicesRes, bookingsRes, proposalsRes] = await Promise.all([
           fetch('/api/weddings', { headers: { 'Authorization': `Bearer ${token}` } }),
           fetch('/api/consultations', { headers: { 'Authorization': `Bearer ${token}` } }),
           fetch('/api/enquiries', { headers: { 'Authorization': `Bearer ${token}` } }),
           fetch('/api/venues', { headers: { 'Authorization': `Bearer ${token}` } }),
-          fetch('/api/services', { headers: { 'Authorization': `Bearer ${token}` } })
+          fetch('/api/services', { headers: { 'Authorization': `Bearer ${token}` } }),
+          fetch('/api/bookings', { headers: { 'Authorization': `Bearer ${token}` } }),
+          fetch('/api/proposals', { headers: { 'Authorization': `Bearer ${token}` } })
         ]);
 
         const weddingsData = await weddingsRes.json();
@@ -37,12 +41,16 @@ export default function ClientDashboard() {
         const enquiriesData = await enquiriesRes.json();
         const venuesData = await venuesRes.json();
         const servicesData = await servicesRes.json();
+        const bookingsData = await bookingsRes.json();
+        const proposalsData = await proposalsRes.json();
 
         if (weddingsData.success) setWeddings(weddingsData.weddings || []);
         if (consultationsData.success) setConsultations(consultationsData.consultations || []);
         if (enquiriesData.success) setEnquiries(enquiriesData.enquiries || []);
         if (venuesData.success) setVenues(venuesData.data || []);
         if (servicesData.success) setServices(servicesData.data || []);
+        if (bookingsData.success) setBookings(bookingsData.bookings || []);
+        if (proposalsData.success) setProposals(proposalsData.proposals || []);
       } catch (err) {
         setError('Failed to load dashboard details. Please try again later.');
       } finally {
@@ -135,7 +143,19 @@ export default function ClientDashboard() {
               </p>
             </div>
 
-            <div style={{ display: 'flex', gap: '12px' }}>
+            <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+              <Link 
+                to="/proposals" 
+                style={{ backgroundColor: 'var(--color-gold-dark)', color: '#fff', textDecoration: 'none', padding: '12px 24px', borderRadius: '4px', fontWeight: '600', fontSize: '0.85rem', letterSpacing: '1px', textTransform: 'uppercase' }}
+              >
+                Review Proposals
+              </Link>
+              <Link 
+                to="/bookings" 
+                style={{ backgroundColor: 'var(--color-espresso)', color: '#fff', textDecoration: 'none', padding: '12px 24px', borderRadius: '4px', fontWeight: '600', fontSize: '0.85rem', letterSpacing: '1px', textTransform: 'uppercase' }}
+              >
+                View Bookings
+              </Link>
               <button 
                 onClick={() => navigate('/contact')} 
                 style={{ backgroundColor: 'var(--color-burgundy)', color: '#fff', border: 'none', padding: '12px 24px', borderRadius: '4px', fontWeight: '600', fontSize: '0.85rem', letterSpacing: '1px', textTransform: 'uppercase', cursor: 'pointer' }}
@@ -319,6 +339,65 @@ export default function ClientDashboard() {
             <div style={{ marginTop: 'auto' }}>
               <Link to="/dashboard/enquiries" style={{ textDecoration: 'none', color: 'var(--color-burgundy)', fontWeight: '600', fontSize: '0.9rem', display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
                 Manage My Enquiries & Consultations &rarr;
+              </Link>
+            </div>
+          </div>
+
+          {/* Card 4: Confirmed Bookings & Contracts */}
+          <div style={{ backgroundColor: '#fff', borderRadius: '16px', padding: '32px', boxShadow: '0 10px 30px rgba(0,0,0,0.03)', border: '1px solid #E5E7EB', display: 'flex', flexDirection: 'column' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+              <h2 style={{ fontFamily: 'Playfair Display, serif', fontSize: '1.5rem', color: 'var(--color-espresso)', margin: 0 }}>
+                Confirmed Bookings & Contracts
+              </h2>
+              <span style={{ fontSize: '0.8rem', color: 'var(--color-gold-dark)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '1px' }}>
+                {bookings.length} Booking{bookings.length !== 1 ? 's' : ''}
+              </span>
+            </div>
+
+            {bookings.length > 0 ? (
+              <div style={{ marginBottom: '20px' }}>
+                {bookings.map((b) => (
+                  <div key={b.id} style={{ backgroundColor: '#FAF7F2', borderRadius: '12px', padding: '20px', border: '1px solid rgba(212,175,55,0.3)', marginBottom: '15px' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                      <div style={{ fontWeight: '700', color: 'var(--color-burgundy)', fontSize: '1.1rem' }}>
+                        {b.bookingNumber}
+                      </div>
+                      {renderStatusBadge(b.status)}
+                    </div>
+                    <div style={{ fontSize: '0.85rem', color: '#6B7280', marginBottom: '10px' }}>
+                      Total Value: <strong style={{ color: 'var(--color-burgundy)' }}>${Number(b.totalAmount).toLocaleString()}</strong> | Deposit: <strong style={{ color: '#166534' }}>${Number(b.depositAmount).toLocaleString()}</strong>
+                    </div>
+                    {b.contractNotes && (
+                      <div style={{ fontSize: '0.8rem', color: '#4B5563', backgroundColor: '#fff', padding: '8px 12px', borderRadius: '6px', borderLeft: '3px solid var(--color-gold)' }}>
+                        <strong>Contract Notes:</strong> {b.contractNotes}
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div style={{ padding: '24px', backgroundColor: '#F9FAFB', borderRadius: '12px', border: '1px solid #E5E7EB', marginBottom: '20px', textAlign: 'center', color: '#6B7280' }}>
+                <p style={{ margin: '0 0 8px 0', fontWeight: '500' }}>No active service bookings yet.</p>
+                <p style={{ margin: 0, fontSize: '0.85rem' }}>Approved proposals will automatically generate confirmed booking contracts here.</p>
+              </div>
+            )}
+
+            {/* Proposals Summary */}
+            <div style={{ padding: '16px 20px', backgroundColor: '#fff', borderRadius: '12px', border: '1px solid #E5E7EB', marginBottom: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div>
+                <div style={{ fontWeight: '600', color: 'var(--color-espresso)', fontSize: '0.95rem' }}>Luxury Proposals ({proposals.length})</div>
+                <div style={{ fontSize: '0.8rem', color: '#6B7280' }}>
+                  {proposals.length > 0 ? `Latest: ${proposals[0].proposalNumber} (${proposals[0].status})` : 'No proposals issued yet.'}
+                </div>
+              </div>
+              <Link to="/proposals" className="btn-outline" style={{ padding: '6px 14px', fontSize: '0.8rem', textDecoration: 'none', color: 'var(--color-burgundy)' }}>
+                View Proposals
+              </Link>
+            </div>
+
+            <div style={{ marginTop: 'auto' }}>
+              <Link to="/bookings" style={{ textDecoration: 'none', color: 'var(--color-burgundy)', fontWeight: '600', fontSize: '0.9rem', display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                View All Booking Details &rarr;
               </Link>
             </div>
           </div>

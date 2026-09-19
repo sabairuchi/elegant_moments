@@ -6,6 +6,8 @@ import userRoutes from './userRoutes.js';
 import weddingRoutes from './weddingRoutes.js';
 import serviceRoutes from './serviceRoutes.js';
 import venueRoutes from './venueRoutes.js';
+import proposalRoutes from './proposalRoutes.js';
+import bookingRoutes from './bookingRoutes.js';
 
 const router = express.Router();
 
@@ -26,16 +28,16 @@ router.use('/users', userRoutes);
 router.use('/weddings', weddingRoutes);
 router.use('/services', serviceRoutes);
 router.use('/venues', venueRoutes);
+router.use('/proposals', proposalRoutes);
+router.use('/bookings', bookingRoutes);
 
-// Placeholder endpoints for Milestone 2 modules (M2.3 onwards)
+// Placeholder endpoints for remaining Milestone 2 modules
 const placeholderHandler = (moduleName) => (req, res) => {
   res.status(501).json({
     success: false,
-    message: `Module '/api/${moduleName}' architecture is ready. Implementation arrives in Milestone 2.3+.`,
+    message: `Module '/api/${moduleName}' architecture is ready. Implementation arrives in Milestone 2.10+.`,
   });
 };
-router.use('/proposals', placeholderHandler('proposals'));
-router.use('/bookings', placeholderHandler('bookings'));
 router.use('/documents', placeholderHandler('documents'));
 router.use('/notifications', placeholderHandler('notifications'));
 

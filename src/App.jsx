@@ -42,9 +42,12 @@ import ForgotPassword from './pages/ForgotPassword';
 import ResetPassword from './pages/ResetPassword';
 import Profile from './pages/Profile';
 
-// Real Role Dashboards (M2.7 & M2.8)
+// Real Role Dashboards (M2.7 & M2.8 & M2.9)
 import PlannerDashboard from './pages/PlannerDashboard';
 import VendorDashboard from './pages/VendorDashboard';
+import ProposalManagement from './pages/ProposalManagement';
+import ProposalDetails from './pages/ProposalDetails';
+import BookingManagement from './pages/BookingManagement';
 
 // Protected Route Placeholders (M2.2)
 import {
@@ -185,6 +188,30 @@ export default function App() {
                 element={
                   <ProtectedRoute allowedRoles={['vendor', 'admin', 'super_admin']}>
                     <VendorDashboard />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/proposals"
+                element={
+                  <ProtectedRoute requiredPermissions={['proposals.view']}>
+                    <ProposalManagement />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/proposals/:id"
+                element={
+                  <ProtectedRoute requiredPermissions={['proposals.view']}>
+                    <ProposalDetails />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/bookings"
+                element={
+                  <ProtectedRoute requiredPermissions={['bookings.view']}>
+                    <BookingManagement />
                   </ProtectedRoute>
                 }
               />

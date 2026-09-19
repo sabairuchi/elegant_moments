@@ -103,7 +103,10 @@ export default function VendorDashboard() {
             </p>
           </div>
 
-          <div style={{ display: 'flex', gap: '10px' }}>
+          <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+            <Link to="/bookings" className="btn btn-primary" style={{ padding: '8px 18px', fontSize: '0.85rem' }}>
+              Service Bookings
+            </Link>
             <Link to="/profile" className="btn btn-secondary" style={{ padding: '8px 18px', fontSize: '0.85rem' }}>
               Profile
             </Link>
