@@ -206,10 +206,6 @@ export default function Register() {
               </div>
             </div>
 
-            <div style={{ background: '#FAF7F2', padding: '12px 15px', borderRadius: '6px', border: '1px solid rgba(212,175,55,0.3)', marginBottom: '20px', fontSize: '0.8rem', color: '#555' }}>
-              ℹ️ Public registration automatically creates a <strong>CLIENT</strong> role. Admin, Planner, and Vendor roles are assigned through administrative setup.
-            </div>
-
             <button
               type="submit"
               disabled={loading}
