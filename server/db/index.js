@@ -14,6 +14,9 @@ if (connectionString || process.env.DB_HOST) {
         ? {
             connectionString,
             ssl: process.env.NODE_ENV === 'production' || process.env.DB_SSL === 'true' ? { rejectUnauthorized: false } : false,
+            max: parseInt(process.env.DB_POOL_MAX || '10', 10),
+            idleTimeoutMillis: 30000,
+            connectionTimeoutMillis: 5000,
           }
         : {
             host: config.db.host,
@@ -22,8 +25,15 @@ if (connectionString || process.env.DB_HOST) {
             user: config.db.user,
             password: config.db.password,
             ssl: process.env.DB_SSL === 'true' ? { rejectUnauthorized: false } : false,
+            max: parseInt(process.env.DB_POOL_MAX || '10', 10),
+            idleTimeoutMillis: 30000,
+            connectionTimeoutMillis: 5000,
           }
     );
+
+    pool.on('error', (err) => {
+      console.error('Unexpected PostgreSQL Pool Error:', err);
+    });
   } catch (err) {
     console.warn('Failed to initialize PostgreSQL Pool:', err.message);
   }
@@ -190,10 +200,131 @@ export const initDb = async () => {
     try {
       await client.query(`CREATE EXTENSION IF NOT EXISTS "pgcrypto";`);
 
+      // Roles & Permissions
+      await client.query(`
+        CREATE TABLE IF NOT EXISTS roles (
+            id VARCHAR(255) PRIMARY KEY,
+            name VARCHAR(50) UNIQUE NOT NULL,
+            display_name VARCHAR(100) NOT NULL,
+            description TEXT,
+            created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+            updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+        );
+      `);
+
+      await client.query(`
+        CREATE TABLE IF NOT EXISTS users (
+            id VARCHAR(255) PRIMARY KEY,
+            email VARCHAR(255) UNIQUE NOT NULL,
+            password_hash VARCHAR(255) NOT NULL,
+            first_name VARCHAR(100) NOT NULL,
+            last_name VARCHAR(100) NOT NULL,
+            phone VARCHAR(30),
+            avatar_url VARCHAR(500),
+            role VARCHAR(50) DEFAULT 'client',
+            roles JSONB,
+            is_active BOOLEAN DEFAULT TRUE,
+            is_verified BOOLEAN DEFAULT FALSE,
+            account_status VARCHAR(50) DEFAULT 'ACTIVE',
+            last_login_at TIMESTAMP WITH TIME ZONE,
+            created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+            updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+            deleted_at TIMESTAMP WITH TIME ZONE
+        );
+      `);
+
+      await client.query(`
+        CREATE TABLE IF NOT EXISTS user_roles (
+            user_id VARCHAR(255) REFERENCES users(id) ON DELETE CASCADE,
+            role_id VARCHAR(255) REFERENCES roles(id) ON DELETE CASCADE,
+            assigned_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+            PRIMARY KEY (user_id, role_id)
+        );
+      `);
+
+      await client.query(`
+        CREATE TABLE IF NOT EXISTS client_profiles (
+            id VARCHAR(255) PRIMARY KEY,
+            user_id VARCHAR(255) REFERENCES users(id) ON DELETE CASCADE,
+            partner_first_name VARCHAR(100),
+            partner_last_name VARCHAR(100),
+            partner_email VARCHAR(255),
+            anniversary_date DATE,
+            notes TEXT,
+            created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+            updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+        );
+      `);
+
+      await client.query(`
+        CREATE TABLE IF NOT EXISTS planner_profiles (
+            id VARCHAR(255) PRIMARY KEY,
+            user_id VARCHAR(255) REFERENCES users(id) ON DELETE CASCADE,
+            bio TEXT,
+            specialization VARCHAR(100),
+            max_active_weddings INT DEFAULT 5,
+            rating NUMERIC(3,2) DEFAULT 5.00,
+            created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+            updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+        );
+      `);
+
+      await client.query(`
+        CREATE TABLE IF NOT EXISTS vendor_profiles (
+            id VARCHAR(255) PRIMARY KEY,
+            user_id VARCHAR(255) REFERENCES users(id) ON DELETE CASCADE,
+            company_name VARCHAR(200) NOT NULL,
+            category VARCHAR(100) NOT NULL,
+            website VARCHAR(255),
+            instagram VARCHAR(100),
+            verified_status VARCHAR(30) DEFAULT 'Pending',
+            rating NUMERIC(3,2) DEFAULT 0.00,
+            created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+            updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+        );
+      `);
+
+      await client.query(`
+        CREATE TABLE IF NOT EXISTS enquiries (
+            id VARCHAR(255) PRIMARY KEY,
+            enquiry_number VARCHAR(50) UNIQUE NOT NULL,
+            name VARCHAR(200) NOT NULL,
+            email VARCHAR(255) NOT NULL,
+            phone VARCHAR(30),
+            event_type VARCHAR(100),
+            event_date DATE,
+            location VARCHAR(200),
+            guest_count VARCHAR(50),
+            estimated_budget VARCHAR(50),
+            services_required JSONB,
+            vision TEXT,
+            status VARCHAR(50) DEFAULT 'NEW',
+            created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+            updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+        );
+      `);
+
+      await client.query(`
+        CREATE TABLE IF NOT EXISTS consultations (
+            id VARCHAR(255) PRIMARY KEY,
+            consultation_number VARCHAR(50) UNIQUE NOT NULL,
+            enquiry_id VARCHAR(255) REFERENCES enquiries(id) ON DELETE SET NULL,
+            name VARCHAR(200) NOT NULL,
+            email VARCHAR(255) NOT NULL,
+            phone VARCHAR(30),
+            preferred_time VARCHAR(100),
+            scheduled_at TIMESTAMP WITH TIME ZONE,
+            note TEXT,
+            status VARCHAR(50) DEFAULT 'REQUESTED',
+            created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+            updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+        );
+      `);
+
       await client.query(`
         CREATE TABLE IF NOT EXISTS services (
-            id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-            vendor_profile_id UUID,
+            id VARCHAR(255) PRIMARY KEY,
+            vendor_profile_id VARCHAR(255),
             title VARCHAR(200),
             name VARCHAR(200),
             category VARCHAR(100) NOT NULL,
@@ -210,13 +341,13 @@ export const initDb = async () => {
 
       await client.query(`
         CREATE TABLE IF NOT EXISTS venues (
-            id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+            id VARCHAR(255) PRIMARY KEY,
             name VARCHAR(200) NOT NULL,
             slug VARCHAR(200),
             city VARCHAR(100),
             country VARCHAR(100),
             location VARCHAR(200),
-            capacity INT NOT NULL DEFAULT 0,
+            capacity INT DEFAULT 0,
             rental_fee NUMERIC(10,2),
             pricing NUMERIC(10,2),
             description TEXT,
@@ -230,40 +361,13 @@ export const initDb = async () => {
       `);
 
       await client.query(`
-        CREATE TABLE IF NOT EXISTS client_profiles (
-            id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-            user_id UUID,
-            partner_first_name VARCHAR(100),
-            partner_last_name VARCHAR(100),
-            partner_email VARCHAR(255),
-            anniversary_date DATE,
-            notes TEXT,
-            created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-            updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
-        );
-      `);
-
-      await client.query(`
-        CREATE TABLE IF NOT EXISTS planner_profiles (
-            id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-            user_id UUID,
-            bio TEXT,
-            specialization VARCHAR(100),
-            max_active_weddings INT DEFAULT 5,
-            rating NUMERIC(3,2) DEFAULT 5.00,
-            created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-            updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
-        );
-      `);
-
-      await client.query(`
         CREATE TABLE IF NOT EXISTS weddings (
-            id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+            id VARCHAR(255) PRIMARY KEY,
             wedding_title VARCHAR(200),
             client_id VARCHAR(255),
             client_name VARCHAR(255),
-            client_profile_id UUID,
-            planner_profile_id UUID,
+            client_profile_id VARCHAR(255),
+            planner_profile_id VARCHAR(255),
             assigned_planner_id VARCHAR(255),
             assigned_planner_name VARCHAR(255),
             wedding_date DATE,
@@ -283,9 +387,9 @@ export const initDb = async () => {
 
       await client.query(`
         CREATE TABLE IF NOT EXISTS wedding_venues (
-            id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-            wedding_id UUID NOT NULL REFERENCES weddings(id) ON DELETE CASCADE,
-            venue_id UUID NOT NULL REFERENCES venues(id) ON DELETE CASCADE,
+            id VARCHAR(255) PRIMARY KEY,
+            wedding_id VARCHAR(255) REFERENCES weddings(id) ON DELETE CASCADE,
+            venue_id VARCHAR(255) REFERENCES venues(id) ON DELETE CASCADE,
             booking_status VARCHAR(30) DEFAULT 'Reserved',
             agreed_price NUMERIC(10,2),
             created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
@@ -294,12 +398,90 @@ export const initDb = async () => {
 
       await client.query(`
         CREATE TABLE IF NOT EXISTS wedding_services (
-            id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-            wedding_id UUID NOT NULL REFERENCES weddings(id) ON DELETE CASCADE,
-            service_id UUID NOT NULL REFERENCES services(id) ON DELETE CASCADE,
-            vendor_profile_id UUID,
+            id VARCHAR(255) PRIMARY KEY,
+            wedding_id VARCHAR(255) REFERENCES weddings(id) ON DELETE CASCADE,
+            service_id VARCHAR(255) REFERENCES services(id) ON DELETE CASCADE,
+            vendor_profile_id VARCHAR(255),
             custom_price NUMERIC(10,2),
             status VARCHAR(30) DEFAULT 'Proposed',
+            created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+        );
+      `);
+
+      await client.query(`
+        CREATE TABLE IF NOT EXISTS proposals (
+            id VARCHAR(255) PRIMARY KEY,
+            proposal_number VARCHAR(50) UNIQUE NOT NULL,
+            wedding_id VARCHAR(255) REFERENCES weddings(id) ON DELETE CASCADE,
+            created_by_user_id VARCHAR(255),
+            created_by_user_email VARCHAR(255),
+            client_name VARCHAR(255),
+            wedding_title VARCHAR(255),
+            subtotal NUMERIC(12,2),
+            total_amount NUMERIC(12,2),
+            discount_amount NUMERIC(10,2) DEFAULT 0.00,
+            tax_amount NUMERIC(10,2) DEFAULT 0.00,
+            final_amount NUMERIC(12,2),
+            valid_until DATE,
+            status VARCHAR(30) DEFAULT 'DRAFT',
+            notes TEXT,
+            client_feedback TEXT,
+            created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+            updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+        );
+      `);
+
+      await client.query(`
+        CREATE TABLE IF NOT EXISTS proposal_items (
+            id VARCHAR(255) PRIMARY KEY,
+            proposal_id VARCHAR(255) REFERENCES proposals(id) ON DELETE CASCADE,
+            service_id VARCHAR(255),
+            description VARCHAR(255) NOT NULL,
+            quantity INT DEFAULT 1,
+            unit_price NUMERIC(10,2) NOT NULL,
+            subtotal NUMERIC(10,2) NOT NULL,
+            created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+        );
+      `);
+
+      await client.query(`
+        CREATE TABLE IF NOT EXISTS bookings (
+            id VARCHAR(255) PRIMARY KEY,
+            booking_number VARCHAR(50) UNIQUE NOT NULL,
+            wedding_id VARCHAR(255) REFERENCES weddings(id) ON DELETE CASCADE,
+            proposal_id VARCHAR(255) REFERENCES proposals(id) ON DELETE SET NULL,
+            total_amount NUMERIC(12,2),
+            deposit_amount NUMERIC(10,2),
+            status VARCHAR(30) DEFAULT 'PENDING',
+            contract_notes TEXT,
+            payment_status VARCHAR(30) DEFAULT 'Pending',
+            contract_status VARCHAR(30) DEFAULT 'Draft',
+            created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+            updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+        );
+      `);
+
+      await client.query(`
+        CREATE TABLE IF NOT EXISTS activity_logs (
+            id VARCHAR(255) PRIMARY KEY,
+            user_id VARCHAR(255),
+            user_email VARCHAR(255),
+            action VARCHAR(100) NOT NULL,
+            entity_type VARCHAR(50) NOT NULL,
+            entity_id VARCHAR(255),
+            ip_address VARCHAR(45),
+            metadata JSONB,
+            created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+        );
+      `);
+
+      await client.query(`
+        CREATE TABLE IF NOT EXISTS tokens (
+            id VARCHAR(255) PRIMARY KEY,
+            user_id VARCHAR(255) REFERENCES users(id) ON DELETE CASCADE,
+            token VARCHAR(255) UNIQUE NOT NULL,
+            type VARCHAR(50) NOT NULL,
+            expires_at TIMESTAMP WITH TIME ZONE NOT NULL,
             created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
         );
       `);
@@ -345,3 +527,4 @@ export const initDb = async () => {
 export const hasDbConnection = () => isConnected || Boolean(pool);
 
 export default pool;
+

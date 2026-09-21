@@ -185,5 +185,39 @@
     "accountStatus": "ACTIVE",
     "createdAt": "2026-09-19T15:00:00.000Z",
     "updatedAt": "2026-09-19T15:00:00.000Z"
+  },
+  {
+    "id": "usr-client-1789973384776-ff0a3b",
+    "email": "client.test.1789973383492@gmail.com",
+    "passwordHash": "$2b$10$/0ubW9O.xPRguL7Nd8rWmu4KNbBRDH3uAgX9KH5/yxifkUqfyKB5K",
+    "firstName": "Pankaj",
+    "lastName": "Kumar",
+    "phone": "",
+    "role": "client",
+    "roles": [
+      "client"
+    ],
+    "isActive": true,
+    "isVerified": false,
+    "accountStatus": "PENDING_VERIFICATION",
+    "createdAt": "2026-09-21T06:49:44.777Z",
+    "updatedAt": "2026-09-21T06:49:44.778Z"
+  },
+  {
+    "id": "usr-client-1789975192139-4dcfbe",
+    "email": "client.test.1789975191952@gmail.com",
+    "passwordHash": "$2b$10$IP2wqXEOiLZjwMMnBLen6.I5csZKLOItDgGIoyz5oeZENToe/HIcS",
+    "firstName": "Pankaj",
+    "lastName": "Kumar",
+    "phone": "",
+    "role": "client",
+    "roles": [
+      "client"
+    ],
+    "isActive": true,
+    "isVerified": false,
+    "accountStatus": "PENDING_VERIFICATION",
+    "createdAt": "2026-09-21T07:19:52.141Z",
+    "updatedAt": "2026-09-21T07:19:52.141Z"
   }
 ]

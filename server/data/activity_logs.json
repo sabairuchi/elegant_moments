@@ -256,5 +256,155 @@
     },
     "ipAddress": "unknown",
     "createdAt": "2026-09-19T08:01:43.977Z"
+  },
+  {
+    "id": "log-1789973371585-69a7d6",
+    "userId": "usr-planner-003",
+    "userEmail": "planner@elegantmoments.com",
+    "action": "PROPOSAL_CREATED",
+    "entityType": "PROPOSAL",
+    "entityId": "4f4d17ca-c5c3-41fb-b216-11147cdb5c84",
+    "metadata": {
+      "proposalNumber": "PROP-2026-1747",
+      "weddingId": "wed-001",
+      "finalAmount": 8300,
+      "status": "SENT"
+    },
+    "ipAddress": "unknown",
+    "createdAt": "2026-09-21T06:49:31.585Z"
+  },
+  {
+    "id": "log-1789973371727-a8ee23",
+    "userId": "usr-client-005",
+    "userEmail": "client@elegantmoments.com",
+    "action": "PROPOSAL_UPDATED",
+    "entityType": "PROPOSAL",
+    "entityId": "4f4d17ca-c5c3-41fb-b216-11147cdb5c84",
+    "metadata": {
+      "status": "APPROVED",
+      "finalAmount": 8300
+    },
+    "ipAddress": "unknown",
+    "createdAt": "2026-09-21T06:49:31.727Z"
+  },
+  {
+    "id": "log-1789973371731-e0ae25",
+    "userId": "usr-client-005",
+    "userEmail": "client@elegantmoments.com",
+    "action": "PROPOSAL_STATUS_APPROVED",
+    "entityType": "PROPOSAL",
+    "entityId": "4f4d17ca-c5c3-41fb-b216-11147cdb5c84",
+    "metadata": {
+      "previousStatus": "APPROVED",
+      "newStatus": "APPROVED",
+      "clientFeedback": "Looks exquisite! We are excited to move forward."
+    },
+    "ipAddress": "unknown",
+    "createdAt": "2026-09-21T06:49:31.731Z"
+  },
+  {
+    "id": "log-1789973371780-e48341",
+    "userId": "usr-planner-003",
+    "userEmail": "planner@elegantmoments.com",
+    "action": "BOOKING_CREATED",
+    "entityType": "BOOKING",
+    "entityId": "060503d1-fab6-4516-874e-bac22bff3db3",
+    "metadata": {
+      "bookingNumber": "BK-2026-8490",
+      "weddingId": "wed-001",
+      "totalAmount": 8300,
+      "status": "CONFIRMED"
+    },
+    "ipAddress": "unknown",
+    "createdAt": "2026-09-21T06:49:31.780Z"
+  },
+  {
+    "id": "log-1789973371797-f4f896",
+    "userId": "usr-planner-003",
+    "userEmail": "planner@elegantmoments.com",
+    "action": "BOOKING_CREATED_FROM_PROPOSAL",
+    "entityType": "BOOKING",
+    "entityId": "060503d1-fab6-4516-874e-bac22bff3db3",
+    "metadata": {
+      "proposalId": "4f4d17ca-c5c3-41fb-b216-11147cdb5c84",
+      "proposalNumber": "PROP-2026-1747"
+    },
+    "ipAddress": "unknown",
+    "createdAt": "2026-09-21T06:49:31.797Z"
+  },
+  {
+    "id": "log-1789975188536-141b60",
+    "userId": "usr-planner-003",
+    "userEmail": "planner@elegantmoments.com",
+    "action": "PROPOSAL_CREATED",
+    "entityType": "PROPOSAL",
+    "entityId": "34839da2-6199-467e-9db0-624a76b7cec9",
+    "metadata": {
+      "proposalNumber": "PROP-2026-9604",
+      "weddingId": "wed-002",
+      "finalAmount": 8300,
+      "status": "SENT"
+    },
+    "ipAddress": "unknown",
+    "createdAt": "2026-09-21T07:19:48.536Z"
+  },
+  {
+    "id": "log-1789975188579-7586e6",
+    "userId": "usr-client-005",
+    "userEmail": "client@elegantmoments.com",
+    "action": "PROPOSAL_UPDATED",
+    "entityType": "PROPOSAL",
+    "entityId": "34839da2-6199-467e-9db0-624a76b7cec9",
+    "metadata": {
+      "status": "APPROVED",
+      "finalAmount": 8300
+    },
+    "ipAddress": "unknown",
+    "createdAt": "2026-09-21T07:19:48.579Z"
+  },
+  {
+    "id": "log-1789975188582-035152",
+    "userId": "usr-client-005",
+    "userEmail": "client@elegantmoments.com",
+    "action": "PROPOSAL_STATUS_APPROVED",
+    "entityType": "PROPOSAL",
+    "entityId": "34839da2-6199-467e-9db0-624a76b7cec9",
+    "metadata": {
+      "previousStatus": "APPROVED",
+      "newStatus": "APPROVED",
+      "clientFeedback": "Looks exquisite! We are excited to move forward."
+    },
+    "ipAddress": "unknown",
+    "createdAt": "2026-09-21T07:19:48.582Z"
+  },
+  {
+    "id": "log-1789975188594-649a14",
+    "userId": "usr-planner-003",
+    "userEmail": "planner@elegantmoments.com",
+    "action": "BOOKING_CREATED",
+    "entityType": "BOOKING",
+    "entityId": "bc83ad78-257b-4953-85fd-ad3edf01e5a0",
+    "metadata": {
+      "bookingNumber": "BK-2026-8612",
+      "weddingId": "wed-002",
+      "totalAmount": 8300,
+      "status": "CONFIRMED"
+    },
+    "ipAddress": "unknown",
+    "createdAt": "2026-09-21T07:19:48.594Z"
+  },
+  {
+    "id": "log-1789975188596-36cb6c",
+    "userId": "usr-planner-003",
+    "userEmail": "planner@elegantmoments.com",
+    "action": "BOOKING_CREATED_FROM_PROPOSAL",
+    "entityType": "BOOKING",
+    "entityId": "bc83ad78-257b-4953-85fd-ad3edf01e5a0",
+    "metadata": {
+      "proposalId": "34839da2-6199-467e-9db0-624a76b7cec9",
+      "proposalNumber": "PROP-2026-9604"
+    },
+    "ipAddress": "unknown",
+    "createdAt": "2026-09-21T07:19:48.596Z"
   }
 ]

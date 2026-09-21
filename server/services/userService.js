@@ -4,6 +4,7 @@ import crypto from 'crypto';
 import bcrypt from 'bcryptjs';
 import { fileURLToPath } from 'url';
 import { auditService } from './auditService.js';
+import { query } from '../db/index.js';
 
 import { createRequire } from 'module';
 
@@ -29,15 +30,15 @@ const TOKENS_FILE = path.join(__dirname, '..', 'data', 'tokens.json');
 let memoryUsers = null;
 let memoryTokens = null;
 
-// Ensure data files exist (graceful in read-only environments)
 const ensureFilesExist = () => {
+  if (process.env.NODE_ENV === 'production') return;
   try {
     const dir = path.dirname(USERS_FILE);
     if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
     if (!fs.existsSync(USERS_FILE)) fs.writeFileSync(USERS_FILE, JSON.stringify(seedUsers, null, 2), 'utf-8');
     if (!fs.existsSync(TOKENS_FILE)) fs.writeFileSync(TOKENS_FILE, JSON.stringify(seedTokens, null, 2), 'utf-8');
   } catch {
-    // Read-only filesystem (e.g. Vercel serverless lambda)
+    // Read-only filesystem
   }
 };
 
@@ -45,7 +46,7 @@ const readUsers = () => {
   if (memoryUsers) return memoryUsers;
   ensureFilesExist();
   try {
-    if (fs.existsSync(USERS_FILE)) {
+    if (process.env.NODE_ENV !== 'production' && fs.existsSync(USERS_FILE)) {
       const raw = fs.readFileSync(USERS_FILE, 'utf-8');
       memoryUsers = JSON.parse(raw);
     } else {
@@ -59,12 +60,12 @@ const readUsers = () => {
 
 const writeUsers = (users) => {
   memoryUsers = users;
+  if (process.env.NODE_ENV === 'production') return true;
   ensureFilesExist();
   try {
     fs.writeFileSync(USERS_FILE, JSON.stringify(users, null, 2), 'utf-8');
     return true;
   } catch (err) {
-    // In serverless / read-only filesystem environments, memory cache preserves changes during lambda lifecycle
     return true;
   }
 };
@@ -73,7 +74,7 @@ const readTokens = () => {
   if (memoryTokens) return memoryTokens;
   ensureFilesExist();
   try {
-    if (fs.existsSync(TOKENS_FILE)) {
+    if (process.env.NODE_ENV !== 'production' && fs.existsSync(TOKENS_FILE)) {
       const raw = fs.readFileSync(TOKENS_FILE, 'utf-8');
       memoryTokens = JSON.parse(raw);
     } else {
@@ -87,6 +88,7 @@ const readTokens = () => {
 
 const writeTokens = (tokens) => {
   memoryTokens = tokens;
+  if (process.env.NODE_ENV === 'production') return true;
   ensureFilesExist();
   try {
     fs.writeFileSync(TOKENS_FILE, JSON.stringify(tokens, null, 2), 'utf-8');
@@ -95,6 +97,22 @@ const writeTokens = (tokens) => {
     return true;
   }
 };
+
+const mapRowToUser = (row) => ({
+  id: row.id,
+  email: row.email,
+  passwordHash: row.password_hash,
+  firstName: row.first_name,
+  lastName: row.last_name,
+  phone: row.phone || '',
+  role: row.role || 'client',
+  roles: Array.isArray(row.roles) ? row.roles : (row.roles ? (typeof row.roles === 'string' ? JSON.parse(row.roles) : [row.role || 'client']) : [row.role || 'client']),
+  isActive: row.is_active ?? true,
+  isVerified: row.is_verified ?? false,
+  accountStatus: row.account_status || (row.is_active ? 'ACTIVE' : 'SUSPENDED'),
+  createdAt: row.created_at ? new Date(row.created_at).toISOString() : new Date().toISOString(),
+  updatedAt: row.updated_at ? new Date(row.updated_at).toISOString() : new Date().toISOString(),
+});
 
 export const userService = {
   // Password Security Policy
@@ -129,22 +147,38 @@ export const userService = {
 
   async findByEmail(email) {
     if (!email) return null;
+    const cleanEmail = email.trim().toLowerCase();
+    try {
+      const res = await query('SELECT * FROM users WHERE LOWER(email) = $1 AND deleted_at IS NULL', [cleanEmail]);
+      if (res.rows.length > 0) {
+        return mapRowToUser(res.rows[0]);
+      }
+    } catch (dbErr) {
+      // Fallback
+    }
     const users = readUsers();
-    return users.find((u) => u.email.toLowerCase() === email.trim().toLowerCase()) || null;
+    return users.find((u) => u.email.toLowerCase() === cleanEmail) || null;
   },
 
   async findById(id) {
     if (!id) return null;
+    try {
+      const res = await query('SELECT * FROM users WHERE id = $1 AND deleted_at IS NULL', [id]);
+      if (res.rows.length > 0) {
+        return mapRowToUser(res.rows[0]);
+      }
+    } catch (dbErr) {
+      // Fallback
+    }
     const users = readUsers();
     return users.find((u) => u.id === id) || null;
   },
 
   async createUser({ firstName, lastName, email, phone, password }) {
-    const users = readUsers();
     const cleanEmail = email.trim().toLowerCase();
 
     // Check duplicate email
-    const existing = users.find((u) => u.email.toLowerCase() === cleanEmail);
+    const existing = await this.findByEmail(cleanEmail);
     if (existing) {
       const err = new Error('An account with this email already exists.');
       err.statusCode = 409;
@@ -180,6 +214,17 @@ export const userService = {
       updatedAt: new Date().toISOString(),
     };
 
+    try {
+      await query(
+        `INSERT INTO users (id, email, password_hash, first_name, last_name, phone, role, roles, is_active, is_verified, account_status)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)`,
+        [newId, cleanEmail, passwordHash, firstName.trim(), lastName.trim(), phone ? phone.trim() : '', 'client', JSON.stringify(['client']), true, false, 'PENDING_VERIFICATION']
+      );
+    } catch (dbErr) {
+      // Fallback to memory
+    }
+
+    const users = readUsers();
     users.push(newUser);
     writeUsers(users);
 

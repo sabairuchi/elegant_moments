@@ -50,13 +50,18 @@ export const authController = {
 
       const token = generateJwtToken(user);
 
-      res.status(201).json({
+      const responsePayload = {
         success: true,
         message: 'Registration successful. A verification email has been dispatched.',
         token,
         user,
-        verificationUrlDevOnly: `http://localhost:3000/verify-email?token=${verificationToken}`,
-      });
+      };
+
+      if (config.env === 'development') {
+        responsePayload.verificationUrlDevOnly = `http://localhost:3000/verify-email?token=${verificationToken}`;
+      }
+
+      res.status(201).json(responsePayload);
     } catch (error) {
       if (error.statusCode) {
         return res.status(error.statusCode).json({ success: false, message: error.message });
@@ -175,11 +180,14 @@ export const authController = {
       }
 
       const result = await userService.resendVerification(email);
-      res.status(200).json({
+      const resPayload = {
         success: true,
         message: result.message,
-        verificationUrlDevOnly: result.token ? `http://localhost:3000/verify-email?token=${result.token}` : undefined,
-      });
+      };
+      if (config.env === 'development' && result.token) {
+        resPayload.verificationUrlDevOnly = `http://localhost:3000/verify-email?token=${result.token}`;
+      }
+      res.status(200).json(resPayload);
     } catch (error) {
       next(error);
     }
@@ -194,13 +202,14 @@ export const authController = {
       }
 
       const result = await userService.forgotPassword(email);
-      res.status(200).json({
+      const resPayload = {
         success: true,
         message: result.message,
-        resetUrlDevOnly: result.resetTokenDevOnly
-          ? `http://localhost:3000/reset-password?token=${result.resetTokenDevOnly}`
-          : undefined,
-      });
+      };
+      if (config.env === 'development' && result.resetTokenDevOnly) {
+        resPayload.resetUrlDevOnly = `http://localhost:3000/reset-password?token=${result.resetTokenDevOnly}`;
+      }
+      res.status(200).json(resPayload);
     } catch (error) {
       next(error);
     }
