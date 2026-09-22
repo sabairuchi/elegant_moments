@@ -25,17 +25,18 @@ setInterval(() => {
 export const rateLimit = ({ windowMs = 15 * 60 * 1000, max = 20, message = 'Too many requests, please try again later.' }) => {
   return (req, res, next) => {
     const ip = req.ip || req.connection?.remoteAddress || 'unknown';
+    const key = `${req.originalUrl || req.path}_${ip}`;
     const now = Date.now();
     
-    if (!store.has(ip)) {
-      store.set(ip, {
+    if (!store.has(key)) {
+      store.set(key, {
         count: 1,
         resetTime: now + windowMs
       });
       return next();
     }
 
-    const data = store.get(ip);
+    const data = store.get(key);
 
     // If window expired, reset
     if (now > data.resetTime) {

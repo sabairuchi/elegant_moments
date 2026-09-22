@@ -206,7 +206,7 @@ export const authController = {
         success: true,
         message: result.message,
       };
-      if (config.env === 'development' && result.resetTokenDevOnly) {
+      if (config.env !== 'production' && result.resetTokenDevOnly) {
         resPayload.resetUrlDevOnly = `http://localhost:3000/reset-password?token=${result.resetTokenDevOnly}`;
       }
       res.status(200).json(resPayload);

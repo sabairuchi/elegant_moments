@@ -1,5 +1,6 @@
 import pkg from 'pg';
 const { Pool } = pkg;
+import fs from 'fs';
 import { config } from '../config/index.js';
 
 const connectionString = process.env.DATABASE_URL || process.env.POSTGRES_URL;
@@ -481,10 +482,46 @@ export const initDb = async () => {
             user_id VARCHAR(255) REFERENCES users(id) ON DELETE CASCADE,
             token VARCHAR(255) UNIQUE NOT NULL,
             type VARCHAR(50) NOT NULL,
+            used BOOLEAN DEFAULT FALSE,
             expires_at TIMESTAMP WITH TIME ZONE NOT NULL,
             created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
         );
       `);
+
+      // Seed Users if table is empty
+      const userCountRes = await client.query('SELECT COUNT(*) FROM users');
+      if (parseInt(userCountRes.rows[0].count, 10) === 0) {
+        try {
+          const usersPath = new URL('../data/users.json', import.meta.url);
+          const raw = fs.readFileSync(usersPath, 'utf-8');
+          const seedUsers = JSON.parse(raw);
+          for (const u of seedUsers) {
+            await client.query(
+              `INSERT INTO users (id, email, password_hash, first_name, last_name, phone, role, roles, is_active, is_verified, account_status, created_at, updated_at)
+               VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
+               ON CONFLICT (email) DO NOTHING`,
+              [
+                u.id,
+                u.email.toLowerCase(),
+                u.passwordHash,
+                u.firstName,
+                u.lastName,
+                u.phone || '',
+                u.role || 'client',
+                JSON.stringify(u.roles || [u.role || 'client']),
+                u.isActive ?? true,
+                u.isVerified ?? true,
+                u.accountStatus || 'ACTIVE',
+                u.createdAt || new Date(),
+                u.updatedAt || new Date()
+              ]
+            );
+          }
+          console.log(`Seeded ${seedUsers.length} default users into database.`);
+        } catch (seedErr) {
+          console.warn('Could not seed default users into database:', seedErr.message);
+        }
+      }
 
       // Seed Services if table is empty
       const serviceCountRes = await client.query('SELECT COUNT(*) FROM services');

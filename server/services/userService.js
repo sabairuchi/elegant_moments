@@ -4,7 +4,7 @@ import crypto from 'crypto';
 import bcrypt from 'bcryptjs';
 import { fileURLToPath } from 'url';
 import { auditService } from './auditService.js';
-import { query } from '../db/index.js';
+import { query, hasDbConnection } from '../db/index.js';
 
 import { createRequire } from 'module';
 
@@ -106,9 +106,15 @@ const mapRowToUser = (row) => ({
   lastName: row.last_name,
   phone: row.phone || '',
   role: row.role || 'client',
-  roles: Array.isArray(row.roles) ? row.roles : (row.roles ? (typeof row.roles === 'string' ? JSON.parse(row.roles) : [row.role || 'client']) : [row.role || 'client']),
+  roles: Array.isArray(row.roles)
+    ? row.roles
+    : row.roles
+    ? typeof row.roles === 'string'
+      ? JSON.parse(row.roles)
+      : [row.role || 'client']
+    : [row.role || 'client'],
   isActive: row.is_active ?? true,
-  isVerified: row.is_verified ?? false,
+  isVerified: row.is_verified ?? true,
   accountStatus: row.account_status || (row.is_active ? 'ACTIVE' : 'SUSPENDED'),
   createdAt: row.created_at ? new Date(row.created_at).toISOString() : new Date().toISOString(),
   updatedAt: row.updated_at ? new Date(row.updated_at).toISOString() : new Date().toISOString(),
@@ -148,28 +154,30 @@ export const userService = {
   async findByEmail(email) {
     if (!email) return null;
     const cleanEmail = email.trim().toLowerCase();
-    try {
+
+    if (hasDbConnection()) {
       const res = await query('SELECT * FROM users WHERE LOWER(email) = $1 AND deleted_at IS NULL', [cleanEmail]);
       if (res.rows.length > 0) {
         return mapRowToUser(res.rows[0]);
       }
-    } catch (dbErr) {
-      // Fallback
+      return null;
     }
+
     const users = readUsers();
     return users.find((u) => u.email.toLowerCase() === cleanEmail) || null;
   },
 
   async findById(id) {
     if (!id) return null;
-    try {
+
+    if (hasDbConnection()) {
       const res = await query('SELECT * FROM users WHERE id = $1 AND deleted_at IS NULL', [id]);
       if (res.rows.length > 0) {
         return mapRowToUser(res.rows[0]);
       }
-    } catch (dbErr) {
-      // Fallback
+      return null;
     }
+
     const users = readUsers();
     return users.find((u) => u.id === id) || null;
   },
@@ -208,25 +216,35 @@ export const userService = {
       role: 'client', // STRICT REQUIREMENT: Public registration MUST default to 'client'
       roles: ['client'],
       isActive: true,
-      isVerified: false,
-      accountStatus: 'PENDING_VERIFICATION',
+      isVerified: true,
+      accountStatus: 'ACTIVE',
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     };
 
-    try {
+    if (hasDbConnection()) {
       await query(
         `INSERT INTO users (id, email, password_hash, first_name, last_name, phone, role, roles, is_active, is_verified, account_status)
          VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)`,
-        [newId, cleanEmail, passwordHash, firstName.trim(), lastName.trim(), phone ? phone.trim() : '', 'client', JSON.stringify(['client']), true, false, 'PENDING_VERIFICATION']
+        [
+          newId,
+          cleanEmail,
+          passwordHash,
+          firstName.trim(),
+          lastName.trim(),
+          phone ? phone.trim() : '',
+          'client',
+          JSON.stringify(['client']),
+          true,
+          true,
+          'ACTIVE',
+        ]
       );
-    } catch (dbErr) {
-      // Fallback to memory
+    } else {
+      const users = readUsers();
+      users.push(newUser);
+      writeUsers(users);
     }
-
-    const users = readUsers();
-    users.push(newUser);
-    writeUsers(users);
 
     // Create verification token
     const verificationToken = await this.createToken(newUser.id, 'EMAIL_VERIFICATION', 24 * 60 * 60 * 1000); // 24h
@@ -243,10 +261,6 @@ export const userService = {
 
   // Token Management (Verification & Password Reset)
   async createToken(userId, type, ttlMs) {
-    const tokens = readTokens();
-    // Invalidate existing unexpired tokens of same type for user
-    const filtered = tokens.filter((t) => !(t.userId === userId && t.type === type && !t.used));
-
     const token = crypto.randomBytes(32).toString('hex');
     const newToken = {
       id: `tok-${Date.now()}-${crypto.randomBytes(2).toString('hex')}`,
@@ -258,60 +272,100 @@ export const userService = {
       createdAt: new Date().toISOString(),
     };
 
-    filtered.push(newToken);
-    writeTokens(filtered);
+    if (hasDbConnection()) {
+      await query(
+        `UPDATE tokens SET used = true WHERE user_id = $1 AND type = $2 AND used = false`,
+        [userId, type]
+      );
+      await query(
+        `INSERT INTO tokens (id, user_id, token, type, used, expires_at, created_at)
+         VALUES ($1, $2, $3, $4, $5, $6, $7)`,
+        [newToken.id, newToken.userId, newToken.token, newToken.type, false, newToken.expiresAt, newToken.createdAt]
+      );
+    } else {
+      const tokens = readTokens();
+      const filtered = tokens.filter((t) => !(t.userId === userId && t.type === type && !t.used));
+      filtered.push(newToken);
+      writeTokens(filtered);
+    }
+
     return token;
   },
 
   async verifyEmailToken(tokenStr) {
-    const tokens = readTokens();
-    const tokenObj = tokens.find((t) => t.token === tokenStr && t.type === 'EMAIL_VERIFICATION');
+    if (hasDbConnection()) {
+      const res = await query(`SELECT * FROM tokens WHERE token = $1 AND type = 'EMAIL_VERIFICATION'`, [tokenStr]);
+      if (res.rows.length === 0) {
+        const err = new Error('Invalid email verification token.');
+        err.statusCode = 400;
+        throw err;
+      }
+      const tokenObj = res.rows[0];
 
-    if (!tokenObj) {
-      const err = new Error('Invalid email verification token.');
-      err.statusCode = 400;
-      throw err;
+      if (tokenObj.used) {
+        const err = new Error('This verification token has already been used.');
+        err.statusCode = 400;
+        throw err;
+      }
+
+      if (new Date(tokenObj.expires_at) < new Date()) {
+        const err = new Error('Verification token has expired. Please request a new verification email.');
+        err.statusCode = 400;
+        throw err;
+      }
+
+      await query(`UPDATE tokens SET used = true WHERE id = $1`, [tokenObj.id]);
+      await query(`UPDATE users SET is_verified = true, account_status = 'ACTIVE', updated_at = NOW() WHERE id = $1`, [tokenObj.user_id]);
+
+      const user = await this.findById(tokenObj.user_id);
+      return this.getSafeUser(user);
+    } else {
+      const tokens = readTokens();
+      const tokenObj = tokens.find((t) => t.token === tokenStr && t.type === 'EMAIL_VERIFICATION');
+
+      if (!tokenObj) {
+        const err = new Error('Invalid email verification token.');
+        err.statusCode = 400;
+        throw err;
+      }
+
+      if (tokenObj.used) {
+        const err = new Error('This verification token has already been used.');
+        err.statusCode = 400;
+        throw err;
+      }
+
+      if (new Date(tokenObj.expiresAt) < new Date()) {
+        const err = new Error('Verification token has expired. Please request a new verification email.');
+        err.statusCode = 400;
+        throw err;
+      }
+
+      tokenObj.used = true;
+      writeTokens(tokens);
+
+      const users = readUsers();
+      const user = users.find((u) => u.id === tokenObj.userId);
+      if (!user) {
+        const err = new Error('Associated user not found.');
+        err.statusCode = 404;
+        throw err;
+      }
+
+      user.isVerified = true;
+      if (user.accountStatus === 'PENDING_VERIFICATION') {
+        user.accountStatus = 'ACTIVE';
+      }
+      user.updatedAt = new Date().toISOString();
+      writeUsers(users);
+
+      return this.getSafeUser(user);
     }
-
-    if (tokenObj.used) {
-      const err = new Error('This verification token has already been used.');
-      err.statusCode = 400;
-      throw err;
-    }
-
-    if (new Date(tokenObj.expiresAt) < new Date()) {
-      const err = new Error('Verification token has expired. Please request a new verification email.');
-      err.statusCode = 400;
-      throw err;
-    }
-
-    // Update token as used
-    tokenObj.used = true;
-    writeTokens(tokens);
-
-    // Update user
-    const users = readUsers();
-    const user = users.find((u) => u.id === tokenObj.userId);
-    if (!user) {
-      const err = new Error('Associated user not found.');
-      err.statusCode = 404;
-      throw err;
-    }
-
-    user.isVerified = true;
-    if (user.accountStatus === 'PENDING_VERIFICATION') {
-      user.accountStatus = 'ACTIVE';
-    }
-    user.updatedAt = new Date().toISOString();
-    writeUsers(users);
-
-    return this.getSafeUser(user);
   },
 
   async resendVerification(email) {
     const user = await this.findByEmail(email);
     if (!user) {
-      // Generic response to avoid enumeration
       return { message: 'If an account exists with this email, a verification link has been generated.' };
     }
 
@@ -330,7 +384,6 @@ export const userService = {
   async forgotPassword(email) {
     const user = await this.findByEmail(email);
 
-    // Anti-account enumeration: Always return success message
     if (!user) {
       return {
         success: true,
@@ -345,13 +398,12 @@ export const userService = {
       };
     }
 
-    // Generate single-use reset token valid for 1 hour
     const token = await this.createToken(user.id, 'PASSWORD_RESET', 60 * 60 * 1000);
 
     return {
       success: true,
       message: 'If an account exists with that email address, password reset instructions have been sent.',
-      resetTokenDevOnly: token, // Included for local dev demo/testing ease
+      resetTokenDevOnly: token,
       email: user.email,
     };
   },
@@ -364,48 +416,88 @@ export const userService = {
       throw err;
     }
 
-    const tokens = readTokens();
-    const tokenObj = tokens.find((t) => t.token === tokenStr && t.type === 'PASSWORD_RESET');
+    if (hasDbConnection()) {
+      const res = await query(`SELECT * FROM tokens WHERE token = $1 AND type = 'PASSWORD_RESET'`, [tokenStr]);
+      if (res.rows.length === 0) {
+        const err = new Error('Invalid password reset token.');
+        err.statusCode = 400;
+        throw err;
+      }
+      const tokenObj = res.rows[0];
 
-    if (!tokenObj) {
-      const err = new Error('Invalid password reset token.');
-      err.statusCode = 400;
-      throw err;
+      if (tokenObj.used) {
+        const err = new Error('This password reset token has already been used.');
+        err.statusCode = 400;
+        throw err;
+      }
+
+      if (new Date(tokenObj.expires_at) < new Date()) {
+        const err = new Error('Password reset token has expired. Please request a new reset link.');
+        err.statusCode = 400;
+        throw err;
+      }
+
+      const newPasswordHash = await bcrypt.hash(newPassword, 10);
+
+      await query(`UPDATE tokens SET used = true WHERE id = $1`, [tokenObj.id]);
+      await query(`UPDATE users SET password_hash = $1, updated_at = NOW() WHERE id = $2`, [newPasswordHash, tokenObj.user_id]);
+
+      const user = await this.findById(tokenObj.user_id);
+      return this.getSafeUser(user);
+    } else {
+      const tokens = readTokens();
+      const tokenObj = tokens.find((t) => t.token === tokenStr && t.type === 'PASSWORD_RESET');
+
+      if (!tokenObj) {
+        const err = new Error('Invalid password reset token.');
+        err.statusCode = 400;
+        throw err;
+      }
+
+      if (tokenObj.used) {
+        const err = new Error('This password reset token has already been used.');
+        err.statusCode = 400;
+        throw err;
+      }
+
+      if (new Date(tokenObj.expiresAt) < new Date()) {
+        const err = new Error('Password reset token has expired. Please request a new reset link.');
+        err.statusCode = 400;
+        throw err;
+      }
+
+      tokenObj.used = true;
+      writeTokens(tokens);
+
+      const users = readUsers();
+      const user = users.find((u) => u.id === tokenObj.userId);
+      if (!user) {
+        const err = new Error('Associated user not found.');
+        err.statusCode = 404;
+        throw err;
+      }
+
+      user.passwordHash = await bcrypt.hash(newPassword, 10);
+      user.updatedAt = new Date().toISOString();
+      writeUsers(users);
+
+      return this.getSafeUser(user);
     }
-
-    if (tokenObj.used) {
-      const err = new Error('This password reset token has already been used.');
-      err.statusCode = 400;
-      throw err;
-    }
-
-    if (new Date(tokenObj.expiresAt) < new Date()) {
-      const err = new Error('Password reset token has expired. Please request a new reset link.');
-      err.statusCode = 400;
-      throw err;
-    }
-
-    // Mark token as used
-    tokenObj.used = true;
-    writeTokens(tokens);
-
-    // Hash new password & update user
-    const users = readUsers();
-    const user = users.find((u) => u.id === tokenObj.userId);
-    if (!user) {
-      const err = new Error('Associated user not found.');
-      err.statusCode = 404;
-      throw err;
-    }
-
-    user.passwordHash = await bcrypt.hash(newPassword, 10);
-    user.updatedAt = new Date().toISOString();
-    writeUsers(users);
-
-    return this.getSafeUser(user);
   },
 
   async getAllTokens() {
+    if (hasDbConnection()) {
+      const res = await query(`SELECT * FROM tokens ORDER BY created_at DESC`);
+      return res.rows.map((r) => ({
+        id: r.id,
+        userId: r.user_id,
+        token: r.token,
+        type: r.type,
+        used: r.used,
+        expiresAt: r.expires_at,
+        createdAt: r.created_at,
+      }));
+    }
     return readTokens();
   },
 
@@ -414,43 +506,90 @@ export const userService = {
   // ---------------------------------------------------------------------------
 
   async listUsers({ page = 1, limit = 20, search = '', role = '', status = '' }) {
-    let users = readUsers();
+    if (hasDbConnection()) {
+      let whereClauses = ['deleted_at IS NULL'];
+      let params = [];
+      let pIdx = 1;
 
-    // Filters
-    if (search) {
-      const s = search.toLowerCase();
-      users = users.filter(
-        (u) =>
-          u.email.toLowerCase().includes(s) ||
-          u.firstName.toLowerCase().includes(s) ||
-          u.lastName.toLowerCase().includes(s)
+      if (search) {
+        const s = `%${search.toLowerCase()}%`;
+        whereClauses.push(`(LOWER(email) LIKE $${pIdx} OR LOWER(first_name) LIKE $${pIdx} OR LOWER(last_name) LIKE $${pIdx})`);
+        params.push(s);
+        pIdx++;
+      }
+      if (role && role !== 'All') {
+        whereClauses.push(`role = $${pIdx}`);
+        params.push(role);
+        pIdx++;
+      }
+      if (status && status !== 'All') {
+        whereClauses.push(`account_status = $${pIdx}`);
+        params.push(status);
+        pIdx++;
+      }
+
+      const whereSql = whereClauses.join(' AND ');
+      const countRes = await query(`SELECT COUNT(*) FROM users WHERE ${whereSql}`, params);
+      const total = parseInt(countRes.rows[0].count, 10);
+      const totalPages = Math.ceil(total / limit) || 1;
+      const start = (page - 1) * limit;
+
+      const dataRes = await query(
+        `SELECT * FROM users WHERE ${whereSql} ORDER BY created_at DESC LIMIT $${pIdx} OFFSET $${pIdx + 1}`,
+        [...params, limit, start]
       );
-    }
-    if (role && role !== 'All') {
-      users = users.filter((u) => u.role === role);
-    }
-    if (status && status !== 'All') {
-      users = users.filter((u) => u.accountStatus === status);
-    }
+      const paginated = dataRes.rows.map((row) => this.getSafeUser(mapRowToUser(row)));
 
-    // Pagination
-    const total = users.length;
-    const totalPages = Math.ceil(total / limit);
-    const start = (page - 1) * limit;
-    const paginated = users.slice(start, start + limit).map((u) => this.getSafeUser(u));
+      return {
+        data: paginated,
+        pagination: {
+          page: Number(page),
+          limit: Number(limit),
+          total,
+          totalPages,
+        },
+      };
+    } else {
+      let users = readUsers();
 
-    return {
-      data: paginated,
-      pagination: {
-        page: Number(page),
-        limit: Number(limit),
-        total,
-        totalPages,
-      },
-    };
+      if (search) {
+        const s = search.toLowerCase();
+        users = users.filter(
+          (u) =>
+            u.email.toLowerCase().includes(s) ||
+            u.firstName.toLowerCase().includes(s) ||
+            u.lastName.toLowerCase().includes(s)
+        );
+      }
+      if (role && role !== 'All') {
+        users = users.filter((u) => u.role === role);
+      }
+      if (status && status !== 'All') {
+        users = users.filter((u) => u.accountStatus === status);
+      }
+
+      const total = users.length;
+      const totalPages = Math.ceil(total / limit) || 1;
+      const start = (page - 1) * limit;
+      const paginated = users.slice(start, start + limit).map((u) => this.getSafeUser(u));
+
+      return {
+        data: paginated,
+        pagination: {
+          page: Number(page),
+          limit: Number(limit),
+          total,
+          totalPages,
+        },
+      };
+    }
   },
 
-  countSuperAdmins() {
+  async countSuperAdmins() {
+    if (hasDbConnection()) {
+      const res = await query(`SELECT COUNT(*) FROM users WHERE role = 'super_admin' AND account_status = 'ACTIVE' AND deleted_at IS NULL`);
+      return parseInt(res.rows[0].count, 10);
+    }
     const users = readUsers();
     return users.filter((u) => u.role === 'super_admin' && u.accountStatus === 'ACTIVE').length;
   },
@@ -469,19 +608,16 @@ export const userService = {
       throw err;
     }
 
-    const users = readUsers();
-    const userIndex = users.findIndex((u) => u.id === userId);
-    if (userIndex === -1) {
+    const targetUser = await this.findById(userId);
+    if (!targetUser) {
       const err = new Error('User not found.');
       err.statusCode = 404;
       throw err;
     }
 
-    const targetUser = users[userIndex];
-
-    // Prevent suspending the last super_admin
     if (targetUser.role === 'super_admin' && newStatus !== 'ACTIVE') {
-      if (this.countSuperAdmins() <= 1) {
+      const count = await this.countSuperAdmins();
+      if (count <= 1) {
         const err = new Error('Cannot suspend or deactivate the last remaining Super Admin.');
         err.statusCode = 403;
         throw err;
@@ -489,15 +625,23 @@ export const userService = {
     }
 
     const oldStatus = targetUser.accountStatus;
-    targetUser.accountStatus = newStatus;
-    if (newStatus === 'INACTIVE' || newStatus === 'SUSPENDED') {
-      targetUser.isActive = false;
-    } else if (newStatus === 'ACTIVE') {
-      targetUser.isActive = true;
-    }
+    const isActive = newStatus === 'ACTIVE';
 
-    targetUser.updatedAt = new Date().toISOString();
-    writeUsers(users);
+    if (hasDbConnection()) {
+      await query(
+        `UPDATE users SET account_status = $1, is_active = $2, updated_at = NOW() WHERE id = $3`,
+        [newStatus, isActive, userId]
+      );
+    } else {
+      const users = readUsers();
+      const u = users.find((x) => x.id === userId);
+      if (u) {
+        u.accountStatus = newStatus;
+        u.isActive = isActive;
+        u.updatedAt = new Date().toISOString();
+        writeUsers(users);
+      }
+    }
 
     auditService.logAction({
       userId: currentAdminUser.id,
@@ -509,7 +653,8 @@ export const userService = {
       ipAddress,
     });
 
-    return this.getSafeUser(targetUser);
+    const updatedUser = await this.findById(userId);
+    return this.getSafeUser(updatedUser);
   },
 
   async updateUserRole(userId, newRole, currentAdminUser, ipAddress) {
@@ -520,30 +665,39 @@ export const userService = {
       throw err;
     }
 
-    const users = readUsers();
-    const userIndex = users.findIndex((u) => u.id === userId);
-    if (userIndex === -1) {
+    const targetUser = await this.findById(userId);
+    if (!targetUser) {
       const err = new Error('User not found.');
       err.statusCode = 404;
       throw err;
     }
 
-    const targetUser = users[userIndex];
     const oldRole = targetUser.role;
 
-    // Prevent demoting the last super_admin
     if (oldRole === 'super_admin' && newRole !== 'super_admin') {
-      if (this.countSuperAdmins() <= 1) {
+      const count = await this.countSuperAdmins();
+      if (count <= 1) {
         const err = new Error('Cannot demote the last remaining Super Admin.');
         err.statusCode = 403;
         throw err;
       }
     }
 
-    targetUser.role = newRole;
-    targetUser.roles = [newRole];
-    targetUser.updatedAt = new Date().toISOString();
-    writeUsers(users);
+    if (hasDbConnection()) {
+      await query(
+        `UPDATE users SET role = $1, roles = $2, updated_at = NOW() WHERE id = $3`,
+        [newRole, JSON.stringify([newRole]), userId]
+      );
+    } else {
+      const users = readUsers();
+      const u = users.find((x) => x.id === userId);
+      if (u) {
+        u.role = newRole;
+        u.roles = [newRole];
+        u.updatedAt = new Date().toISOString();
+        writeUsers(users);
+      }
+    }
 
     auditService.logAction({
       userId: currentAdminUser.id,
@@ -555,6 +709,7 @@ export const userService = {
       ipAddress,
     });
 
-    return this.getSafeUser(targetUser);
-  }
+    const updatedUser = await this.findById(userId);
+    return this.getSafeUser(updatedUser);
+  },
 };
