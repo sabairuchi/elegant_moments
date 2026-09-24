@@ -11,6 +11,12 @@ export const config = {
     user: process.env.DB_USER || 'postgres',
     password: process.env.DB_PASSWORD || '',
   },
+  paymentGateway: {
+    mode: process.env.PAYMENT_GATEWAY_MODE || 'sandbox',
+    key: process.env.PAYMENT_GATEWAY_KEY || 'sbx_key_em_2026_test',
+    secret: process.env.PAYMENT_GATEWAY_SECRET || 'sbx_secret_em_2026_test_secret_key',
+    currency: process.env.PAYMENT_CURRENCY || 'USD',
+  },
 };
 
 // Security check for production

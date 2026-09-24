@@ -139,6 +139,7 @@ export default function AdminConsultations() {
                   <th style={{ padding: '15px', textAlign: 'left', color: 'var(--color-espresso)' }}>Client</th>
                   <th style={{ padding: '15px', textAlign: 'left', color: 'var(--color-espresso)' }}>Date/Time</th>
                   <th style={{ padding: '15px', textAlign: 'left', color: 'var(--color-espresso)' }}>Type</th>
+                  <th style={{ padding: '15px', textAlign: 'left', color: 'var(--color-espresso)' }}>Payment</th>
                   <th style={{ padding: '15px', textAlign: 'left', color: 'var(--color-espresso)' }}>Status</th>
                   <th style={{ padding: '15px', textAlign: 'center', color: 'var(--color-espresso)' }}>Action</th>
                 </tr>
@@ -154,6 +155,11 @@ export default function AdminConsultations() {
                       {c.date ? `${c.date} ${c.time || ''}` : <span style={{ color: '#888' }}>Requested: {c.requestedDate}</span>}
                     </td>
                     <td style={{ padding: '15px', fontSize: '0.9rem' }}>{c.meetingType}</td>
+                    <td style={{ padding: '15px' }}>
+                      <span style={{ backgroundColor: c.paymentStatus === 'PAID' ? '#DCFCE7' : '#FEF3C7', color: c.paymentStatus === 'PAID' ? '#166534' : '#92400E', padding: '4px 8px', borderRadius: '12px', fontSize: '0.75rem', fontWeight: 'bold' }}>
+                        {c.paymentStatus || 'UNPAID'}
+                      </span>
+                    </td>
                     <td style={{ padding: '15px' }}>{renderStatusBadge(c.status)}</td>
                     <td style={{ padding: '15px', textAlign: 'center' }}>
                       <button className="btn btn-secondary" style={{ padding: '6px 12px', fontSize: '0.8rem' }} onClick={(e) => { e.stopPropagation(); setSelectedConsultation(c); }}>
@@ -171,6 +177,14 @@ export default function AdminConsultations() {
         {selectedConsultation && (
           <div style={{ width: '400px', backgroundColor: '#fff', borderRadius: '12px', boxShadow: '0 4px 15px rgba(0,0,0,0.05)', padding: '25px', position: 'sticky', top: '120px' }}>
             <h3 style={{ fontFamily: 'Playfair Display, serif', color: 'var(--color-burgundy)', fontSize: '1.5rem', margin: '0 0 15px 0' }}>Manage Consultation</h3>
+
+            {/* Payment Summary */}
+            <div style={{ backgroundColor: '#FAF7F2', borderRadius: '8px', padding: '12px 14px', border: '1px solid var(--color-gold)', marginBottom: '15px', fontSize: '0.85rem' }}>
+              <div style={{ fontWeight: '700', color: 'var(--color-burgundy)', marginBottom: '4px' }}>Payment & Fee Info</div>
+              <div>Fee: <strong>${Number(selectedConsultation.fee || 150).toFixed(2)} USD</strong></div>
+              <div>Status: <strong>{selectedConsultation.paymentStatus || 'UNPAID'}</strong></div>
+              {selectedConsultation.paymentId && <div>Payment Ref: <code>{selectedConsultation.paymentId}</code></div>}
+            </div>
 
             {updateMsg && (
               <div style={{ padding: '10px', backgroundColor: '#E0F2FE', color: '#0369A1', borderRadius: '6px', marginBottom: '15px', fontSize: '0.85rem' }}>

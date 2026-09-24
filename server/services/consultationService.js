@@ -52,18 +52,22 @@ const mapRowToConsultation = (row) => ({
   id: row.id,
   consultationNumber: row.consultation_number || row.id,
   enquiryId: row.enquiry_id || null,
+  userId: row.user_id || null,
   name: row.name,
   email: row.email,
   phone: row.phone || '',
-  requestedDate: row.scheduled_at ? new Date(row.scheduled_at).toISOString().split('T')[0] : '',
-  date: row.scheduled_at ? new Date(row.scheduled_at).toISOString().split('T')[0] : '',
-  time: row.preferred_time || '',
-  duration: '30 mins',
-  meetingType: 'Video Call',
-  locationLink: '',
-  notes: row.note || '',
-  internalNotes: '',
-  assignedTo: null,
+  requestedDate: row.scheduled_at ? new Date(row.scheduled_at).toISOString().split('T')[0] : (row.requested_date || ''),
+  date: row.scheduled_at ? new Date(row.scheduled_at).toISOString().split('T')[0] : (row.date || ''),
+  time: row.preferred_time || row.time || '',
+  duration: row.duration || '30 mins',
+  meetingType: row.meeting_type || row.meetingType || 'Video Call',
+  fee: Number(row.fee) || 150.00,
+  paymentStatus: row.payment_status || row.paymentStatus || 'UNPAID',
+  paymentId: row.payment_id || row.paymentId || null,
+  locationLink: row.location_link || row.locationLink || '',
+  notes: row.note || row.notes || '',
+  internalNotes: row.internal_notes || row.internalNotes || '',
+  assignedTo: row.assigned_to || row.assignedTo || null,
   status: row.status || 'REQUESTED',
   createdAt: row.created_at ? new Date(row.created_at).toISOString() : new Date().toISOString(),
   updatedAt: row.updated_at ? new Date(row.updated_at).toISOString() : new Date().toISOString(),
@@ -75,17 +79,22 @@ export const CONSULTATION_STATUSES = [
 
 export const consultationService = {
   async getAllConsultations(options = {}) {
-    const { page = 1, limit = 10, search = '', status = '', email = '' } = options;
+    const { page = 1, limit = 10, search = '', status = '', email = '', userId = '' } = options;
 
     try {
       let sql = 'SELECT * FROM consultations WHERE 1=1';
       const params = [];
       let paramIdx = 1;
 
-      if (email) {
+      if (userId) {
+        sql += ` AND (user_id = $${paramIdx} OR LOWER(email) = $${paramIdx + 1})`;
+        params.push(userId, email ? email.toLowerCase() : '');
+        paramIdx += 2;
+      } else if (email) {
         sql += ` AND LOWER(email) = $${paramIdx++}`;
         params.push(email.toLowerCase());
       }
+
       if (search) {
         sql += ` AND (LOWER(name) LIKE $${paramIdx} OR LOWER(email) LIKE $${paramIdx})`;
         params.push(`%${search.toLowerCase()}%`);
@@ -117,9 +126,11 @@ export const consultationService = {
     } catch (dbErr) {
       let consultations = readData();
 
-      if (email) {
-        const lowerEmail = email.toLowerCase();
-        consultations = consultations.filter((c) => c.email && c.email.toLowerCase() === lowerEmail);
+      if (userId || email) {
+        const lowerEmail = email ? email.toLowerCase() : '';
+        consultations = consultations.filter((c) =>
+          (userId && c.userId === userId) || (lowerEmail && c.email && c.email.toLowerCase() === lowerEmail)
+        );
       }
 
       if (search) {
@@ -171,21 +182,25 @@ export const consultationService = {
   },
 
   async createConsultation(payload) {
-    const { enquiryId, name, email, phone, requestedDate, meetingType, notes } = payload;
+    const { enquiryId, userId, name, email, phone, requestedDate, date, time, meetingType, notes, fee } = payload;
 
     const id = `CON-${Date.now().toString().slice(-6)}`;
     const newConsultation = {
       id,
       consultationNumber: id,
       enquiryId: enquiryId || null,
+      userId: userId || null,
       name: name.trim(),
       email: email.trim(),
       phone: phone ? phone.trim() : '',
-      requestedDate: requestedDate || '',
-      date: '',
-      time: '',
-      duration: '',
+      requestedDate: requestedDate || date || '',
+      date: date || requestedDate || '',
+      time: time || '',
+      duration: '30 mins',
       meetingType: meetingType ? meetingType.trim() : 'Video Call',
+      fee: Number(fee) || 150.00,
+      paymentStatus: 'UNPAID',
+      paymentId: null,
       locationLink: '',
       notes: notes ? notes.trim() : '',
       internalNotes: '',
@@ -197,16 +212,20 @@ export const consultationService = {
 
     try {
       await query(
-        `INSERT INTO consultations (id, consultation_number, enquiry_id, name, email, phone, preferred_time, note, status)
-         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`,
+        `INSERT INTO consultations (id, consultation_number, enquiry_id, user_id, name, email, phone, preferred_time, meeting_type, fee, payment_status, note, status)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)`,
         [
           id,
           id,
           enquiryId || null,
+          userId || null,
           name.trim(),
           email.trim(),
           phone ? phone.trim() : '',
+          time || '10:00 AM',
           meetingType ? meetingType.trim() : 'Video Call',
+          newConsultation.fee,
+          'UNPAID',
           notes ? notes.trim() : '',
           'REQUESTED'
         ]
@@ -244,6 +263,9 @@ export const consultationService = {
     if (updates.time !== undefined) consultation.time = updates.time;
     if (updates.duration !== undefined) consultation.duration = updates.duration;
     if (updates.meetingType !== undefined) consultation.meetingType = updates.meetingType;
+    if (updates.fee !== undefined) consultation.fee = Number(updates.fee);
+    if (updates.paymentStatus !== undefined) consultation.paymentStatus = updates.paymentStatus;
+    if (updates.paymentId !== undefined) consultation.paymentId = updates.paymentId;
     if (updates.locationLink !== undefined) consultation.locationLink = updates.locationLink;
     if (updates.notes !== undefined) consultation.notes = updates.notes;
     if (updates.internalNotes !== undefined) consultation.internalNotes = updates.internalNotes;
@@ -253,8 +275,8 @@ export const consultationService = {
 
     try {
       await query(
-        `UPDATE consultations SET status = $1, note = $2, updated_at = CURRENT_TIMESTAMP WHERE id = $3`,
-        [consultation.status, consultation.notes, id]
+        `UPDATE consultations SET status = $1, note = $2, payment_status = $3, payment_id = $4, updated_at = CURRENT_TIMESTAMP WHERE id = $5`,
+        [consultation.status, consultation.notes, consultation.paymentStatus, consultation.paymentId, id]
       );
     } catch (dbErr) {
       // Fallback

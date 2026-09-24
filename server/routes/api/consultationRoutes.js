@@ -6,8 +6,15 @@ import { PERMISSIONS } from '../../config/permissions.js';
 
 const router = express.Router();
 
-// Public route to submit a consultation
-router.post('/', createConsultation);
+const optionalAuth = (req, res, next) => {
+  if (req.headers.authorization && req.headers.authorization.startsWith('Bearer ')) {
+    return authenticateUser(req, res, next);
+  }
+  next();
+};
+
+// Route to submit a consultation (Public or Authenticated Client)
+router.post('/', optionalAuth, createConsultation);
 
 // Protected routes
 router.get('/', authenticateUser, requirePermission(PERMISSIONS.CONSULTATIONS_VIEW), getConsultations);

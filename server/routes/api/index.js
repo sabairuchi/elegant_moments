@@ -8,6 +8,7 @@ import serviceRoutes from './serviceRoutes.js';
 import venueRoutes from './venueRoutes.js';
 import proposalRoutes from './proposalRoutes.js';
 import bookingRoutes from './bookingRoutes.js';
+import paymentRoutes from './paymentRoutes.js';
 
 const router = express.Router();
 
@@ -15,7 +16,7 @@ const router = express.Router();
 router.get('/health', (req, res) => {
   res.json({
     status: 'ok',
-    brand: 'Elegant Moments API (Milestone 2.2 Layered Architecture)',
+    brand: 'Elegant Moments API (Milestone 3.1 Architecture)',
     timestamp: new Date().toISOString(),
   });
 });
@@ -30,6 +31,7 @@ router.use('/services', serviceRoutes);
 router.use('/venues', venueRoutes);
 router.use('/proposals', proposalRoutes);
 router.use('/bookings', bookingRoutes);
+router.use('/payments', paymentRoutes);
 
 // Placeholder endpoints for remaining Milestone 2 modules
 const placeholderHandler = (moduleName) => (req, res) => {

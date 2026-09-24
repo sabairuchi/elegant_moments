@@ -16,7 +16,14 @@ app.use(cors({
 }));
 app.use(express.json());
 
-// API Routes
+// Root & API Routes
+app.get('/', (req, res) => {
+  res.json({
+    status: 'online',
+    message: 'Elegant Moments API Server is running.',
+    webAppUrl: 'http://localhost:3000',
+  });
+});
 app.use('/api', apiRouter);
 
 // Central Error Handler

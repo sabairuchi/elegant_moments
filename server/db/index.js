@@ -310,13 +310,39 @@ export const initDb = async () => {
             id VARCHAR(255) PRIMARY KEY,
             consultation_number VARCHAR(50) UNIQUE NOT NULL,
             enquiry_id VARCHAR(255) REFERENCES enquiries(id) ON DELETE SET NULL,
+            user_id VARCHAR(255) REFERENCES users(id) ON DELETE CASCADE,
             name VARCHAR(200) NOT NULL,
             email VARCHAR(255) NOT NULL,
             phone VARCHAR(30),
             preferred_time VARCHAR(100),
             scheduled_at TIMESTAMP WITH TIME ZONE,
+            meeting_type VARCHAR(100) DEFAULT 'Video Call',
+            fee NUMERIC(10,2) DEFAULT 150.00,
+            payment_status VARCHAR(30) DEFAULT 'UNPAID',
+            payment_id VARCHAR(255),
             note TEXT,
             status VARCHAR(50) DEFAULT 'REQUESTED',
+            created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+            updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+        );
+      `);
+
+      await client.query(`
+        CREATE TABLE IF NOT EXISTS payments (
+            id VARCHAR(255) PRIMARY KEY,
+            payment_number VARCHAR(50) UNIQUE NOT NULL,
+            consultation_id VARCHAR(255) REFERENCES consultations(id) ON DELETE CASCADE,
+            user_id VARCHAR(255) REFERENCES users(id) ON DELETE CASCADE,
+            enquiry_id VARCHAR(255) REFERENCES enquiries(id) ON DELETE SET NULL,
+            wedding_id VARCHAR(255) REFERENCES weddings(id) ON DELETE SET NULL,
+            amount NUMERIC(10,2) NOT NULL,
+            currency VARCHAR(10) DEFAULT 'USD',
+            status VARCHAR(30) DEFAULT 'PENDING',
+            payment_method VARCHAR(50) DEFAULT 'CARD',
+            gateway_transaction_id VARCHAR(255),
+            gateway_order_id VARCHAR(255),
+            gateway_signature VARCHAR(255),
+            failure_reason TEXT,
             created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
             updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
         );

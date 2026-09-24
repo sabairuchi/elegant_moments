@@ -4,45 +4,50 @@ import { useNavigate } from 'react-router-dom';
 import ClientSubNav from '../components/ClientSubNav';
 import { Sparkles, Calendar, Clock, Video, FileText, CheckCircle, MessageSquare } from '../components/Icons';
 
+import BookConsultationModal from '../components/BookConsultationModal';
+
 export default function ClientEnquiries() {
   const { token } = useAuth();
   const navigate = useNavigate();
 
-  const [activeTab, setActiveTab] = useState('enquiries'); // 'enquiries' | 'consultations'
+  const [activeTab, setActiveTab] = useState('consultations'); // 'enquiries' | 'consultations'
   const [enquiries, setEnquiries] = useState([]);
   const [consultations, setConsultations] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      setError(null);
-      try {
-        const [enquiriesRes, consultationsRes] = await Promise.all([
-          fetch('/api/enquiries', { headers: { 'Authorization': `Bearer ${token}` } }),
-          fetch('/api/consultations', { headers: { 'Authorization': `Bearer ${token}` } })
-        ]);
+  const [isBookModalOpen, setIsBookModalOpen] = useState(false);
+  const [selectedConsultationForPay, setSelectedConsultationForPay] = useState(null);
 
-        const enquiriesData = await enquiriesRes.json();
-        const consultationsData = await consultationsRes.json();
+  const fetchData = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const [enquiriesRes, consultationsRes] = await Promise.all([
+        fetch('/api/enquiries', { headers: { 'Authorization': `Bearer ${token}` } }),
+        fetch('/api/consultations', { headers: { 'Authorization': `Bearer ${token}` } })
+      ]);
 
-        if (enquiriesData.success) {
-          setEnquiries(enquiriesData.enquiries || []);
-        } else {
-          setError(enquiriesData.message || 'Failed to load enquiries.');
-        }
+      const enquiriesData = await enquiriesRes.json();
+      const consultationsData = await consultationsRes.json();
 
-        if (consultationsData.success) {
-          setConsultations(consultationsData.consultations || []);
-        }
-      } catch (err) {
-        setError('An error occurred while fetching your records.');
-      } finally {
-        setLoading(false);
+      if (enquiriesData.success) {
+        setEnquiries(enquiriesData.enquiries || []);
+      } else {
+        setError(enquiriesData.message || 'Failed to load enquiries.');
       }
-    };
 
+      if (consultationsData.success) {
+        setConsultations(consultationsData.consultations || []);
+      }
+    } catch (err) {
+      setError('An error occurred while fetching your records.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
     if (token) fetchData();
   }, [token]);
 
@@ -69,6 +74,23 @@ export default function ClientEnquiries() {
     );
   };
 
+  const renderPaymentBadge = (payStatus) => {
+    let bg = '#FEF3C7';
+    let color = '#92400E';
+    switch(payStatus) {
+      case 'PAID': bg = '#DCFCE7'; color = '#166534'; break;
+      case 'PENDING': bg = '#DBEAFE'; color = '#1E40AF'; break;
+      case 'FAILED': bg = '#FEE2E2'; color = '#991B1B'; break;
+      case 'UNPAID':
+      default: bg = '#FEF3C7'; color = '#92400E'; break;
+    }
+    return (
+      <span style={{ backgroundColor: bg, color, padding: '4px 10px', borderRadius: '12px', fontSize: '0.72rem', fontWeight: '700', letterSpacing: '0.05em' }}>
+        PAYMENT: {payStatus || 'UNPAID'}
+      </span>
+    );
+  };
+
   const upcomingConsultations = consultations.filter(c => ['REQUESTED', 'SCHEDULED', 'CONFIRMED'].includes(c.status));
   const pastConsultations = consultations.filter(c => ['COMPLETED', 'CANCELLED', 'NO_SHOW'].includes(c.status));
 
@@ -78,16 +100,41 @@ export default function ClientEnquiries() {
 
       <div style={{ maxWidth: '1100px', margin: '0 auto', padding: '60px 20px' }}>
         
-        <div style={{ textAlign: 'center', marginBottom: '40px' }}>
+        <div style={{ textAlign: 'center', marginBottom: '30px' }}>
           <span style={{ fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '2px', color: 'var(--color-gold)', fontWeight: '600', display: 'block', marginBottom: '8px' }}>
             Communication History
           </span>
           <h1 style={{ fontFamily: 'Playfair Display, serif', color: 'var(--color-burgundy)', fontSize: '3rem', margin: '0 0 15px 0' }}>
             My Enquiries & Consultations
           </h1>
-          <p style={{ color: '#666', fontSize: '1.05rem', maxWidth: '600px', margin: '0 auto' }}>
+          <p style={{ color: '#666', fontSize: '1.05rem', maxWidth: '600px', margin: '0 auto 20px auto' }}>
             Track the status of your initial inquiries and scheduled private consultations with our event curators.
           </p>
+
+          <button
+            onClick={() => {
+              setSelectedConsultationForPay(null);
+              setIsBookModalOpen(true);
+            }}
+            style={{
+              backgroundColor: 'var(--color-burgundy)',
+              color: '#fff',
+              border: 'none',
+              padding: '12px 28px',
+              borderRadius: '6px',
+              fontWeight: '700',
+              fontSize: '0.88rem',
+              letterSpacing: '1px',
+              textTransform: 'uppercase',
+              cursor: 'pointer',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '8px',
+              boxShadow: '0 4px 15px rgba(88,24,37,0.2)',
+            }}
+          >
+            <Sparkles size={16} /> Schedule Online Consultation ($150)
+          </button>
         </div>
 
         {/* Tab Switcher */}
@@ -195,22 +242,39 @@ export default function ClientEnquiries() {
                 Upcoming Consultations
               </h2>
               {upcomingConsultations.length === 0 ? (
-                <div style={{ padding: '30px', backgroundColor: '#fff', borderRadius: '12px', color: '#888', border: '1px solid #eaeaea' }}>
-                  No upcoming consultations scheduled.
+                <div style={{ padding: '40px', backgroundColor: '#fff', borderRadius: '12px', color: '#888', border: '1px solid #eaeaea', textAlign: 'center' }}>
+                  <p style={{ margin: '0 0 15px 0' }}>No upcoming consultations scheduled.</p>
+                  <button
+                    onClick={() => {
+                      setSelectedConsultationForPay(null);
+                      setIsBookModalOpen(true);
+                    }}
+                    style={{ backgroundColor: 'var(--color-burgundy)', color: '#fff', border: 'none', padding: '10px 20px', borderRadius: '4px', cursor: 'pointer', fontWeight: '600', fontSize: '0.85rem' }}
+                  >
+                    Schedule Online Consultation
+                  </button>
                 </div>
               ) : (
                 <div style={{ display: 'grid', gap: '20px' }}>
                   {upcomingConsultations.map((c) => (
                     <div key={c.id} style={{ backgroundColor: '#fff', borderRadius: '12px', padding: '24px', boxShadow: '0 4px 20px rgba(0,0,0,0.03)', borderLeft: '4px solid var(--color-gold)', border: '1px solid #E5E7EB' }}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
-                        <h3 style={{ fontFamily: 'Playfair Display, serif', fontSize: '1.3rem', color: 'var(--color-burgundy)', margin: 0 }}>
-                          {c.meetingType || 'Consultation Session'}
-                        </h3>
-                        {renderBadge(c.status)}
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px', flexWrap: 'wrap', gap: '10px' }}>
+                        <div>
+                          <span style={{ fontSize: '0.75rem', color: 'var(--color-gold)', fontWeight: '700', textTransform: 'uppercase' }}>Ref #{c.consultationNumber || c.id}</span>
+                          <h3 style={{ fontFamily: 'Playfair Display, serif', fontSize: '1.3rem', color: 'var(--color-burgundy)', margin: '2px 0 0 0' }}>
+                            {c.meetingType || 'Consultation Session'}
+                          </h3>
+                        </div>
+                        <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                          {renderPaymentBadge(c.paymentStatus)}
+                          {renderBadge(c.status)}
+                        </div>
                       </div>
+
                       <div style={{ color: '#4B5563', fontSize: '0.95rem', lineHeight: '1.6' }}>
-                        <div><strong>Date:</strong> {c.date || c.requestedDate || 'To be confirmed'}</div>
-                        {c.time && <div><strong>Time:</strong> {c.time} ({c.duration || '45 mins'})</div>}
+                        <div><strong>Date & Time:</strong> {c.date || c.requestedDate || 'To be confirmed'} {c.time ? `at ${c.time}` : ''} ({c.duration || '30 mins'})</div>
+                        <div><strong>Fee:</strong> ${Number(c.fee || 150).toFixed(2)} USD</div>
+                        {c.paymentId && <div><strong>Payment Ref:</strong> <code style={{ backgroundColor: '#F3F4F6', padding: '2px 6px', borderRadius: '4px' }}>{c.paymentId}</code></div>}
                         {c.locationLink && (
                           <div style={{ marginTop: '8px' }}>
                             <strong>Join Link:</strong> <a href={c.locationLink} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--color-burgundy)' }}>{c.locationLink}</a>
@@ -218,6 +282,29 @@ export default function ClientEnquiries() {
                         )}
                         {c.notes && <div style={{ marginTop: '8px', color: '#6B7280', fontSize: '0.9rem' }}>Notes: {c.notes}</div>}
                       </div>
+
+                      {c.paymentStatus !== 'PAID' && (
+                        <div style={{ marginTop: '16px', paddingTop: '14px', borderTop: '1px dashed #E5E7EB', display: 'flex', justifyContent: 'flex-end' }}>
+                          <button
+                            onClick={() => {
+                              setSelectedConsultationForPay(c);
+                              setIsBookModalOpen(true);
+                            }}
+                            style={{
+                              backgroundColor: 'var(--color-gold-dark)',
+                              color: '#fff',
+                              border: 'none',
+                              padding: '8px 18px',
+                              borderRadius: '4px',
+                              fontWeight: '600',
+                              fontSize: '0.85rem',
+                              cursor: 'pointer',
+                            }}
+                          >
+                            Pay Consultation Fee ($150) &rarr;
+                          </button>
+                        </div>
+                      )}
                     </div>
                   ))}
                 </div>
@@ -240,10 +327,13 @@ export default function ClientEnquiries() {
                         <h3 style={{ fontFamily: 'Playfair Display, serif', fontSize: '1.1rem', color: '#374151', margin: 0 }}>
                           {c.meetingType || 'Consultation'}
                         </h3>
-                        {renderBadge(c.status)}
+                        <div style={{ display: 'flex', gap: '8px' }}>
+                          {renderPaymentBadge(c.paymentStatus)}
+                          {renderBadge(c.status)}
+                        </div>
                       </div>
                       <div style={{ color: '#6B7280', fontSize: '0.9rem' }}>
-                        Date: {c.date || c.requestedDate || 'N/A'}
+                        Date: {c.date || c.requestedDate || 'N/A'} | Payment Ref: {c.paymentId || 'N/A'}
                       </div>
                     </div>
                   ))}
@@ -255,6 +345,15 @@ export default function ClientEnquiries() {
         )}
 
       </div>
+
+      <BookConsultationModal
+        isOpen={isBookModalOpen}
+        onClose={() => setIsBookModalOpen(false)}
+        initialConsultation={selectedConsultationForPay}
+        onConsultationBooked={() => {
+          fetchData();
+        }}
+      />
     </div>
   );
 }

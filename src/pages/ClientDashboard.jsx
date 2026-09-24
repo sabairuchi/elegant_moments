@@ -4,6 +4,8 @@ import { useNavigate, Link } from 'react-router-dom';
 import ClientSubNav from '../components/ClientSubNav';
 import { Sparkles, Calendar, MapPin, Users, Phone, Clock, FileText, CheckCircle } from '../components/Icons';
 
+import BookConsultationModal from '../components/BookConsultationModal';
+
 export default function ClientDashboard() {
   const { user, token, logout } = useAuth();
   const navigate = useNavigate();
@@ -18,53 +20,56 @@ export default function ClientDashboard() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  const [isBookModalOpen, setIsBookModalOpen] = useState(false);
+  const [selectedConsultationForPay, setSelectedConsultationForPay] = useState(null);
+
   // Countdown timer state
   const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
 
-  useEffect(() => {
-    const fetchDashboardData = async () => {
-      setLoading(true);
-      setError(null);
-      try {
-        const responses = await Promise.all([
-          fetch('/api/weddings', { headers: { 'Authorization': `Bearer ${token}` } }),
-          fetch('/api/consultations', { headers: { 'Authorization': `Bearer ${token}` } }),
-          fetch('/api/enquiries', { headers: { 'Authorization': `Bearer ${token}` } }),
-          fetch('/api/venues', { headers: { 'Authorization': `Bearer ${token}` } }),
-          fetch('/api/services', { headers: { 'Authorization': `Bearer ${token}` } }),
-          fetch('/api/bookings', { headers: { 'Authorization': `Bearer ${token}` } }),
-          fetch('/api/proposals', { headers: { 'Authorization': `Bearer ${token}` } })
-        ]);
+  const fetchDashboardData = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const responses = await Promise.all([
+        fetch('/api/weddings', { headers: { 'Authorization': `Bearer ${token}` } }),
+        fetch('/api/consultations', { headers: { 'Authorization': `Bearer ${token}` } }),
+        fetch('/api/enquiries', { headers: { 'Authorization': `Bearer ${token}` } }),
+        fetch('/api/venues', { headers: { 'Authorization': `Bearer ${token}` } }),
+        fetch('/api/services', { headers: { 'Authorization': `Bearer ${token}` } }),
+        fetch('/api/bookings', { headers: { 'Authorization': `Bearer ${token}` } }),
+        fetch('/api/proposals', { headers: { 'Authorization': `Bearer ${token}` } })
+      ]);
 
-        if (responses.some(r => r.status === 401)) {
-          logout();
-          return;
-        }
-
-        const [weddingsRes, consultationsRes, enquiriesRes, venuesRes, servicesRes, bookingsRes, proposalsRes] = responses;
-
-        const weddingsData = await weddingsRes.json();
-        const consultationsData = await consultationsRes.json();
-        const enquiriesData = await enquiriesRes.json();
-        const venuesData = await venuesRes.json();
-        const servicesData = await servicesRes.json();
-        const bookingsData = await bookingsRes.json();
-        const proposalsData = await proposalsRes.json();
-
-        if (weddingsData.success) setWeddings(weddingsData.weddings || []);
-        if (consultationsData.success) setConsultations(consultationsData.consultations || []);
-        if (enquiriesData.success) setEnquiries(enquiriesData.enquiries || []);
-        if (venuesData.success) setVenues(venuesData.data || []);
-        if (servicesData.success) setServices(servicesData.data || []);
-        if (bookingsData.success) setBookings(bookingsData.bookings || []);
-        if (proposalsData.success) setProposals(proposalsData.proposals || []);
-      } catch (err) {
-        setError('Failed to load dashboard details. Please try again later.');
-      } finally {
-        setLoading(false);
+      if (responses.some(r => r.status === 401)) {
+        logout();
+        return;
       }
-    };
 
+      const [weddingsRes, consultationsRes, enquiriesRes, venuesRes, servicesRes, bookingsRes, proposalsRes] = responses;
+
+      const weddingsData = await weddingsRes.json();
+      const consultationsData = await consultationsRes.json();
+      const enquiriesData = await enquiriesRes.json();
+      const venuesData = await venuesRes.json();
+      const servicesData = await servicesRes.json();
+      const bookingsData = await bookingsRes.json();
+      const proposalsData = await proposalsRes.json();
+
+      if (weddingsData.success) setWeddings(weddingsData.weddings || []);
+      if (consultationsData.success) setConsultations(consultationsData.consultations || []);
+      if (enquiriesData.success) setEnquiries(enquiriesData.enquiries || []);
+      if (venuesData.success) setVenues(venuesData.data || []);
+      if (servicesData.success) setServices(servicesData.data || []);
+      if (bookingsData.success) setBookings(bookingsData.bookings || []);
+      if (proposalsData.success) setProposals(proposalsData.proposals || []);
+    } catch (err) {
+      setError('Failed to load dashboard details. Please try again later.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
     if (token) fetchDashboardData();
   }, [token]);
 
@@ -117,6 +122,22 @@ export default function ClientDashboard() {
     );
   };
 
+  const renderPaymentBadge = (payStatus) => {
+    let bg = '#FEF3C7';
+    let color = '#92400E';
+    switch(payStatus) {
+      case 'PAID': bg = '#DCFCE7'; color = '#166534'; break;
+      case 'PENDING': bg = '#DBEAFE'; color = '#1E40AF'; break;
+      case 'FAILED': bg = '#FEE2E2'; color = '#991B1B'; break;
+      default: bg = '#FEF3C7'; color = '#92400E'; break;
+    }
+    return (
+      <span style={{ backgroundColor: bg, color, padding: '4px 10px', borderRadius: '12px', fontSize: '0.7rem', fontWeight: '700' }}>
+        PAYMENT: {payStatus || 'UNPAID'}
+      </span>
+    );
+  };
+
   if (loading) {
     return (
       <div>
@@ -151,17 +172,20 @@ export default function ClientDashboard() {
             </div>
 
             <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+              <button
+                onClick={() => {
+                  setSelectedConsultationForPay(null);
+                  setIsBookModalOpen(true);
+                }}
+                style={{ backgroundColor: 'var(--color-gold-dark)', color: '#fff', border: 'none', padding: '12px 24px', borderRadius: '4px', fontWeight: '600', fontSize: '0.85rem', letterSpacing: '1px', textTransform: 'uppercase', cursor: 'pointer' }}
+              >
+                Book Consultation ($150)
+              </button>
               <Link 
                 to="/proposals" 
-                style={{ backgroundColor: 'var(--color-gold-dark)', color: '#fff', textDecoration: 'none', padding: '12px 24px', borderRadius: '4px', fontWeight: '600', fontSize: '0.85rem', letterSpacing: '1px', textTransform: 'uppercase' }}
-              >
-                Review Proposals
-              </Link>
-              <Link 
-                to="/bookings" 
                 style={{ backgroundColor: 'var(--color-espresso)', color: '#fff', textDecoration: 'none', padding: '12px 24px', borderRadius: '4px', fontWeight: '600', fontSize: '0.85rem', letterSpacing: '1px', textTransform: 'uppercase' }}
               >
-                View Bookings
+                Review Proposals
               </Link>
               <button 
                 onClick={() => navigate('/contact')} 
@@ -321,13 +345,36 @@ export default function ClientDashboard() {
                   <div style={{ color: '#6B7280', fontSize: '0.85rem', marginTop: '4px' }}>
                     Date: {upcomingConsultation.date || upcomingConsultation.requestedDate || 'Pending confirmation'} {upcomingConsultation.time ? `at ${upcomingConsultation.time}` : ''}
                   </div>
-                  <div style={{ marginTop: '8px' }}>
+                  <div style={{ marginTop: '8px', display: 'flex', gap: '8px', alignItems: 'center' }}>
                     {renderStatusBadge(upcomingConsultation.status)}
+                    {renderPaymentBadge(upcomingConsultation.paymentStatus)}
                   </div>
+                  {upcomingConsultation.paymentStatus !== 'PAID' && (
+                    <button
+                      onClick={() => {
+                        setSelectedConsultationForPay(upcomingConsultation);
+                        setIsBookModalOpen(true);
+                      }}
+                      style={{ marginTop: '12px', backgroundColor: 'var(--color-gold-dark)', color: '#fff', border: 'none', padding: '6px 14px', borderRadius: '4px', fontSize: '0.78rem', fontWeight: '700', cursor: 'pointer' }}
+                    >
+                      Pay Fee ($150) Now &rarr;
+                    </button>
+                  )}
                 </div>
               ) : (
-                <div style={{ color: '#6B7280', fontSize: '0.85rem' }}>
-                  No upcoming consultations scheduled. You can request one anytime.
+                <div>
+                  <div style={{ color: '#6B7280', fontSize: '0.85rem', marginBottom: '10px' }}>
+                    No upcoming consultations scheduled.
+                  </div>
+                  <button
+                    onClick={() => {
+                      setSelectedConsultationForPay(null);
+                      setIsBookModalOpen(true);
+                    }}
+                    style={{ backgroundColor: 'var(--color-burgundy)', color: '#fff', border: 'none', padding: '6px 14px', borderRadius: '4px', fontSize: '0.78rem', fontWeight: '700', cursor: 'pointer' }}
+                  >
+                    Schedule Online Consultation ($150)
+                  </button>
                 </div>
               )}
             </div>
@@ -412,6 +459,15 @@ export default function ClientDashboard() {
         </div>
 
       </div>
+
+      <BookConsultationModal
+        isOpen={isBookModalOpen}
+        onClose={() => setIsBookModalOpen(false)}
+        initialConsultation={selectedConsultationForPay}
+        onConsultationBooked={() => {
+          fetchDashboardData();
+        }}
+      />
     </div>
   );
 }
