@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import {
@@ -6,22 +6,25 @@ import {
   X,
   Search,
   ChevronRight,
+  ChevronDown,
+  User,
   Phone,
   Instagram,
   Facebook,
   Pinterest,
   WhatsApp,
-  Sparkles,
 } from './Icons';
 
 export default function Header({ onOpenEnquiry }) {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const location = useLocation();
   const navigate = useNavigate();
   const { user, isAuthenticated, logout } = useAuth();
+  const userMenuRef = useRef(null);
 
   // Scroll listener for sticky header styling
   useEffect(() => {
@@ -30,6 +33,17 @@ export default function Header({ onOpenEnquiry }) {
     };
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  // Close user dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (userMenuRef.current && !userMenuRef.current.contains(e.target)) {
+        setIsUserMenuOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
   // Lock body scroll when drawer or search is open
@@ -44,16 +58,17 @@ export default function Header({ onOpenEnquiry }) {
     };
   }, [isDrawerOpen, isSearchOpen]);
 
-  // Close drawer on route change
+  // Close popovers on route change
   useEffect(() => {
     setIsDrawerOpen(false);
     setIsSearchOpen(false);
+    setIsUserMenuOpen(false);
     setSearchQuery('');
     window.scrollTo(0, 0);
   }, [location.pathname]);
 
-  // Navigation Items matching Image 2
-  const menuItems = [
+  // Public Menu Items
+  const publicMenuItems = [
     { name: 'HOME', path: '/' },
     { name: 'ABOUT US', path: '/about' },
     { name: 'SERVICES', path: '/services', hasArrow: true },
@@ -64,6 +79,66 @@ export default function Header({ onOpenEnquiry }) {
     { name: 'JOURNAL', path: '/journal' },
     { name: 'CONTACT', path: '/contact' },
   ];
+
+  // Helper to determine main role dashboard route
+  const getDashboardRoute = () => {
+    if (!user) return '/';
+    if (user.role === 'client') return '/dashboard';
+    if (user.role === 'planner') return '/planner';
+    if (user.role === 'vendor') return '/vendor';
+    if (user.role === 'admin' || user.role === 'super_admin') return '/admin/users';
+    return '/profile';
+  };
+
+  // Role-Specific Management Items for MENU Drawer
+  const getRoleMenuItems = () => {
+    if (!isAuthenticated || !user) return [];
+
+    if (user.role === 'super_admin' || user.role === 'admin') {
+      return [
+        { name: 'DASHBOARD', path: '/admin/users' },
+        { name: 'USERS', path: '/admin/users' },
+        { name: 'ENQUIRIES', path: '/admin/enquiries' },
+        { name: 'CONSULTATIONS', path: '/admin/consultations' },
+        { name: 'WEDDINGS', path: '/admin/weddings' },
+        { name: 'SERVICES', path: '/admin/services' },
+        { name: 'VENUES', path: '/admin/venues' },
+        { name: 'PROPOSALS', path: '/proposals' },
+        { name: 'BOOKINGS', path: '/bookings' },
+      ];
+    }
+
+    if (user.role === 'client') {
+      return [
+        { name: 'MY DASHBOARD', path: '/dashboard' },
+        { name: 'MY WEDDING', path: '/dashboard/wedding' },
+        { name: 'MY ENQUIRIES', path: '/dashboard/enquiries' },
+        { name: 'MY CONSULTATIONS', path: '/dashboard/enquiries' },
+        { name: 'MY PROPOSALS', path: '/proposals' },
+        { name: 'MY BOOKINGS', path: '/bookings' },
+      ];
+    }
+
+    if (user.role === 'planner') {
+      return [
+        { name: 'PLANNER PORTAL', path: '/planner' },
+        { name: 'PROPOSALS', path: '/proposals' },
+        { name: 'BOOKINGS', path: '/bookings' },
+        { name: 'MY PROFILE', path: '/profile' },
+      ];
+    }
+
+    if (user.role === 'vendor') {
+      return [
+        { name: 'VENDOR PORTAL', path: '/vendor' },
+        { name: 'PROPOSALS', path: '/proposals' },
+        { name: 'BOOKINGS', path: '/bookings' },
+        { name: 'MY PROFILE', path: '/profile' },
+      ];
+    }
+
+    return [];
+  };
 
   const handleSearchSubmit = (e) => {
     e.preventDefault();
@@ -86,9 +161,14 @@ export default function Header({ onOpenEnquiry }) {
     }
   };
 
+  const formatRoleLabel = (role) => {
+    if (!role) return '';
+    return role.replace('_', ' ').toUpperCase();
+  };
+
   return (
     <>
-      {/* 1. TOP NAVBAR (MATCHING IMAGE 1) */}
+      {/* 1. TOP NAVBAR */}
       <header
         style={{
           position: 'fixed',
@@ -187,7 +267,7 @@ export default function Header({ onOpenEnquiry }) {
             </button>
           </div>
 
-          {/* Center Brand Logo (Prominent & Clear) */}
+          {/* Center Brand Logo */}
           <Link
             to="/"
             style={{
@@ -202,7 +282,7 @@ export default function Header({ onOpenEnquiry }) {
           >
             <img
               src="/logo-transparent.png?v=2"
-              alt="Elegant Moments Luxury Wedding & Management Logo"
+              alt="Elegant Moments Luxury Wedding Logo"
               style={{
                 height: isScrolled ? 'clamp(62px, 7.5vh, 72px)' : 'clamp(76px, 9.5vh, 88px)',
                 width: 'auto',
@@ -221,274 +301,193 @@ export default function Header({ onOpenEnquiry }) {
             />
           </Link>
 
-          {/* Right Action: Auth / Profile + BEGIN YOUR STORY CTA Button */}
+          {/* Right Action: Auth / Compact Profile Dropdown + BEGIN YOUR STORY Button */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.8rem' }}>
             {isAuthenticated ? (
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
-                <Link
-                  to={user.role === 'client' ? '/dashboard' : '/profile'}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '0.5rem',
-                    color: 'var(--color-ivory)',
-                    textDecoration: 'none',
-                    fontSize: '0.78rem',
-                    fontFamily: 'var(--font-sans)',
-                    letterSpacing: '0.15em',
-                    fontWeight: '600',
-                    background: 'rgba(212,175,55,0.15)',
-                    border: '1px solid rgba(212,175,55,0.4)',
-                    padding: '0.4rem 0.8rem',
-                    borderRadius: '3px',
-                  }}
-                  className="nav-btn-hover"
-                >
-                  <span style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#22C55E' }} />
-                  <span>{user.firstName?.toUpperCase()} ({user.role?.toUpperCase()})</span>
-                </Link>
-                <Link
-                  to="/proposals"
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '0.5rem',
-                    color: 'var(--color-gold-light)',
-                    textDecoration: 'none',
-                    fontSize: '0.78rem',
-                    fontFamily: 'var(--font-sans)',
-                    letterSpacing: '0.15em',
-                    fontWeight: '600',
-                    padding: '0.4rem 0.6rem',
-                  }}
-                  className="nav-btn-hover"
-                >
-                  PROPOSALS
-                </Link>
-                <Link
-                  to="/bookings"
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '0.5rem',
-                    color: 'var(--color-gold-light)',
-                    textDecoration: 'none',
-                    fontSize: '0.78rem',
-                    fontFamily: 'var(--font-sans)',
-                    letterSpacing: '0.15em',
-                    fontWeight: '600',
-                    padding: '0.4rem 0.6rem',
-                  }}
-                  className="nav-btn-hover"
-                >
-                  BOOKINGS
-                </Link>
-                {user.role === 'client' && (
-                  <Link
-                    to="/dashboard"
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '0.5rem',
-                      color: 'var(--color-gold-light)',
-                      textDecoration: 'none',
-                      fontSize: '0.78rem',
-                      fontFamily: 'var(--font-sans)',
-                      letterSpacing: '0.15em',
-                      fontWeight: '600',
-                      padding: '0.4rem 0.8rem',
-                    }}
-                    className="nav-btn-hover"
-                  >
-                    MY DASHBOARD
-                  </Link>
-                )}
-                {user.role === 'planner' && (
-                  <Link
-                    to="/planner"
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '0.5rem',
-                      color: 'var(--color-gold-light)',
-                      textDecoration: 'none',
-                      fontSize: '0.78rem',
-                      fontFamily: 'var(--font-sans)',
-                      letterSpacing: '0.15em',
-                      fontWeight: '600',
-                      padding: '0.4rem 0.8rem',
-                    }}
-                    className="nav-btn-hover"
-                  >
-                    PLANNER PORTAL
-                  </Link>
-                )}
-                {user.role === 'vendor' && (
-                  <Link
-                    to="/vendor"
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '0.5rem',
-                      color: 'var(--color-gold-light)',
-                      textDecoration: 'none',
-                      fontSize: '0.78rem',
-                      fontFamily: 'var(--font-sans)',
-                      letterSpacing: '0.15em',
-                      fontWeight: '600',
-                      padding: '0.4rem 0.8rem',
-                    }}
-                    className="nav-btn-hover"
-                  >
-                    VENDOR PORTAL
-                  </Link>
-                )}
-                {(user.role === 'admin' || user.role === 'super_admin') && (
-                  <>
-                    <Link
-                      to="/admin/users"
-                      style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '0.5rem',
-                        color: 'var(--color-gold-light)',
-                        textDecoration: 'none',
-                        fontSize: '0.78rem',
-                        fontFamily: 'var(--font-sans)',
-                        letterSpacing: '0.15em',
-                        fontWeight: '600',
-                        padding: '0.4rem 0.8rem',
-                      }}
-                      className="nav-btn-hover"
-                    >
-                      USERS
-                    </Link>
-                    <Link
-                      to="/admin/enquiries"
-                      style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '0.5rem',
-                        color: 'var(--color-gold-light)',
-                        textDecoration: 'none',
-                        fontSize: '0.78rem',
-                        fontFamily: 'var(--font-sans)',
-                        letterSpacing: '0.15em',
-                        fontWeight: '600',
-                        padding: '0.4rem 0.8rem',
-                      }}
-                      className="nav-btn-hover"
-                    >
-                      ENQUIRIES
-                    </Link>
-                    <Link
-                      to="/admin/consultations"
-                      style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '0.5rem',
-                        color: 'var(--color-gold-light)',
-                        textDecoration: 'none',
-                        fontSize: '0.78rem',
-                        fontFamily: 'var(--font-sans)',
-                        letterSpacing: '0.15em',
-                        fontWeight: '600',
-                        padding: '0.4rem 0.8rem',
-                      }}
-                      className="nav-btn-hover"
-                    >
-                      CONSULTATIONS
-                    </Link>
-                    <Link
-                      to="/admin/weddings"
-                      style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '0.5rem',
-                        color: 'var(--color-gold-light)',
-                        textDecoration: 'none',
-                        fontSize: '0.78rem',
-                        fontFamily: 'var(--font-sans)',
-                        letterSpacing: '0.15em',
-                        fontWeight: '600',
-                        padding: '0.4rem 0.8rem',
-                      }}
-                      className="nav-btn-hover"
-                    >
-                      WEDDINGS
-                    </Link>
-                    <Link
-                      to="/admin/services"
-                      style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '0.5rem',
-                        color: 'var(--color-gold-light)',
-                        textDecoration: 'none',
-                        fontSize: '0.78rem',
-                        fontFamily: 'var(--font-sans)',
-                        letterSpacing: '0.15em',
-                        fontWeight: '600',
-                        padding: '0.4rem 0.8rem',
-                      }}
-                      className="nav-btn-hover"
-                    >
-                      SERVICES
-                    </Link>
-                    <Link
-                      to="/admin/venues"
-                      style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '0.5rem',
-                        color: 'var(--color-gold-light)',
-                        textDecoration: 'none',
-                        fontSize: '0.78rem',
-                        fontFamily: 'var(--font-sans)',
-                        letterSpacing: '0.15em',
-                        fontWeight: '600',
-                        padding: '0.4rem 0.8rem',
-                      }}
-                      className="nav-btn-hover"
-                    >
-                      VENUES
-                    </Link>
-                  </>
-                )}
+              <div ref={userMenuRef} style={{ position: 'relative' }}>
+                {/* Compact Profile Control */}
                 <button
-                  onClick={logout}
+                  onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
                   style={{
-                    background: 'none',
-                    border: '1px solid rgba(255,255,255,0.3)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.45rem',
                     color: 'var(--color-ivory)',
-                    padding: '0.4rem 0.7rem',
-                    fontSize: '0.7rem',
-                    letterSpacing: '0.15em',
+                    background: 'rgba(212,175,55,0.12)',
+                    border: '1px solid rgba(212,175,55,0.35)',
+                    padding: '0.42rem 0.85rem',
+                    borderRadius: '3px',
                     cursor: 'pointer',
-                    borderRadius: '2px',
+                    fontFamily: 'var(--font-sans)',
+                    fontSize: '0.78rem',
+                    letterSpacing: '0.12em',
+                    fontWeight: '600',
+                    transition: 'all 0.3s ease',
                   }}
+                  className="nav-btn-hover"
+                  aria-expanded={isUserMenuOpen}
+                  aria-label="User Account Menu"
                 >
-                  LOGOUT
+                  <span
+                    style={{
+                      width: '7px',
+                      height: '7px',
+                      borderRadius: '50%',
+                      backgroundColor: '#22C55E',
+                      boxShadow: '0 0 8px rgba(34, 197, 94, 0.6)',
+                    }}
+                  />
+                  <span>{user.firstName || 'ACCOUNT'}</span>
+                  <ChevronDown size={14} color="var(--color-gold-light)" />
                 </button>
+
+                {/* Compact Profile Popover Dropdown */}
+                {isUserMenuOpen && (
+                  <div
+                    style={{
+                      position: 'absolute',
+                      top: 'calc(100% + 10px)',
+                      right: 0,
+                      width: '240px',
+                      backgroundColor: '#2A1014',
+                      border: '1px solid rgba(201, 168, 106, 0.4)',
+                      borderRadius: '4px',
+                      boxShadow: '0 12px 35px rgba(0, 0, 0, 0.6)',
+                      padding: '0.8rem 0',
+                      zIndex: 1005,
+                      animation: 'fadeIn 0.2s ease forwards',
+                    }}
+                  >
+                    {/* Profile Header Block */}
+                    <div
+                      style={{
+                        padding: '0.6rem 1.2rem 0.8rem 1.2rem',
+                        borderBottom: '1px solid rgba(201, 168, 106, 0.2)',
+                        marginBottom: '0.4rem',
+                      }}
+                    >
+                      <div
+                        style={{
+                          fontFamily: 'var(--font-serif)',
+                          fontSize: '0.95rem',
+                          color: 'var(--color-ivory)',
+                          fontWeight: '600',
+                          marginBottom: '0.2rem',
+                        }}
+                      >
+                        {user.firstName} {user.lastName}
+                      </div>
+                      <div
+                        style={{
+                          display: 'inline-block',
+                          fontFamily: 'var(--font-sans)',
+                          fontSize: '0.58rem',
+                          letterSpacing: '0.18em',
+                          fontWeight: '700',
+                          color: 'var(--color-gold)',
+                          backgroundColor: 'rgba(201, 168, 106, 0.15)',
+                          padding: '0.15rem 0.5rem',
+                          borderRadius: '2px',
+                          textTransform: 'uppercase',
+                        }}
+                      >
+                        {formatRoleLabel(user.role)}
+                      </div>
+                    </div>
+
+                    {/* Links */}
+                    <Link
+                      to="/profile"
+                      onClick={() => setIsUserMenuOpen(false)}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '0.6rem',
+                        padding: '0.6rem 1.2rem',
+                        color: 'var(--color-ivory)',
+                        textDecoration: 'none',
+                        fontSize: '0.78rem',
+                        fontFamily: 'var(--font-sans)',
+                        letterSpacing: '0.12em',
+                        transition: 'background 0.2s ease',
+                      }}
+                      className="dropdown-item-hover"
+                    >
+                      <User size={15} color="var(--color-gold-light)" />
+                      <span>MY PROFILE</span>
+                    </Link>
+
+                    <Link
+                      to={getDashboardRoute()}
+                      onClick={() => setIsUserMenuOpen(false)}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '0.6rem',
+                        padding: '0.6rem 1.2rem',
+                        color: 'var(--color-ivory)',
+                        textDecoration: 'none',
+                        fontSize: '0.78rem',
+                        fontFamily: 'var(--font-sans)',
+                        letterSpacing: '0.12em',
+                        transition: 'background 0.2s ease',
+                      }}
+                      className="dropdown-item-hover"
+                    >
+                      <ChevronRight size={15} color="var(--color-gold-light)" />
+                      <span>DASHBOARD</span>
+                    </Link>
+
+                    <div
+                      style={{
+                        height: '1px',
+                        backgroundColor: 'rgba(201, 168, 106, 0.2)',
+                        margin: '0.4rem 0',
+                      }}
+                    />
+
+                    <button
+                      onClick={() => {
+                        setIsUserMenuOpen(false);
+                        logout();
+                      }}
+                      style={{
+                        width: '100%',
+                        textAlign: 'left',
+                        background: 'none',
+                        border: 'none',
+                        padding: '0.6rem 1.2rem',
+                        color: '#EF4444',
+                        cursor: 'pointer',
+                        fontSize: '0.75rem',
+                        fontFamily: 'var(--font-sans)',
+                        letterSpacing: '0.15em',
+                        fontWeight: '600',
+                        transition: 'background 0.2s ease',
+                      }}
+                      className="dropdown-item-hover"
+                    >
+                      LOGOUT
+                    </button>
+                  </div>
+                )}
               </div>
             ) : (
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
-                <Link
-                  to="/login"
-                  style={{
-                    color: 'var(--color-ivory)',
-                    textDecoration: 'none',
-                    fontSize: '0.75rem',
-                    fontFamily: 'var(--font-sans)',
-                    letterSpacing: '0.18em',
-                    fontWeight: '500',
-                    padding: '0.4rem 0.6rem',
-                  }}
-                  className="nav-btn-hover"
-                >
-                  SIGN IN
-                </Link>
-              </div>
+              <Link
+                to="/login"
+                style={{
+                  color: 'var(--color-ivory)',
+                  textDecoration: 'none',
+                  fontSize: '0.75rem',
+                  fontFamily: 'var(--font-sans)',
+                  letterSpacing: '0.18em',
+                  fontWeight: '500',
+                  padding: '0.4rem 0.6rem',
+                }}
+                className="nav-btn-hover"
+              >
+                SIGN IN
+              </Link>
             )}
 
             <button
@@ -497,19 +496,19 @@ export default function Header({ onOpenEnquiry }) {
                 backgroundColor: 'var(--color-gold)',
                 color: '#1A0F12',
                 border: 'none',
-                padding: '0.72rem 1.6rem',
+                padding: '0.72rem 1.4rem',
                 borderRadius: '2px',
                 fontFamily: 'var(--font-sans)',
-                fontSize: '0.75rem',
+                fontSize: '0.73rem',
                 fontWeight: '600',
-                letterSpacing: '0.2em',
+                letterSpacing: '0.18em',
                 textTransform: 'uppercase',
                 cursor: 'pointer',
                 transition: 'all 0.35s ease',
                 boxShadow: '0 2px 10px rgba(0,0,0,0.2)',
                 whiteSpace: 'nowrap',
               }}
-              className="btn-story-hover"
+              className="btn-story-hover header-cta-btn"
             >
               BEGIN YOUR STORY
             </button>
@@ -517,8 +516,7 @@ export default function Header({ onOpenEnquiry }) {
         </div>
       </header>
 
-      {/* 2. SLIDE-OUT DRAWER NAVIGATION (MATCHING IMAGE 2) */}
-      {/* Dark Overlay Backdrop */}
+      {/* 2. SLIDE-OUT DRAWER NAVIGATION */}
       <div
         onClick={() => setIsDrawerOpen(false)}
         style={{
@@ -533,16 +531,15 @@ export default function Header({ onOpenEnquiry }) {
         }}
       />
 
-      {/* Off-Canvas Left Drawer */}
       <aside
         style={{
           position: 'fixed',
           top: 0,
           left: 0,
           width: '380px',
-          maxWidth: '86vw',
+          maxWidth: '88vw',
           height: '100vh',
-          backgroundColor: 'var(--color-ivory)', // Off-white ivory background as in Image 2
+          backgroundColor: 'var(--color-ivory)',
           color: 'var(--color-charcoal)',
           zIndex: 10002,
           boxShadow: '12px 0 45px rgba(0, 0, 0, 0.4)',
@@ -554,13 +551,13 @@ export default function Header({ onOpenEnquiry }) {
           overflowY: 'auto',
         }}
       >
-        {/* Drawer Header (Logo + Close X Button) */}
+        {/* Drawer Header */}
         <div>
           <div
             style={{
-              padding: '1.8rem 2rem 1.4rem 2rem',
+              padding: '1.6rem 1.8rem 1.2rem 1.8rem',
               display: 'flex',
-              alignItems: 'flex-start',
+              alignItems: 'center',
               justifyContent: 'space-between',
               borderBottom: '1px solid rgba(41, 38, 38, 0.08)',
             }}
@@ -569,14 +566,14 @@ export default function Header({ onOpenEnquiry }) {
               <img
                 src="/logo-emblem.png?v=2"
                 alt="Elegant Moments Crest"
-                style={{ height: '65px', width: 'auto', objectFit: 'contain' }}
+                style={{ height: '58px', width: 'auto', objectFit: 'contain' }}
               />
               <div>
                 <span
                   style={{
                     display: 'block',
                     fontFamily: 'var(--font-serif)',
-                    fontSize: '1.25rem',
+                    fontSize: '1.15rem',
                     color: 'var(--color-burgundy)',
                     letterSpacing: '0.12em',
                     lineHeight: 1.1,
@@ -590,11 +587,11 @@ export default function Header({ onOpenEnquiry }) {
                   style={{
                     display: 'block',
                     fontFamily: 'var(--font-sans)',
-                    fontSize: '0.52rem',
-                    letterSpacing: '0.28em',
+                    fontSize: '0.5rem',
+                    letterSpacing: '0.26em',
                     color: 'var(--color-gold-dark)',
                     textTransform: 'uppercase',
-                    marginTop: '0.25rem',
+                    marginTop: '0.2rem',
                     fontWeight: '600',
                   }}
                 >
@@ -622,9 +619,78 @@ export default function Header({ onOpenEnquiry }) {
             </button>
           </div>
 
-          {/* Drawer Menu Items List */}
+          {/* Role Management Menu Items (If Logged In) */}
+          {isAuthenticated && getRoleMenuItems().length > 0 && (
+            <div
+              style={{
+                padding: '0.8rem 0 0.4rem 0',
+                borderBottom: '1px solid rgba(41, 38, 38, 0.08)',
+                backgroundColor: 'rgba(59, 22, 27, 0.03)',
+              }}
+            >
+              <div
+                style={{
+                  padding: '0.4rem 1.8rem',
+                  fontFamily: 'var(--font-sans)',
+                  fontSize: '0.62rem',
+                  fontWeight: '700',
+                  letterSpacing: '0.25em',
+                  color: 'var(--color-gold-dark)',
+                  textTransform: 'uppercase',
+                }}
+              >
+                {user.role === 'client' ? 'MY PORTAL' : `${formatRoleLabel(user.role)} MANAGEMENT`}
+              </div>
+              <nav>
+                {getRoleMenuItems().map((item) => {
+                  const isActive = location.pathname === item.path;
+                  return (
+                    <Link
+                      key={item.name}
+                      to={item.path}
+                      onClick={() => setIsDrawerOpen(false)}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        padding: '0.75rem 1.8rem',
+                        textDecoration: 'none',
+                        fontFamily: 'var(--font-sans)',
+                        fontSize: '0.8rem',
+                        fontWeight: isActive ? '600' : '500',
+                        letterSpacing: '0.18em',
+                        textTransform: 'uppercase',
+                        color: isActive ? 'var(--color-burgundy)' : 'var(--color-charcoal)',
+                        backgroundColor: isActive ? 'rgba(201, 168, 106, 0.12)' : 'transparent',
+                        transition: 'all 0.25s ease',
+                      }}
+                      className="drawer-item-hover"
+                    >
+                      <span>{item.name}</span>
+                      <ChevronRight size={14} color="var(--color-gold-dark)" />
+                    </Link>
+                  );
+                })}
+              </nav>
+            </div>
+          )}
+
+          {/* Main Atelier Website Links */}
           <nav style={{ padding: '0.5rem 0' }}>
-            {menuItems.map((item) => {
+            <div
+              style={{
+                padding: '0.5rem 1.8rem 0.2rem 1.8rem',
+                fontFamily: 'var(--font-sans)',
+                fontSize: '0.62rem',
+                fontWeight: '700',
+                letterSpacing: '0.25em',
+                color: 'rgba(41, 38, 38, 0.4)',
+                textTransform: 'uppercase',
+              }}
+            >
+              EXPLORE ATELIER
+            </div>
+            {publicMenuItems.map((item) => {
               const isActive = location.pathname === item.path;
               return (
                 <Link
@@ -635,17 +701,17 @@ export default function Header({ onOpenEnquiry }) {
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'space-between',
-                    padding: '1.05rem 2rem',
+                    padding: '0.85rem 1.8rem',
                     textDecoration: 'none',
                     fontFamily: 'var(--font-sans)',
-                    fontSize: '0.85rem',
+                    fontSize: '0.82rem',
                     fontWeight: isActive ? '600' : '400',
-                    letterSpacing: '0.2em',
+                    letterSpacing: '0.18em',
                     textTransform: 'uppercase',
                     color: isActive
                       ? 'var(--color-gold-dark)'
                       : 'var(--color-charcoal)',
-                    borderBottom: '1px solid rgba(41, 38, 38, 0.06)',
+                    borderBottom: '1px solid rgba(41, 38, 38, 0.05)',
                     backgroundColor: isActive
                       ? 'rgba(201, 168, 106, 0.06)'
                       : 'transparent',
@@ -670,47 +736,115 @@ export default function Header({ onOpenEnquiry }) {
           </nav>
         </div>
 
-        {/* Drawer Bottom Footer (Phone Pill + Social Icons) */}
+        {/* Drawer Bottom Footer */}
         <div
           style={{
-            padding: '1.5rem 2rem 2.2rem 2rem',
+            padding: '1.2rem 1.8rem 1.8rem 1.8rem',
             borderTop: '1px solid rgba(41, 38, 38, 0.08)',
             backgroundColor: 'var(--color-ivory)',
           }}
         >
-          {/* Call Pill Button (Matching Image 2: +91 98765 43210) */}
+          {isAuthenticated ? (
+            <button
+              onClick={() => {
+                setIsDrawerOpen(false);
+                logout();
+              }}
+              style={{
+                width: '100%',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                padding: '0.65rem 1rem',
+                border: '1px solid rgba(239, 68, 68, 0.4)',
+                borderRadius: '3px',
+                color: '#EF4444',
+                background: 'rgba(239, 68, 68, 0.04)',
+                cursor: 'pointer',
+                fontFamily: 'var(--font-sans)',
+                fontSize: '0.75rem',
+                fontWeight: '600',
+                letterSpacing: '0.18em',
+                marginBottom: '1.2rem',
+                transition: 'all 0.25s ease',
+              }}
+            >
+              LOGOUT ({user.firstName?.toUpperCase()})
+            </button>
+          ) : (
+            <div style={{ display: 'flex', gap: '0.6rem', marginBottom: '1.2rem' }}>
+              <Link
+                to="/login"
+                onClick={() => setIsDrawerOpen(false)}
+                style={{
+                  flex: 1,
+                  textAlign: 'center',
+                  padding: '0.6rem 0',
+                  border: '1px solid var(--color-burgundy)',
+                  color: 'var(--color-burgundy)',
+                  textDecoration: 'none',
+                  fontSize: '0.72rem',
+                  fontFamily: 'var(--font-sans)',
+                  letterSpacing: '0.15em',
+                  fontWeight: '600',
+                }}
+              >
+                SIGN IN
+              </Link>
+              <Link
+                to="/register"
+                onClick={() => setIsDrawerOpen(false)}
+                style={{
+                  flex: 1,
+                  textAlign: 'center',
+                  padding: '0.6rem 0',
+                  backgroundColor: 'var(--color-burgundy)',
+                  color: 'var(--color-ivory)',
+                  textDecoration: 'none',
+                  fontSize: '0.72rem',
+                  fontFamily: 'var(--font-sans)',
+                  letterSpacing: '0.15em',
+                  fontWeight: '600',
+                }}
+              >
+                REGISTER
+              </Link>
+            </div>
+          )}
+
+          {/* Call Pill Button */}
           <a
             href="tel:+919876543210"
             style={{
               display: 'flex',
               alignItems: 'center',
               gap: '0.65rem',
-              padding: '0.75rem 1.2rem',
+              padding: '0.7rem 1.2rem',
               border: '1px solid var(--color-gold)',
               borderRadius: '3px',
               color: 'var(--color-gold-dark)',
               textDecoration: 'none',
               fontFamily: 'var(--font-sans)',
-              fontSize: '0.84rem',
+              fontSize: '0.8rem',
               fontWeight: '600',
               letterSpacing: '0.12em',
               width: 'fit-content',
-              marginBottom: '1.6rem',
+              marginBottom: '1.2rem',
               backgroundColor: 'rgba(201, 168, 106, 0.05)',
               transition: 'all 0.3s ease',
             }}
             className="phone-pill-hover"
           >
-            <Phone size={16} color="var(--color-gold-dark)" />
+            <Phone size={15} color="var(--color-gold-dark)" />
             <span>+91 98765 43210</span>
           </a>
 
-          {/* Social Icons Row (Instagram, Facebook, Pinterest, WhatsApp) */}
+          {/* Social Icons Row */}
           <div
             style={{
               display: 'flex',
               alignItems: 'center',
-              gap: '1.5rem',
+              gap: '1.4rem',
             }}
           >
             <a
@@ -721,7 +855,7 @@ export default function Header({ onOpenEnquiry }) {
               className="social-icon-hover"
               aria-label="Instagram"
             >
-              <Instagram size={20} />
+              <Instagram size={19} />
             </a>
             <a
               href="https://facebook.com"
@@ -731,7 +865,7 @@ export default function Header({ onOpenEnquiry }) {
               className="social-icon-hover"
               aria-label="Facebook"
             >
-              <Facebook size={20} />
+              <Facebook size={19} />
             </a>
             <a
               href="https://pinterest.com"
@@ -741,7 +875,7 @@ export default function Header({ onOpenEnquiry }) {
               className="social-icon-hover"
               aria-label="Pinterest"
             >
-              <Pinterest size={20} />
+              <Pinterest size={19} />
             </a>
             <a
               href="https://wa.me/919876543210"
@@ -751,7 +885,7 @@ export default function Header({ onOpenEnquiry }) {
               className="social-icon-hover"
               aria-label="WhatsApp"
             >
-              <WhatsApp size={20} />
+              <WhatsApp size={19} />
             </a>
           </div>
         </div>
@@ -913,8 +1047,12 @@ export default function Header({ onOpenEnquiry }) {
         }
         .drawer-item-hover:hover {
           color: var(--color-gold-dark) !important;
-          padding-left: 2.3rem !important;
+          padding-left: 2.1rem !important;
           background-color: rgba(201, 168, 106, 0.08) !important;
+        }
+        .dropdown-item-hover:hover {
+          background-color: rgba(201, 168, 106, 0.15) !important;
+          color: var(--color-gold-light) !important;
         }
         .phone-pill-hover:hover {
           background-color: var(--color-gold) !important;
@@ -927,6 +1065,11 @@ export default function Header({ onOpenEnquiry }) {
         .tag-btn-hover:hover {
           background-color: var(--color-gold) !important;
           color: #1A0F12 !important;
+        }
+        @media (max-width: 768px) {
+          .header-cta-btn {
+            display: none;
+          }
         }
         @media (max-width: 640px) {
           .search-btn-text {
