@@ -2786,5 +2786,243 @@
     "accountStatus": "ACTIVE",
     "createdAt": "2026-09-25T07:06:07.956Z",
     "updatedAt": "2026-09-25T07:06:07.956Z"
+  },
+  {
+    "id": "usr-client-1790329704366-70c601",
+    "email": "clienta.1790329703939@test.com",
+    "passwordHash": "$2b$10$neSZ/JCwdwRZ0nq.fd1Uvuryj7QYj83.vPLKBC/5JgRRXP1n5hw7m",
+    "firstName": "Client",
+    "lastName": "A",
+    "phone": "",
+    "role": "client",
+    "roles": [
+      "client"
+    ],
+    "isActive": true,
+    "isVerified": true,
+    "accountStatus": "ACTIVE",
+    "createdAt": "2026-09-25T09:48:24.366Z",
+    "updatedAt": "2026-09-25T09:48:24.366Z"
+  },
+  {
+    "id": "usr-client-1790329704886-5828f2",
+    "email": "clientb.1790329704651@test.com",
+    "passwordHash": "$2b$10$4KLUXvTwNSqt9HzMJ.1a1Oe2efAKc/EjzVxoAJEiTwUJpx.Utw4Uy",
+    "firstName": "Client",
+    "lastName": "B",
+    "phone": "",
+    "role": "client",
+    "roles": [
+      "client"
+    ],
+    "isActive": true,
+    "isVerified": true,
+    "accountStatus": "ACTIVE",
+    "createdAt": "2026-09-25T09:48:24.886Z",
+    "updatedAt": "2026-09-25T09:48:24.886Z"
+  },
+  {
+    "id": "usr-client-1790329705434-0bb247",
+    "email": "iso.a.1790329705193@test.com",
+    "passwordHash": "$2b$10$CCool8oHb/lLQhI714.Y1OianPUF/Xkk61Xc35rFSjhLX6dXdW5Pm",
+    "firstName": "IsoA",
+    "lastName": "User",
+    "phone": "",
+    "role": "client",
+    "roles": [
+      "client"
+    ],
+    "isActive": true,
+    "isVerified": true,
+    "accountStatus": "ACTIVE",
+    "createdAt": "2026-09-25T09:48:25.435Z",
+    "updatedAt": "2026-09-25T09:48:25.435Z"
+  },
+  {
+    "id": "usr-client-1790329705701-1856d7",
+    "email": "iso.b.1790329705193@test.com",
+    "passwordHash": "$2b$10$eScYYOTr/sFtkojO0dWS3.a5GvhDkR10tM4qnD25u3CQV29LyP2um",
+    "firstName": "IsoB",
+    "lastName": "User",
+    "phone": "",
+    "role": "client",
+    "roles": [
+      "client"
+    ],
+    "isActive": true,
+    "isVerified": true,
+    "accountStatus": "ACTIVE",
+    "createdAt": "2026-09-25T09:48:25.701Z",
+    "updatedAt": "2026-09-25T09:48:25.701Z"
+  },
+  {
+    "id": "usr-client-1790329706323-eec486",
+    "email": "wrongpass.1790329706125@test.com",
+    "passwordHash": "$2b$10$FAZHoZO0eTJb35rsMBaK5.anTt2E50UtZvH2ZFNzdwEHgGYUaj6QO",
+    "firstName": "Wrong",
+    "lastName": "PassUser",
+    "phone": "",
+    "role": "client",
+    "roles": [
+      "client"
+    ],
+    "isActive": true,
+    "isVerified": true,
+    "accountStatus": "ACTIVE",
+    "createdAt": "2026-09-25T09:48:26.323Z",
+    "updatedAt": "2026-09-25T09:48:26.323Z"
+  },
+  {
+    "id": "usr-client-1790329706830-c39a53",
+    "email": "dup.1790329706630@test.com",
+    "passwordHash": "$2b$10$1xemjns2b.pQWDH17XQ3keGlLc8j7VNI0QgDhV9MlTZeJnaQvC3c6",
+    "firstName": "First",
+    "lastName": "User",
+    "phone": "",
+    "role": "client",
+    "roles": [
+      "client"
+    ],
+    "isActive": true,
+    "isVerified": true,
+    "accountStatus": "ACTIVE",
+    "createdAt": "2026-09-25T09:48:26.831Z",
+    "updatedAt": "2026-09-25T09:48:26.832Z"
+  },
+  {
+    "id": "usr-client-1790329707062-857a59",
+    "email": "upperlower.1790329706856@testdomain.com",
+    "passwordHash": "$2b$10$7M.Wn0sfp4EmUiR0xfM8BO8LuVj2T1mdeFFPzwUOTyzbcAd65CY5m",
+    "firstName": "Norm",
+    "lastName": "Test",
+    "phone": "",
+    "role": "client",
+    "roles": [
+      "client"
+    ],
+    "isActive": true,
+    "isVerified": true,
+    "accountStatus": "ACTIVE",
+    "createdAt": "2026-09-25T09:48:27.062Z",
+    "updatedAt": "2026-09-25T09:48:27.063Z"
+  },
+  {
+    "id": "usr-client-1790329707579-268bc0",
+    "email": "sec.1790329707265@test.com",
+    "passwordHash": "$2b$10$PdNme10fWGwNLi1K88rkuup4ZEJWyaKImZQ/0UmAi.RCHWotZMw4C",
+    "firstName": "Sec",
+    "lastName": "User",
+    "phone": "",
+    "role": "client",
+    "roles": [
+      "client"
+    ],
+    "isActive": true,
+    "isVerified": true,
+    "accountStatus": "ACTIVE",
+    "createdAt": "2026-09-25T09:48:27.579Z",
+    "updatedAt": "2026-09-25T09:48:27.579Z"
+  },
+  {
+    "id": "usr-client-1790329707983-908111",
+    "email": "reset.1790329707790@test.com",
+    "passwordHash": "$2b$10$vwRt82zQsxGSSzcI66NmPOVrU3T2vbmjg/f5SgocRkijyGsiyfuLO",
+    "firstName": "Reset",
+    "lastName": "User",
+    "phone": "",
+    "role": "client",
+    "roles": [
+      "client"
+    ],
+    "isActive": true,
+    "isVerified": true,
+    "accountStatus": "ACTIVE",
+    "createdAt": "2026-09-25T09:48:27.983Z",
+    "updatedAt": "2026-09-25T09:48:28.235Z"
+  },
+  {
+    "id": "usr-client-1790329708883-8b503f",
+    "email": "mclient1.1790329708655@test.com",
+    "passwordHash": "$2b$10$Fx8K8d2RirJby/tZFNIy3.QCxx263hfYLlfsgP40N/wXi1KcrlECa",
+    "firstName": "Multi",
+    "lastName": "Client",
+    "phone": "",
+    "role": "client",
+    "roles": [
+      "client"
+    ],
+    "isActive": true,
+    "isVerified": true,
+    "accountStatus": "ACTIVE",
+    "createdAt": "2026-09-25T09:48:28.883Z",
+    "updatedAt": "2026-09-25T09:48:28.883Z"
+  },
+  {
+    "id": "usr-client-1790329709085-07bf35",
+    "email": "mclient2.1790329708655@test.com",
+    "passwordHash": "$2b$10$pzkRifxKkfU3Sp6ZhrIyGehpC7iPlod.IxhxT4Y9nlUXdUxb6rOxe",
+    "firstName": "Multi",
+    "lastName": "Client",
+    "phone": "",
+    "role": "client",
+    "roles": [
+      "client"
+    ],
+    "isActive": true,
+    "isVerified": true,
+    "accountStatus": "ACTIVE",
+    "createdAt": "2026-09-25T09:48:29.085Z",
+    "updatedAt": "2026-09-25T09:48:29.085Z"
+  },
+  {
+    "id": "usr-client-1790329709303-bc898c",
+    "email": "mclient3.1790329708655@test.com",
+    "passwordHash": "$2b$10$AGK7gi8v6ghGDQHPipVKweHPtIJgLUZ.xJiptfIUJCV9VdDdwbQEy",
+    "firstName": "Multi",
+    "lastName": "Client",
+    "phone": "",
+    "role": "client",
+    "roles": [
+      "client"
+    ],
+    "isActive": true,
+    "isVerified": true,
+    "accountStatus": "ACTIVE",
+    "createdAt": "2026-09-25T09:48:29.303Z",
+    "updatedAt": "2026-09-25T09:48:29.303Z"
+  },
+  {
+    "id": "usr-client-1790329710148-be32c8",
+    "email": "rbac.1790329709954@test.com",
+    "passwordHash": "$2b$10$l55PrUWSWkLaueplrNxiJOOW.ubHqC31QgEcSNwx8b8btC7G5anN.",
+    "firstName": "Rbac",
+    "lastName": "Attacker",
+    "phone": "",
+    "role": "client",
+    "roles": [
+      "client"
+    ],
+    "isActive": true,
+    "isVerified": true,
+    "accountStatus": "ACTIVE",
+    "createdAt": "2026-09-25T09:48:30.148Z",
+    "updatedAt": "2026-09-25T09:48:30.148Z"
+  },
+  {
+    "id": "usr-client-1790329715001-705fce",
+    "email": "client.test.1790329714486@gmail.com",
+    "passwordHash": "$2b$10$sooFv4h6cPE6P/QjmY2nqOf5lsflDZDB3kSfQ91/ijhnzG/LGUgX.",
+    "firstName": "Pankaj",
+    "lastName": "Kumar",
+    "phone": "",
+    "role": "client",
+    "roles": [
+      "client"
+    ],
+    "isActive": true,
+    "isVerified": true,
+    "accountStatus": "ACTIVE",
+    "createdAt": "2026-09-25T09:48:35.001Z",
+    "updatedAt": "2026-09-25T09:48:35.001Z"
   }
 ]
