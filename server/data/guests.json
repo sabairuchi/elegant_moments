@@ -1,0 +1,67 @@
+[
+  {
+    "id": "gst-1790408844153-gt1m2",
+    "weddingId": "b73a867a-8942-42de-aaa3-840b6a180644",
+    "name": "Lord & Lady Harrington",
+    "email": "harrington@vip.com",
+    "phone": "",
+    "relationship": "VIP Guest",
+    "rsvpStatus": "NOT_ATTENDING",
+    "guestCount": 2,
+    "notes": "",
+    "createdAt": "2026-09-26T07:47:24.154Z",
+    "updatedAt": "2026-09-26T07:47:24.181Z"
+  },
+  {
+    "id": "gst-1790407752338-3erly",
+    "weddingId": "0b7dac2e-a9df-42a6-b049-100c19ab858f",
+    "name": "Lord & Lady Harrington",
+    "email": "harrington@vip.com",
+    "phone": "",
+    "relationship": "VIP Guest",
+    "rsvpStatus": "NOT_ATTENDING",
+    "guestCount": 2,
+    "notes": "",
+    "createdAt": "2026-09-26T07:29:12.338Z",
+    "updatedAt": "2026-09-26T07:29:12.373Z"
+  },
+  {
+    "id": "gst-1790407200924-vbx6f",
+    "weddingId": "51d66bd0-461c-4855-931a-406a8e8ab6f1",
+    "name": "Lord & Lady Harrington",
+    "email": "harrington@vip.com",
+    "phone": "",
+    "relationship": "VIP Guest",
+    "rsvpStatus": "NOT_ATTENDING",
+    "guestCount": 2,
+    "notes": "",
+    "createdAt": "2026-09-26T07:20:00.924Z",
+    "updatedAt": "2026-09-26T07:20:01.069Z"
+  },
+  {
+    "id": "gst-1790407127593-zskfj",
+    "weddingId": "387392ec-618b-48cb-851e-0484b6abc1ba",
+    "name": "Lord & Lady Harrington",
+    "email": "harrington@vip.com",
+    "phone": "",
+    "relationship": "VIP Guest",
+    "rsvpStatus": "NOT_ATTENDING",
+    "guestCount": 2,
+    "notes": "",
+    "createdAt": "2026-09-26T07:18:47.593Z",
+    "updatedAt": "2026-09-26T07:18:47.645Z"
+  },
+  {
+    "id": "gst-1790407075579-6002p",
+    "weddingId": "13a953da-c3ef-4869-a7ea-d0a40a94e927",
+    "name": "Lord & Lady Harrington",
+    "email": "harrington@vip.com",
+    "phone": "",
+    "relationship": "VIP Guest",
+    "rsvpStatus": "NOT_ATTENDING",
+    "guestCount": 2,
+    "notes": "",
+    "createdAt": "2026-09-26T07:17:55.579Z",
+    "updatedAt": "2026-09-26T07:17:55.763Z"
+  }
+]

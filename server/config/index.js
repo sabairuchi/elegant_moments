@@ -1,3 +1,29 @@
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const envPath = path.join(__dirname, '..', '..', '.env');
+
+if (fs.existsSync(envPath)) {
+  try {
+    const rawEnv = fs.readFileSync(envPath, 'utf-8');
+    rawEnv.split('\n').forEach((line) => {
+      const trimmed = line.trim();
+      if (trimmed && !trimmed.startsWith('#') && trimmed.includes('=')) {
+        const [key, ...valueParts] = trimmed.split('=');
+        const val = valueParts.join('=').trim().replace(/^["']|["']$/g, '');
+        if (key && !process.env[key.trim()]) {
+          process.env[key.trim()] = val;
+        }
+      }
+    });
+  } catch (e) {
+    // Ignore error
+  }
+}
+
 export const config = {
   port: process.env.PORT || 5000,
   env: process.env.NODE_ENV || 'development',

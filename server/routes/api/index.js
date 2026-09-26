@@ -10,13 +10,18 @@ import proposalRoutes from './proposalRoutes.js';
 import bookingRoutes from './bookingRoutes.js';
 import paymentRoutes from './paymentRoutes.js';
 
+import notificationRoutes from './notificationRoutes.js';
+import aiRoutes from './aiRoutes.js';
+import analyticsRoutes from './analyticsRoutes.js';
+import vendorRoutes from './vendorRoutes.js';
+
 const router = express.Router();
 
 // Health Check
 router.get('/health', (req, res) => {
   res.json({
     status: 'ok',
-    brand: 'Elegant Moments API (Milestone 3.1 Architecture)',
+    brand: 'Elegant Moments API (Milestone 3 Architecture)',
     timestamp: new Date().toISOString(),
   });
 });
@@ -32,15 +37,18 @@ router.use('/venues', venueRoutes);
 router.use('/proposals', proposalRoutes);
 router.use('/bookings', bookingRoutes);
 router.use('/payments', paymentRoutes);
+router.use('/notifications', notificationRoutes);
+router.use('/ai', aiRoutes);
+router.use('/analytics', analyticsRoutes);
+router.use('/vendors', vendorRoutes);
 
-// Placeholder endpoints for remaining Milestone 2 modules
+// Placeholder endpoints
 const placeholderHandler = (moduleName) => (req, res) => {
   res.status(501).json({
     success: false,
-    message: `Module '/api/${moduleName}' architecture is ready. Implementation arrives in Milestone 2.10+.`,
+    message: `Module '/api/${moduleName}' architecture is ready.`,
   });
 };
 router.use('/documents', placeholderHandler('documents'));
-router.use('/notifications', placeholderHandler('notifications'));
 
 export default router;

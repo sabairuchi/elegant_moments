@@ -224,6 +224,25 @@ export const enquiryService = {
     const enquiries = readData();
     enquiries.unshift(newEnquiry);
     writeData(enquiries);
+
+    // Trigger Automated Notification
+    try {
+      const { notificationService } = await import('./notificationService.js');
+      const { emailService } = await import('./emailService.js');
+      const tpl = emailService.getEnquiryTemplate(newEnquiry);
+      await notificationService.createAndSendNotification({
+        email: newEnquiry.email,
+        phone: newEnquiry.phone,
+        type: 'ENQUIRY_RECEIVED',
+        channel: 'EMAIL',
+        title: tpl.subject,
+        message: tpl.html,
+        reference: newEnquiry.enquiryNumber || newEnquiry.id,
+      });
+    } catch (notifErr) {
+      console.warn('[ENQUIRY NOTIFICATION] Trigger error:', notifErr.message);
+    }
+
     return newEnquiry;
   },
 

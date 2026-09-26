@@ -11,11 +11,14 @@ import {
   deleteProposal
 } from '../../controllers/proposalController.js';
 
+import { proposalDocumentController } from '../../controllers/proposalDocumentController.js';
+
 const router = express.Router();
 
 router.use(authenticateUser);
 
 router.get('/', requirePermission(PERMISSIONS.PROPOSALS_VIEW), getProposals);
+router.get('/:id/document', requirePermission(PERMISSIONS.PROPOSALS_VIEW), proposalDocumentController.getProposalDocument);
 router.get('/:id', requirePermission(PERMISSIONS.PROPOSALS_VIEW), getProposalById);
 router.post('/', requirePermission(PERMISSIONS.PROPOSALS_CREATE), createProposal);
 router.patch('/:id', requirePermission(PERMISSIONS.PROPOSALS_UPDATE), updateProposal);

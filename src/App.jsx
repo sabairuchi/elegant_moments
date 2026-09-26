@@ -87,8 +87,12 @@ function EnquireRouteHandler({ onOpenEnquiry }) {
   return null;
 }
 
+import AdminAnalytics from './pages/AdminAnalytics';
+import AiAssistantModal from './components/AiAssistantModal';
+
 export default function App() {
   const [enquiryModalOpen, setEnquiryModalOpen] = useState(false);
+  const [aiWidgetOpen, setAiWidgetOpen] = useState(false);
 
   const handleOpenEnquiry = () => setEnquiryModalOpen(true);
   const handleCloseEnquiry = () => setEnquiryModalOpen(false);
@@ -216,6 +220,14 @@ export default function App() {
                 }
               />
               <Route
+                path="/admin/analytics"
+                element={
+                  <ProtectedRoute allowedRoles={['admin', 'super_admin', 'planner']}>
+                    <AdminAnalytics />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
                 path="/admin"
                 element={
                   <ProtectedRoute allowedRoles={['admin', 'super_admin']}>
@@ -248,7 +260,6 @@ export default function App() {
                   </ProtectedRoute>
                 } 
               />
-              {/* M2.5 Wedding Management Routes */}
               <Route 
                 path="/admin/weddings" 
                 element={
@@ -309,6 +320,34 @@ export default function App() {
               <Route path="*" element={<Home onOpenEnquiry={handleOpenEnquiry} />} />
             </Routes>
           </main>
+
+          {/* AI Concierge Trigger Floating Button */}
+          <button
+            onClick={() => setAiWidgetOpen(true)}
+            style={{
+              position: 'fixed',
+              bottom: '24px',
+              right: '24px',
+              backgroundColor: '#4A0E17',
+              color: '#D4AF37',
+              border: '1px solid #D4AF37',
+              borderRadius: '30px',
+              padding: '12px 20px',
+              fontWeight: 'bold',
+              fontSize: '0.82rem',
+              letterSpacing: '1px',
+              boxShadow: '0 8px 24px rgba(0,0,0,0.3)',
+              cursor: 'pointer',
+              zIndex: 9998,
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+            }}
+          >
+            <span>✨ AI Concierge</span>
+          </button>
+
+          <AiAssistantModal isOpen={aiWidgetOpen} onClose={() => setAiWidgetOpen(false)} />
 
           <Footer onOpenEnquiry={handleOpenEnquiry} />
 

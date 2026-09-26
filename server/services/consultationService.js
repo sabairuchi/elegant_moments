@@ -237,6 +237,26 @@ export const consultationService = {
     const consultations = readData();
     consultations.unshift(newConsultation);
     writeData(consultations);
+
+    // Trigger Automated Consultation Notification
+    try {
+      const { notificationService } = await import('./notificationService.js');
+      const { emailService } = await import('./emailService.js');
+      const tpl = emailService.getConsultationTemplate(newConsultation);
+      await notificationService.createAndSendNotification({
+        userId: newConsultation.userId,
+        email: newConsultation.email,
+        phone: newConsultation.phone,
+        type: 'CONSULTATION_CONFIRMED',
+        channel: 'EMAIL',
+        title: tpl.subject,
+        message: tpl.html,
+        reference: newConsultation.consultationNumber || newConsultation.id,
+      });
+    } catch (notifErr) {
+      console.warn('[CONSULTATION NOTIFICATION] Trigger error:', notifErr.message);
+    }
+
     return newConsultation;
   },
 
