@@ -505,6 +505,98 @@ export const userService = {
   // Admin User Management
   // ---------------------------------------------------------------------------
 
+  async createInternalUser({ firstName, lastName, email, phone, password, role = 'client', creatorUser }) {
+    const cleanEmail = email.trim().toLowerCase();
+
+    // Check duplicate email
+    const existing = await this.findByEmail(cleanEmail);
+    if (existing) {
+      const err = new Error('An account with this email already exists.');
+      err.statusCode = 409;
+      throw err;
+    }
+
+    // Password Policy Validation
+    const policyError = this.validatePasswordPolicy(password);
+    if (policyError) {
+      const err = new Error(policyError);
+      err.statusCode = 400;
+      throw err;
+    }
+
+    const normalizedRole = (role || 'client').trim().toLowerCase();
+    const validRoles = ['super_admin', 'admin', 'planner', 'vendor', 'client'];
+    if (!validRoles.includes(normalizedRole)) {
+      const err = new Error('Invalid role specified.');
+      err.statusCode = 400;
+      throw err;
+    }
+
+    // Only Super Admin can create another Super Admin
+    if (normalizedRole === 'super_admin' && creatorUser && creatorUser.role !== 'super_admin') {
+      const err = new Error('Only Super Admin can create another Super Admin account.');
+      err.statusCode = 403;
+      throw err;
+    }
+
+    const saltRounds = 10;
+    const passwordHash = await bcrypt.hash(password, saltRounds);
+
+    const newId = `usr-${normalizedRole}-${Date.now()}-${crypto.randomBytes(3).toString('hex')}`;
+    const newUser = {
+      id: newId,
+      email: cleanEmail,
+      passwordHash,
+      firstName: firstName.trim(),
+      lastName: lastName.trim(),
+      phone: phone ? phone.trim() : '',
+      role: normalizedRole,
+      roles: [normalizedRole],
+      isActive: true,
+      isVerified: true,
+      accountStatus: 'ACTIVE',
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+
+    if (hasDbConnection()) {
+      await query(
+        `INSERT INTO users (id, email, password_hash, first_name, last_name, phone, role, roles, is_active, is_verified, account_status)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)`,
+        [
+          newId,
+          cleanEmail,
+          passwordHash,
+          firstName.trim(),
+          lastName.trim(),
+          phone ? phone.trim() : '',
+          normalizedRole,
+          JSON.stringify([normalizedRole]),
+          true,
+          true,
+          'ACTIVE',
+        ]
+      );
+    } else {
+      const users = readUsers();
+      users.push(newUser);
+      writeUsers(users);
+    }
+
+    if (creatorUser) {
+      auditService.logAction({
+        userId: creatorUser.id,
+        userEmail: creatorUser.email,
+        action: 'INTERNAL_USER_CREATED',
+        entityType: 'USER',
+        entityId: newId,
+        details: { createdRole: normalizedRole, createdEmail: cleanEmail },
+      });
+    }
+
+    return this.getSafeUser(newUser);
+  },
+
   async listUsers({ page = 1, limit = 20, search = '', role = '', status = '' }) {
     if (hasDbConnection()) {
       let whereClauses = ['deleted_at IS NULL'];

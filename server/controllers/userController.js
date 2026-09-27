@@ -21,6 +21,40 @@ export const userController = {
     }
   },
 
+  async createUser(req, res, next) {
+    try {
+      let { firstName, lastName, email, phone, password, role } = req.body;
+
+      if (!firstName || !lastName || !email || !password) {
+        return res.status(400).json({
+          success: false,
+          message: 'First name, last name, email, and password are required.',
+        });
+      }
+
+      const createdUser = await userService.createInternalUser({
+        firstName,
+        lastName,
+        email,
+        phone,
+        password,
+        role: role || 'client',
+        creatorUser: req.user,
+      });
+
+      res.status(201).json({
+        success: true,
+        message: `User created successfully with role ${createdUser.role}.`,
+        user: createdUser,
+      });
+    } catch (error) {
+      if (error.statusCode) {
+        return res.status(error.statusCode).json({ success: false, message: error.message });
+      }
+      next(error);
+    }
+  },
+
   async updateUserStatus(req, res, next) {
     try {
       const { id } = req.params;

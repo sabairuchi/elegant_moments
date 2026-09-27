@@ -15,6 +15,9 @@ router.get('/vendor-profile', userController.getVendorProfile);
 // GET /api/users (requires users.view permission)
 router.get('/', requirePermission(PERMISSIONS.USERS_VIEW), userController.listUsers);
 
+// POST /api/users (requires users.create permission)
+router.post('/', requirePermission(PERMISSIONS.USERS_CREATE), userController.createUser);
+
 // PATCH /api/users/:id/status (requires users.suspend permission)
 router.patch('/:id/status', requirePermission(PERMISSIONS.USERS_SUSPEND), userController.updateUserStatus);
 

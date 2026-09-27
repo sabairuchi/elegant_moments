@@ -25,6 +25,20 @@ const AdminUsers = () => {
   const [actionSuccess, setActionSuccess] = useState('');
   const [updating, setUpdating] = useState(false);
 
+  // Create User Modal State
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [newUserData, setNewUserData] = useState({
+    firstName: '',
+    lastName: '',
+    email: '',
+    phone: '',
+    password: '',
+    role: 'planner',
+  });
+  const [createError, setCreateError] = useState('');
+  const [createSuccess, setCreateSuccess] = useState('');
+  const [creating, setCreating] = useState(false);
+
   const fetchUsers = async () => {
     try {
       setLoading(true);
@@ -73,6 +87,40 @@ const AdminUsers = () => {
     setEditStatus(user.accountStatus);
     setActionError('');
     setActionSuccess('');
+  };
+
+  const handleCreateUser = async (e) => {
+    e.preventDefault();
+    setCreateError('');
+    setCreateSuccess('');
+    setCreating(true);
+
+    try {
+      const response = await fetch('/api/users', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(newUserData)
+      });
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.message || 'Failed to create user');
+      }
+
+      setCreateSuccess(`User created successfully with role ${data.user?.role?.toUpperCase()}.`);
+      setTimeout(() => {
+        setShowCreateModal(false);
+        setNewUserData({ firstName: '', lastName: '', email: '', phone: '', password: '', role: 'planner' });
+        setCreateSuccess('');
+        fetchUsers();
+      }, 1500);
+    } catch (err) {
+      setCreateError(err.message);
+    } finally {
+      setCreating(false);
+    }
   };
 
   const handleUpdate = async (e) => {
@@ -159,9 +207,22 @@ const AdminUsers = () => {
 
   return (
     <div style={{ padding: '40px 20px', maxWidth: '1200px', margin: '0 auto', fontFamily: 'Inter, sans-serif' }}>
-      <h1 style={{ fontFamily: 'Playfair Display, serif', color: 'var(--color-burgundy)', fontSize: '2.5rem', marginBottom: '20px' }}>
-        User Management
-      </h1>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', flexWrap: 'wrap', gap: '15px' }}>
+        <h1 style={{ fontFamily: 'Playfair Display, serif', color: 'var(--color-burgundy)', fontSize: '2.5rem', margin: 0 }}>
+          User Management
+        </h1>
+        <button
+          onClick={() => {
+            setShowCreateModal(true);
+            setCreateError('');
+            setCreateSuccess('');
+          }}
+          className="btn btn-primary"
+          style={{ padding: '10px 20px', fontSize: '0.9rem', cursor: 'pointer' }}
+        >
+          + Create Internal User
+        </button>
+      </div>
 
       {error && (
         <div style={{ backgroundColor: '#FEE2E2', border: '1px solid #FCA5A5', color: '#991B1B', padding: '15px', borderRadius: '6px', marginBottom: '20px' }}>
@@ -346,6 +407,112 @@ const AdminUsers = () => {
                   style={{ padding: '10px 20px' }}
                 >
                   {updating ? 'Saving...' : 'Save Changes'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Create User Modal */}
+      {showCreateModal && (
+        <div style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000, padding: '20px' }}>
+          <div style={{ backgroundColor: '#fff', borderRadius: '12px', boxShadow: '0 10px 25px rgba(0,0,0,0.1)', width: '100%', maxWidth: '480px', padding: '30px' }}>
+            <h2 style={{ fontFamily: 'Playfair Display, serif', color: 'var(--color-burgundy)', fontSize: '1.5rem', marginBottom: '20px' }}>
+              Create Internal User
+            </h2>
+            
+            {createError && <div style={{ backgroundColor: '#FEE2E2', color: '#991B1B', padding: '10px', borderRadius: '6px', fontSize: '0.85rem', marginBottom: '15px' }}>{createError}</div>}
+            {createSuccess && <div style={{ backgroundColor: '#DCFCE7', color: '#166534', padding: '10px', borderRadius: '6px', fontSize: '0.85rem', marginBottom: '15px' }}>{createSuccess}</div>}
+
+            <form onSubmit={handleCreateUser}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '12px' }}>
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.8rem', color: '#888', textTransform: 'uppercase', marginBottom: '4px', fontWeight: '600' }}>First Name *</label>
+                  <input
+                    type="text"
+                    required
+                    style={{ width: '100%', padding: '8px 12px', border: '1px solid #ddd', borderRadius: '6px', fontSize: '0.9rem' }}
+                    value={newUserData.firstName}
+                    onChange={(e) => setNewUserData({ ...newUserData, firstName: e.target.value })}
+                  />
+                </div>
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.8rem', color: '#888', textTransform: 'uppercase', marginBottom: '4px', fontWeight: '600' }}>Last Name *</label>
+                  <input
+                    type="text"
+                    required
+                    style={{ width: '100%', padding: '8px 12px', border: '1px solid #ddd', borderRadius: '6px', fontSize: '0.9rem' }}
+                    value={newUserData.lastName}
+                    onChange={(e) => setNewUserData({ ...newUserData, lastName: e.target.value })}
+                  />
+                </div>
+              </div>
+
+              <div style={{ marginBottom: '12px' }}>
+                <label style={{ display: 'block', fontSize: '0.8rem', color: '#888', textTransform: 'uppercase', marginBottom: '4px', fontWeight: '600' }}>Email Address *</label>
+                <input
+                  type="email"
+                  required
+                  style={{ width: '100%', padding: '8px 12px', border: '1px solid #ddd', borderRadius: '6px', fontSize: '0.9rem' }}
+                  value={newUserData.email}
+                  onChange={(e) => setNewUserData({ ...newUserData, email: e.target.value })}
+                />
+              </div>
+
+              <div style={{ marginBottom: '12px' }}>
+                <label style={{ display: 'block', fontSize: '0.8rem', color: '#888', textTransform: 'uppercase', marginBottom: '4px', fontWeight: '600' }}>Phone</label>
+                <input
+                  type="tel"
+                  style={{ width: '100%', padding: '8px 12px', border: '1px solid #ddd', borderRadius: '6px', fontSize: '0.9rem' }}
+                  value={newUserData.phone}
+                  onChange={(e) => setNewUserData({ ...newUserData, phone: e.target.value })}
+                />
+              </div>
+
+              <div style={{ marginBottom: '12px' }}>
+                <label style={{ display: 'block', fontSize: '0.8rem', color: '#888', textTransform: 'uppercase', marginBottom: '4px', fontWeight: '600' }}>Password *</label>
+                <input
+                  type="password"
+                  required
+                  placeholder="Min 8 chars, upper/lowercase, number & symbol"
+                  style={{ width: '100%', padding: '8px 12px', border: '1px solid #ddd', borderRadius: '6px', fontSize: '0.9rem' }}
+                  value={newUserData.password}
+                  onChange={(e) => setNewUserData({ ...newUserData, password: e.target.value })}
+                />
+              </div>
+
+              <div style={{ marginBottom: '20px' }}>
+                <label style={{ display: 'block', fontSize: '0.8rem', color: '#888', textTransform: 'uppercase', marginBottom: '4px', fontWeight: '600' }}>Role *</label>
+                <select
+                  style={{ width: '100%', padding: '8px 12px', border: '1px solid #ddd', borderRadius: '6px', fontSize: '0.9rem' }}
+                  value={newUserData.role}
+                  onChange={(e) => setNewUserData({ ...newUserData, role: e.target.value })}
+                >
+                  <option value="planner">Planner</option>
+                  <option value="vendor">Vendor</option>
+                  <option value="admin">Admin</option>
+                  <option value="super_admin">Super Admin</option>
+                  <option value="client">Client</option>
+                </select>
+              </div>
+
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
+                <button
+                  type="button"
+                  onClick={() => setShowCreateModal(false)}
+                  className="btn btn-secondary"
+                  style={{ padding: '10px 20px' }}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={creating}
+                  className="btn btn-primary"
+                  style={{ padding: '10px 20px' }}
+                >
+                  {creating ? 'Creating...' : 'Create Account'}
                 </button>
               </div>
             </form>

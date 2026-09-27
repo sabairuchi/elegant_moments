@@ -23,12 +23,16 @@ export default function Login() {
       const data = await login(email, password);
       const targetRole = data?.user?.role || 'client';
       let defaultDestination = '/dashboard';
-      if (['admin', 'super_admin'].includes(targetRole)) defaultDestination = '/admin/weddings';
+      if (targetRole === 'super_admin') defaultDestination = '/super-admin';
+      else if (targetRole === 'admin') defaultDestination = '/admin';
       else if (targetRole === 'planner') defaultDestination = '/planner';
       else if (targetRole === 'vendor') defaultDestination = '/vendor';
-      else if (targetRole === 'client') defaultDestination = '/dashboard';
+      else defaultDestination = '/dashboard';
 
-      const destination = (targetRole === 'client') ? '/dashboard' : (location.state?.from?.pathname || defaultDestination);
+      let destination = defaultDestination;
+      if (targetRole !== 'client' && location.state?.from?.pathname) {
+        destination = location.state.from.pathname;
+      }
       navigate(destination, { replace: true });
     } catch (err) {
       setError(err.message || 'Failed to authenticate.');
