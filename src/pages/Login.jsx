@@ -41,13 +41,6 @@ export default function Login() {
     }
   };
 
-  // Demo credential quick-select for effortless testing of all 5 roles
-  const fillDemoCredentials = (demoEmail) => {
-    setEmail(demoEmail);
-    setPassword('Password123!');
-    setError('');
-  };
-
   return (
     <div style={{ backgroundColor: 'var(--color-ivory)', minHeight: '85vh', padding: '60px 20px', display: 'flex', alignItems: 'center' }}>
       <div style={{ maxWidth: '480px', width: '100%', margin: '0 auto', background: '#ffffff', borderRadius: '12px', padding: '40px', boxShadow: '0 15px 35px rgba(44,24,16,0.08)', border: '1px solid rgba(88,28,37,0.1)' }}>
@@ -129,27 +122,6 @@ export default function Login() {
           <Link to="/register" style={{ color: 'var(--color-burgundy)', fontWeight: '600', textDecoration: 'none' }}>
             Register as Client
           </Link>
-        </div>
-
-        {/* Demo Accounts Panel for User Convenience */}
-        <div style={{ marginTop: '35px', paddingTop: '25px', borderTop: '1px solid #eee' }}>
-          <div style={{ fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '1px', color: '#888', textAlign: 'center', marginBottom: '16px', fontWeight: '600' }}>
-            Quick Demo Login (Development Only)
-          </div>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px', justifyContent: 'center' }}>
-            <button type="button" onClick={() => fillDemoCredentials('planner@elegantmoments.com')} style={{ padding: '8px 14px', fontSize: '0.8rem', borderRadius: '6px', background: 'transparent', border: '1px solid var(--color-gold)', color: 'var(--color-burgundy)', fontWeight: '500', cursor: 'pointer', transition: 'all 0.2s ease' }} onMouseEnter={(e) => {e.target.style.background = 'rgba(212,175,55,0.1)'}} onMouseLeave={(e) => {e.target.style.background = 'transparent'}}>
-              Planner
-            </button>
-            <button type="button" onClick={() => fillDemoCredentials('vendor@elegantmoments.com')} style={{ padding: '8px 14px', fontSize: '0.8rem', borderRadius: '6px', background: 'transparent', border: '1px solid var(--color-gold)', color: 'var(--color-burgundy)', fontWeight: '500', cursor: 'pointer', transition: 'all 0.2s ease' }} onMouseEnter={(e) => {e.target.style.background = 'rgba(212,175,55,0.1)'}} onMouseLeave={(e) => {e.target.style.background = 'transparent'}}>
-              Vendor
-            </button>
-            <button type="button" onClick={() => fillDemoCredentials('admin@elegantmoments.com')} style={{ padding: '8px 14px', fontSize: '0.8rem', borderRadius: '6px', background: 'transparent', border: '1px solid var(--color-gold)', color: 'var(--color-burgundy)', fontWeight: '500', cursor: 'pointer', transition: 'all 0.2s ease' }} onMouseEnter={(e) => {e.target.style.background = 'rgba(212,175,55,0.1)'}} onMouseLeave={(e) => {e.target.style.background = 'transparent'}}>
-              Admin
-            </button>
-            <button type="button" onClick={() => fillDemoCredentials('superadmin@elegantmoments.com')} style={{ padding: '8px 14px', fontSize: '0.8rem', borderRadius: '6px', background: 'transparent', border: '1px solid var(--color-gold)', color: 'var(--color-burgundy)', fontWeight: '500', cursor: 'pointer', transition: 'all 0.2s ease' }} onMouseEnter={(e) => {e.target.style.background = 'rgba(212,175,55,0.1)'}} onMouseLeave={(e) => {e.target.style.background = 'transparent'}}>
-              Super Admin
-            </button>
-          </div>
         </div>
 
       </div>

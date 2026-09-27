@@ -1,5 +1,18 @@
 [
   {
+    "id": "gst-1790522454725-npg8d",
+    "weddingId": "2ea35bbc-4d2e-45f5-8203-72ade331255b",
+    "name": "Lord & Lady Harrington",
+    "email": "harrington@vip.com",
+    "phone": "",
+    "relationship": "VIP Guest",
+    "rsvpStatus": "NOT_ATTENDING",
+    "guestCount": 2,
+    "notes": "",
+    "createdAt": "2026-09-27T15:20:54.725Z",
+    "updatedAt": "2026-09-27T15:20:54.778Z"
+  },
+  {
     "id": "gst-1790522002620-wz0mt",
     "weddingId": "484bbc46-78ce-413b-8d48-a2cbaf811533",
     "name": "Lord & Lady Harrington",
