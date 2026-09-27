@@ -33,7 +33,7 @@ export const authController = {
       lastName = lastName ? lastName.trim() : '';
       phone = phone ? phone.trim() : '';
 
-      if (password !== confirmPassword) {
+      if (password != confirmPassword) {
         return res.status(400).json({
           success: false,
           message: 'Password and password confirmation do not match.',

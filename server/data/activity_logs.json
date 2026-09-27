@@ -2348,5 +2348,319 @@
     },
     "ipAddress": "unknown",
     "createdAt": "2026-09-26T07:47:31.073Z"
+  },
+  {
+    "id": "log-1790518398182-76e93d",
+    "userId": null,
+    "userEmail": "system",
+    "entityType": "payment",
+    "entityId": "PAY-18398053",
+    "metadata": {
+      "amount": 150,
+      "consultationId": "CON-397952",
+      "gatewayTransactionId": "txn_sbx_test_123"
+    },
+    "ipAddress": "unknown",
+    "createdAt": "2026-09-27T14:13:18.182Z"
+  },
+  {
+    "id": "log-1790518398335-a10f69",
+    "userId": null,
+    "userEmail": "system",
+    "entityType": "payment",
+    "entityId": "PAY-18398296",
+    "metadata": {
+      "reason": "Payment transaction was declined or failed by bank in sandbox mode.",
+      "consultationId": "CON-398250"
+    },
+    "ipAddress": "unknown",
+    "createdAt": "2026-09-27T14:13:18.335Z"
+  },
+  {
+    "id": "log-1790518398702-2812be",
+    "userId": null,
+    "userEmail": "system",
+    "entityType": "payment",
+    "entityId": "PAY-18398532",
+    "metadata": {
+      "reason": "Server-side signature verification failed. Signature does not match.",
+      "consultationId": "CON-398455"
+    },
+    "ipAddress": "unknown",
+    "createdAt": "2026-09-27T14:13:18.703Z"
+  },
+  {
+    "id": "log-1790518404085-63ecd6",
+    "userId": "usr-planner-003",
+    "userEmail": "planner@elegantmoments.com",
+    "action": "PROPOSAL_CREATED",
+    "entityType": "PROPOSAL",
+    "entityId": "03d0388a-c9cd-4607-8b89-6d94592a7d18",
+    "metadata": {
+      "proposalNumber": "PROP-2026-8575",
+      "weddingId": "wed-001",
+      "finalAmount": 8300,
+      "status": "SENT"
+    },
+    "ipAddress": "unknown",
+    "createdAt": "2026-09-27T14:13:24.086Z"
+  },
+  {
+    "id": "log-1790518404169-dfd588",
+    "userId": "usr-client-005",
+    "userEmail": "client@elegantmoments.com",
+    "action": "PROPOSAL_UPDATED",
+    "entityType": "PROPOSAL",
+    "entityId": "03d0388a-c9cd-4607-8b89-6d94592a7d18",
+    "metadata": {
+      "status": "APPROVED",
+      "finalAmount": 8300
+    },
+    "ipAddress": "unknown",
+    "createdAt": "2026-09-27T14:13:24.169Z"
+  },
+  {
+    "id": "log-1790518404177-fd3e87",
+    "userId": "usr-client-005",
+    "userEmail": "client@elegantmoments.com",
+    "action": "PROPOSAL_STATUS_APPROVED",
+    "entityType": "PROPOSAL",
+    "entityId": "03d0388a-c9cd-4607-8b89-6d94592a7d18",
+    "metadata": {
+      "previousStatus": "APPROVED",
+      "newStatus": "APPROVED",
+      "clientFeedback": "Looks exquisite! We are excited to move forward."
+    },
+    "ipAddress": "unknown",
+    "createdAt": "2026-09-27T14:13:24.178Z"
+  },
+  {
+    "id": "log-1790518404248-b8aa0c",
+    "userId": "usr-planner-003",
+    "userEmail": "planner@elegantmoments.com",
+    "action": "BOOKING_CREATED",
+    "entityType": "BOOKING",
+    "entityId": "20aea036-691b-48ff-8281-254caf70bbcf",
+    "metadata": {
+      "bookingNumber": "BK-2026-2325",
+      "weddingId": "wed-001",
+      "totalAmount": 8300,
+      "status": "CONFIRMED"
+    },
+    "ipAddress": "unknown",
+    "createdAt": "2026-09-27T14:13:24.248Z"
+  },
+  {
+    "id": "log-1790518404252-c9d287",
+    "userId": "usr-planner-003",
+    "userEmail": "planner@elegantmoments.com",
+    "action": "BOOKING_CREATED_FROM_PROPOSAL",
+    "entityType": "BOOKING",
+    "entityId": "20aea036-691b-48ff-8281-254caf70bbcf",
+    "metadata": {
+      "proposalId": "03d0388a-c9cd-4607-8b89-6d94592a7d18",
+      "proposalNumber": "PROP-2026-8575"
+    },
+    "ipAddress": "unknown",
+    "createdAt": "2026-09-27T14:13:24.252Z"
+  },
+  {
+    "id": "log-1790518405164-6c2c0a",
+    "userId": null,
+    "userEmail": "system",
+    "entityType": "wedding",
+    "entityId": "495384c7-a5f4-4992-a0c1-53db59cbc618",
+    "metadata": {
+      "clientId": "usr-client-1790518404366-a4c913",
+      "clientName": "OpClientA User"
+    },
+    "ipAddress": "unknown",
+    "createdAt": "2026-09-27T14:13:25.164Z"
+  },
+  {
+    "id": "log-1790518414506-af6843",
+    "userId": null,
+    "userEmail": "system",
+    "entityType": "wedding",
+    "entityId": "4e7e2576-7551-492e-8100-47bc371f7f39",
+    "metadata": {
+      "clientId": "usr-client-proposal-test",
+      "clientName": "Test Client"
+    },
+    "ipAddress": "unknown",
+    "createdAt": "2026-09-27T14:13:34.507Z"
+  },
+  {
+    "id": "log-1790518414601-ca2c3b",
+    "userId": "usr-admin-002",
+    "userEmail": "admin@elegantmoments.com",
+    "action": "PROPOSAL_CREATED",
+    "entityType": "PROPOSAL",
+    "entityId": "996b0e55-6612-4a6f-a653-3b0afc9529ac",
+    "metadata": {
+      "proposalNumber": "PROP-2026-5432",
+      "weddingId": "4e7e2576-7551-492e-8100-47bc371f7f39",
+      "finalAmount": 11700,
+      "status": "DRAFT"
+    },
+    "ipAddress": "unknown",
+    "createdAt": "2026-09-27T14:13:34.601Z"
+  },
+  {
+    "id": "log-1790518693977-fe7f0e",
+    "userId": null,
+    "userEmail": "system",
+    "entityType": "payment",
+    "entityId": "PAY-18693898",
+    "metadata": {
+      "amount": 150,
+      "consultationId": "CON-693857",
+      "gatewayTransactionId": "txn_sbx_test_123"
+    },
+    "ipAddress": "unknown",
+    "createdAt": "2026-09-27T14:18:13.977Z"
+  },
+  {
+    "id": "log-1790518694149-532c48",
+    "userId": null,
+    "userEmail": "system",
+    "entityType": "payment",
+    "entityId": "PAY-18694127",
+    "metadata": {
+      "reason": "Payment transaction was declined or failed by bank in sandbox mode.",
+      "consultationId": "CON-694098"
+    },
+    "ipAddress": "unknown",
+    "createdAt": "2026-09-27T14:18:14.150Z"
+  },
+  {
+    "id": "log-1790518694573-04c0be",
+    "userId": null,
+    "userEmail": "system",
+    "entityType": "payment",
+    "entityId": "PAY-18694428",
+    "metadata": {
+      "reason": "Server-side signature verification failed. Signature does not match.",
+      "consultationId": "CON-694363"
+    },
+    "ipAddress": "unknown",
+    "createdAt": "2026-09-27T14:18:14.573Z"
+  },
+  {
+    "id": "log-1790518700249-9b350f",
+    "userId": "usr-planner-003",
+    "userEmail": "planner@elegantmoments.com",
+    "action": "PROPOSAL_CREATED",
+    "entityType": "PROPOSAL",
+    "entityId": "c4076eb3-b3f8-4c00-aa62-c480100c4816",
+    "metadata": {
+      "proposalNumber": "PROP-2026-3504",
+      "weddingId": "wed-001",
+      "finalAmount": 8300,
+      "status": "SENT"
+    },
+    "ipAddress": "unknown",
+    "createdAt": "2026-09-27T14:18:20.252Z"
+  },
+  {
+    "id": "log-1790518700323-1c68a6",
+    "userId": "usr-client-005",
+    "userEmail": "client@elegantmoments.com",
+    "action": "PROPOSAL_UPDATED",
+    "entityType": "PROPOSAL",
+    "entityId": "c4076eb3-b3f8-4c00-aa62-c480100c4816",
+    "metadata": {
+      "status": "APPROVED",
+      "finalAmount": 8300
+    },
+    "ipAddress": "unknown",
+    "createdAt": "2026-09-27T14:18:20.323Z"
+  },
+  {
+    "id": "log-1790518700327-16146d",
+    "userId": "usr-client-005",
+    "userEmail": "client@elegantmoments.com",
+    "action": "PROPOSAL_STATUS_APPROVED",
+    "entityType": "PROPOSAL",
+    "entityId": "c4076eb3-b3f8-4c00-aa62-c480100c4816",
+    "metadata": {
+      "previousStatus": "APPROVED",
+      "newStatus": "APPROVED",
+      "clientFeedback": "Looks exquisite! We are excited to move forward."
+    },
+    "ipAddress": "unknown",
+    "createdAt": "2026-09-27T14:18:20.327Z"
+  },
+  {
+    "id": "log-1790518700346-94a076",
+    "userId": "usr-planner-003",
+    "userEmail": "planner@elegantmoments.com",
+    "action": "BOOKING_CREATED",
+    "entityType": "BOOKING",
+    "entityId": "d102d268-9f25-4eba-96e7-b05f936955d5",
+    "metadata": {
+      "bookingNumber": "BK-2026-7762",
+      "weddingId": "wed-001",
+      "totalAmount": 8300,
+      "status": "CONFIRMED"
+    },
+    "ipAddress": "unknown",
+    "createdAt": "2026-09-27T14:18:20.346Z"
+  },
+  {
+    "id": "log-1790518700349-b57f49",
+    "userId": "usr-planner-003",
+    "userEmail": "planner@elegantmoments.com",
+    "action": "BOOKING_CREATED_FROM_PROPOSAL",
+    "entityType": "BOOKING",
+    "entityId": "d102d268-9f25-4eba-96e7-b05f936955d5",
+    "metadata": {
+      "proposalId": "c4076eb3-b3f8-4c00-aa62-c480100c4816",
+      "proposalNumber": "PROP-2026-3504"
+    },
+    "ipAddress": "unknown",
+    "createdAt": "2026-09-27T14:18:20.349Z"
+  },
+  {
+    "id": "log-1790518702876-4bb32b",
+    "userId": null,
+    "userEmail": "system",
+    "entityType": "wedding",
+    "entityId": "569b81bd-78b7-4450-9f45-1f1750d3f3a3",
+    "metadata": {
+      "clientId": "usr-client-1790518702110-fcb709",
+      "clientName": "OpClientA User"
+    },
+    "ipAddress": "unknown",
+    "createdAt": "2026-09-27T14:18:22.876Z"
+  },
+  {
+    "id": "log-1790518710514-f7011a",
+    "userId": null,
+    "userEmail": "system",
+    "entityType": "wedding",
+    "entityId": "121a75c4-8229-4da6-86e6-4b8e324558a4",
+    "metadata": {
+      "clientId": "usr-client-proposal-test",
+      "clientName": "Test Client"
+    },
+    "ipAddress": "unknown",
+    "createdAt": "2026-09-27T14:18:30.514Z"
+  },
+  {
+    "id": "log-1790518710544-03507d",
+    "userId": "usr-admin-002",
+    "userEmail": "admin@elegantmoments.com",
+    "action": "PROPOSAL_CREATED",
+    "entityType": "PROPOSAL",
+    "entityId": "7a5c70a8-0ef1-4d87-90fd-cf961f28f79b",
+    "metadata": {
+      "proposalNumber": "PROP-2026-3086",
+      "weddingId": "121a75c4-8229-4da6-86e6-4b8e324558a4",
+      "finalAmount": 11700,
+      "status": "DRAFT"
+    },
+    "ipAddress": "unknown",
+    "createdAt": "2026-09-27T14:18:30.544Z"
   }
 ]

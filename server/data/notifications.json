@@ -1,5 +1,311 @@
 [
   {
+    "id": "notif-1790518708630-8efjh",
+    "userId": null,
+    "email": "dup.notif.1790518708629@test.com",
+    "type": "ENQUIRY_RECEIVED",
+    "channel": "EMAIL",
+    "title": "First Test Notif",
+    "message": "Hello",
+    "reference": "REF-TEST-1790518708629",
+    "status": "SENT",
+    "isRead": false,
+    "extraDetails": {
+      "emailMode": "DEVELOPMENT_SANDBOX"
+    },
+    "sentAt": "2026-09-27T14:18:28.630Z",
+    "createdAt": "2026-09-27T14:18:28.630Z"
+  },
+  {
+    "id": "notif-1790518708608-7c9lo",
+    "userId": null,
+    "email": "notif.consult.1790518708494@test.com",
+    "type": "CONSULTATION_CONFIRMED",
+    "channel": "EMAIL",
+    "title": "[Elegant Moments] Consultation Confirmed - Ref CON-708524",
+    "message": "\n        <div style=\"font-family: Arial, sans-serif; max-width: 600px; color: #2A1810; border: 1px solid #E5D5C5; padding: 24px; background: #FDFBF7;\">\n          <h2 style=\"color: #4A0E17; border-bottom: 2px solid #D4AF37; padding-bottom: 8px;\">ELEGANT MOMENTS</h2>\n          <p>Dear Consultation Notif User,</p>\n          <p>Your private consultation has been successfully booked and confirmed.</p>\n          <ul style=\"line-height: 1.8;\">\n            <li><strong>Consultation Reference:</strong> CON-708524</li>\n            <li><strong>Date:</strong> 2026-10-15</li>\n            <li><strong>Time:</strong> 02:00 PM</li>\n            <li><strong>Meeting Format:</strong> Video Call</li>\n            <li><strong>Payment Status:</strong> UNPAID</li>\n          </ul>\n          <p>We look forward to speaking with you and tailoring your dream celebration.</p>\n          <p style=\"font-size: 0.9rem; color: #666;\">Warmest regards,<br>The Elegant Moments Team</p>\n        </div>\n      ",
+    "reference": "CON-708524",
+    "status": "SENT",
+    "isRead": false,
+    "extraDetails": {
+      "emailMode": "DEVELOPMENT_SANDBOX"
+    },
+    "sentAt": "2026-09-27T14:18:28.621Z",
+    "createdAt": "2026-09-27T14:18:28.621Z"
+  },
+  {
+    "id": "notif-1790518708448-t0gyl",
+    "userId": null,
+    "email": "notif.enquiry.1790518708266@test.com",
+    "type": "ENQUIRY_RECEIVED",
+    "channel": "EMAIL",
+    "title": "[Elegant Moments] Enquiry Received - ENQ-708414",
+    "message": "\n        <div style=\"font-family: Arial, sans-serif; max-width: 600px; color: #2A1810; border: 1px solid #E5D5C5; padding: 24px; background: #FDFBF7;\">\n          <h2 style=\"color: #4A0E17; border-bottom: 2px solid #D4AF37; padding-bottom: 8px;\">ELEGANT MOMENTS</h2>\n          <p>Dear Notification Test User,</p>\n          <p>Thank you for reaching out to Elegant Moments. We have received your celebration enquiry (Ref: <strong>ENQ-708414</strong>).</p>\n          <p>Our senior event design team is reviewing your vision and will get back to you within 24 hours.</p>\n          <div style=\"background: #FAF6F0; padding: 16px; border-left: 4px solid #D4AF37; margin: 16px 0;\">\n            <strong>Expected Next Step:</strong> A dedicated planning consultant will contact you to schedule an initial consultation.\n          </div>\n          <p style=\"font-size: 0.9rem; color: #666;\">Warmest regards,<br>The Elegant Moments Team</p>\n        </div>\n      ",
+    "reference": "ENQ-708414",
+    "status": "SENT",
+    "isRead": false,
+    "extraDetails": {
+      "emailMode": "DEVELOPMENT_SANDBOX"
+    },
+    "sentAt": "2026-09-27T14:18:28.449Z",
+    "createdAt": "2026-09-27T14:18:28.449Z"
+  },
+  {
+    "id": "notif-1790518705316-v9cix",
+    "userId": null,
+    "email": "testclient@example.com",
+    "type": "CONSULTATION_CONFIRMED",
+    "channel": "EMAIL",
+    "title": "[Elegant Moments] Consultation Confirmed - Ref CON-705299",
+    "message": "\n        <div style=\"font-family: Arial, sans-serif; max-width: 600px; color: #2A1810; border: 1px solid #E5D5C5; padding: 24px; background: #FDFBF7;\">\n          <h2 style=\"color: #4A0E17; border-bottom: 2px solid #D4AF37; padding-bottom: 8px;\">ELEGANT MOMENTS</h2>\n          <p>Dear Test Client,</p>\n          <p>Your private consultation has been successfully booked and confirmed.</p>\n          <ul style=\"line-height: 1.8;\">\n            <li><strong>Consultation Reference:</strong> CON-705299</li>\n            <li><strong>Date:</strong> 2027-10-10</li>\n            <li><strong>Time:</strong> 10:00 AM</li>\n            <li><strong>Meeting Format:</strong> Video Call</li>\n            <li><strong>Payment Status:</strong> UNPAID</li>\n          </ul>\n          <p>We look forward to speaking with you and tailoring your dream celebration.</p>\n          <p style=\"font-size: 0.9rem; color: #666;\">Warmest regards,<br>The Elegant Moments Team</p>\n        </div>\n      ",
+    "reference": "CON-705299",
+    "status": "SENT",
+    "isRead": false,
+    "extraDetails": {
+      "emailMode": "DEVELOPMENT_SANDBOX"
+    },
+    "sentAt": "2026-09-27T14:18:25.319Z",
+    "createdAt": "2026-09-27T14:18:25.320Z"
+  },
+  {
+    "id": "notif-1790518705224-yawsz",
+    "userId": null,
+    "email": "testclient@example.com",
+    "type": "ENQUIRY_RECEIVED",
+    "channel": "EMAIL",
+    "title": "[Elegant Moments] Enquiry Received - ENQ-705197",
+    "message": "\n        <div style=\"font-family: Arial, sans-serif; max-width: 600px; color: #2A1810; border: 1px solid #E5D5C5; padding: 24px; background: #FDFBF7;\">\n          <h2 style=\"color: #4A0E17; border-bottom: 2px solid #D4AF37; padding-bottom: 8px;\">ELEGANT MOMENTS</h2>\n          <p>Dear Test Client,</p>\n          <p>Thank you for reaching out to Elegant Moments. We have received your celebration enquiry (Ref: <strong>ENQ-705197</strong>).</p>\n          <p>Our senior event design team is reviewing your vision and will get back to you within 24 hours.</p>\n          <div style=\"background: #FAF6F0; padding: 16px; border-left: 4px solid #D4AF37; margin: 16px 0;\">\n            <strong>Expected Next Step:</strong> A dedicated planning consultant will contact you to schedule an initial consultation.\n          </div>\n          <p style=\"font-size: 0.9rem; color: #666;\">Warmest regards,<br>The Elegant Moments Team</p>\n        </div>\n      ",
+    "reference": "ENQ-705197",
+    "status": "SENT",
+    "isRead": false,
+    "extraDetails": {
+      "emailMode": "DEVELOPMENT_SANDBOX"
+    },
+    "sentAt": "2026-09-27T14:18:25.225Z",
+    "createdAt": "2026-09-27T14:18:25.225Z"
+  },
+  {
+    "id": "notif-1790518694405-j94mw",
+    "userId": "usr-client-1790518693264-0c486b",
+    "email": "client1_1790518692914@example.com",
+    "type": "CONSULTATION_CONFIRMED",
+    "channel": "EMAIL",
+    "title": "[Elegant Moments] Consultation Confirmed - Ref CON-694363",
+    "message": "\n        <div style=\"font-family: Arial, sans-serif; max-width: 600px; color: #2A1810; border: 1px solid #E5D5C5; padding: 24px; background: #FDFBF7;\">\n          <h2 style=\"color: #4A0E17; border-bottom: 2px solid #D4AF37; padding-bottom: 8px;\">ELEGANT MOMENTS</h2>\n          <p>Dear ClientOne M31,</p>\n          <p>Your private consultation has been successfully booked and confirmed.</p>\n          <ul style=\"line-height: 1.8;\">\n            <li><strong>Consultation Reference:</strong> CON-694363</li>\n            <li><strong>Date:</strong> </li>\n            <li><strong>Time:</strong> 10:00 AM</li>\n            <li><strong>Meeting Format:</strong> Video Call</li>\n            <li><strong>Payment Status:</strong> UNPAID</li>\n          </ul>\n          <p>We look forward to speaking with you and tailoring your dream celebration.</p>\n          <p style=\"font-size: 0.9rem; color: #666;\">Warmest regards,<br>The Elegant Moments Team</p>\n        </div>\n      ",
+    "reference": "CON-694363",
+    "status": "SENT",
+    "isRead": false,
+    "extraDetails": {
+      "emailMode": "DEVELOPMENT_SANDBOX"
+    },
+    "sentAt": "2026-09-27T14:18:14.405Z",
+    "createdAt": "2026-09-27T14:18:14.405Z"
+  },
+  {
+    "id": "notif-1790518694199-mgh59",
+    "userId": "usr-client-1790518693264-0c486b",
+    "email": "client1_1790518692914@example.com",
+    "type": "CONSULTATION_CONFIRMED",
+    "channel": "EMAIL",
+    "title": "[Elegant Moments] Consultation Confirmed - Ref CON-694194",
+    "message": "\n        <div style=\"font-family: Arial, sans-serif; max-width: 600px; color: #2A1810; border: 1px solid #E5D5C5; padding: 24px; background: #FDFBF7;\">\n          <h2 style=\"color: #4A0E17; border-bottom: 2px solid #D4AF37; padding-bottom: 8px;\">ELEGANT MOMENTS</h2>\n          <p>Dear ClientOne M31,</p>\n          <p>Your private consultation has been successfully booked and confirmed.</p>\n          <ul style=\"line-height: 1.8;\">\n            <li><strong>Consultation Reference:</strong> CON-694194</li>\n            <li><strong>Date:</strong> 2026-12-10</li>\n            <li><strong>Time:</strong> 11:00 AM</li>\n            <li><strong>Meeting Format:</strong> In Person</li>\n            <li><strong>Payment Status:</strong> UNPAID</li>\n          </ul>\n          <p>We look forward to speaking with you and tailoring your dream celebration.</p>\n          <p style=\"font-size: 0.9rem; color: #666;\">Warmest regards,<br>The Elegant Moments Team</p>\n        </div>\n      ",
+    "reference": "CON-694194",
+    "status": "SENT",
+    "isRead": false,
+    "extraDetails": {
+      "emailMode": "DEVELOPMENT_SANDBOX"
+    },
+    "sentAt": "2026-09-27T14:18:14.199Z",
+    "createdAt": "2026-09-27T14:18:14.199Z"
+  },
+  {
+    "id": "notif-1790518694107-7hlij",
+    "userId": "usr-client-1790518693264-0c486b",
+    "email": "client1_1790518692914@example.com",
+    "type": "CONSULTATION_CONFIRMED",
+    "channel": "EMAIL",
+    "title": "[Elegant Moments] Consultation Confirmed - Ref CON-694098",
+    "message": "\n        <div style=\"font-family: Arial, sans-serif; max-width: 600px; color: #2A1810; border: 1px solid #E5D5C5; padding: 24px; background: #FDFBF7;\">\n          <h2 style=\"color: #4A0E17; border-bottom: 2px solid #D4AF37; padding-bottom: 8px;\">ELEGANT MOMENTS</h2>\n          <p>Dear ClientOne M31,</p>\n          <p>Your private consultation has been successfully booked and confirmed.</p>\n          <ul style=\"line-height: 1.8;\">\n            <li><strong>Consultation Reference:</strong> CON-694098</li>\n            <li><strong>Date:</strong> 2026-12-01</li>\n            <li><strong>Time:</strong> 10:00 AM</li>\n            <li><strong>Meeting Format:</strong> Phone Call</li>\n            <li><strong>Payment Status:</strong> UNPAID</li>\n          </ul>\n          <p>We look forward to speaking with you and tailoring your dream celebration.</p>\n          <p style=\"font-size: 0.9rem; color: #666;\">Warmest regards,<br>The Elegant Moments Team</p>\n        </div>\n      ",
+    "reference": "CON-694098",
+    "status": "SENT",
+    "isRead": false,
+    "extraDetails": {
+      "emailMode": "DEVELOPMENT_SANDBOX"
+    },
+    "sentAt": "2026-09-27T14:18:14.107Z",
+    "createdAt": "2026-09-27T14:18:14.107Z"
+  },
+  {
+    "id": "notif-1790518693873-c1us2",
+    "userId": "usr-client-1790518693264-0c486b",
+    "email": "client1_1790518692914@example.com",
+    "type": "CONSULTATION_CONFIRMED",
+    "channel": "EMAIL",
+    "title": "[Elegant Moments] Consultation Confirmed - Ref CON-693857",
+    "message": "\n        <div style=\"font-family: Arial, sans-serif; max-width: 600px; color: #2A1810; border: 1px solid #E5D5C5; padding: 24px; background: #FDFBF7;\">\n          <h2 style=\"color: #4A0E17; border-bottom: 2px solid #D4AF37; padding-bottom: 8px;\">ELEGANT MOMENTS</h2>\n          <p>Dear ClientOne M31,</p>\n          <p>Your private consultation has been successfully booked and confirmed.</p>\n          <ul style=\"line-height: 1.8;\">\n            <li><strong>Consultation Reference:</strong> CON-693857</li>\n            <li><strong>Date:</strong> 2026-11-15</li>\n            <li><strong>Time:</strong> 02:00 PM</li>\n            <li><strong>Meeting Format:</strong> Video Call</li>\n            <li><strong>Payment Status:</strong> UNPAID</li>\n          </ul>\n          <p>We look forward to speaking with you and tailoring your dream celebration.</p>\n          <p style=\"font-size: 0.9rem; color: #666;\">Warmest regards,<br>The Elegant Moments Team</p>\n        </div>\n      ",
+    "reference": "CON-693857",
+    "status": "SENT",
+    "isRead": false,
+    "extraDetails": {
+      "emailMode": "DEVELOPMENT_SANDBOX"
+    },
+    "sentAt": "2026-09-27T14:18:13.874Z",
+    "createdAt": "2026-09-27T14:18:13.874Z"
+  },
+  {
+    "id": "notif-1790518412113-60l9r",
+    "userId": null,
+    "email": "dup.notif.1790518412113@test.com",
+    "type": "ENQUIRY_RECEIVED",
+    "channel": "EMAIL",
+    "title": "First Test Notif",
+    "message": "Hello",
+    "reference": "REF-TEST-1790518412113",
+    "status": "SENT",
+    "isRead": false,
+    "extraDetails": {
+      "emailMode": "DEVELOPMENT_SANDBOX"
+    },
+    "sentAt": "2026-09-27T14:13:32.114Z",
+    "createdAt": "2026-09-27T14:13:32.114Z"
+  },
+  {
+    "id": "notif-1790518412086-4ocen",
+    "userId": null,
+    "email": "notif.consult.1790518412045@test.com",
+    "type": "CONSULTATION_CONFIRMED",
+    "channel": "EMAIL",
+    "title": "[Elegant Moments] Consultation Confirmed - Ref CON-412066",
+    "message": "\n        <div style=\"font-family: Arial, sans-serif; max-width: 600px; color: #2A1810; border: 1px solid #E5D5C5; padding: 24px; background: #FDFBF7;\">\n          <h2 style=\"color: #4A0E17; border-bottom: 2px solid #D4AF37; padding-bottom: 8px;\">ELEGANT MOMENTS</h2>\n          <p>Dear Consultation Notif User,</p>\n          <p>Your private consultation has been successfully booked and confirmed.</p>\n          <ul style=\"line-height: 1.8;\">\n            <li><strong>Consultation Reference:</strong> CON-412066</li>\n            <li><strong>Date:</strong> 2026-10-15</li>\n            <li><strong>Time:</strong> 02:00 PM</li>\n            <li><strong>Meeting Format:</strong> Video Call</li>\n            <li><strong>Payment Status:</strong> UNPAID</li>\n          </ul>\n          <p>We look forward to speaking with you and tailoring your dream celebration.</p>\n          <p style=\"font-size: 0.9rem; color: #666;\">Warmest regards,<br>The Elegant Moments Team</p>\n        </div>\n      ",
+    "reference": "CON-412066",
+    "status": "SENT",
+    "isRead": false,
+    "extraDetails": {
+      "emailMode": "DEVELOPMENT_SANDBOX"
+    },
+    "sentAt": "2026-09-27T14:13:32.086Z",
+    "createdAt": "2026-09-27T14:13:32.086Z"
+  },
+  {
+    "id": "notif-1790518411993-6xdle",
+    "userId": null,
+    "email": "notif.enquiry.1790518411781@test.com",
+    "type": "ENQUIRY_RECEIVED",
+    "channel": "EMAIL",
+    "title": "[Elegant Moments] Enquiry Received - ENQ-411916",
+    "message": "\n        <div style=\"font-family: Arial, sans-serif; max-width: 600px; color: #2A1810; border: 1px solid #E5D5C5; padding: 24px; background: #FDFBF7;\">\n          <h2 style=\"color: #4A0E17; border-bottom: 2px solid #D4AF37; padding-bottom: 8px;\">ELEGANT MOMENTS</h2>\n          <p>Dear Notification Test User,</p>\n          <p>Thank you for reaching out to Elegant Moments. We have received your celebration enquiry (Ref: <strong>ENQ-411916</strong>).</p>\n          <p>Our senior event design team is reviewing your vision and will get back to you within 24 hours.</p>\n          <div style=\"background: #FAF6F0; padding: 16px; border-left: 4px solid #D4AF37; margin: 16px 0;\">\n            <strong>Expected Next Step:</strong> A dedicated planning consultant will contact you to schedule an initial consultation.\n          </div>\n          <p style=\"font-size: 0.9rem; color: #666;\">Warmest regards,<br>The Elegant Moments Team</p>\n        </div>\n      ",
+    "reference": "ENQ-411916",
+    "status": "SENT",
+    "isRead": false,
+    "extraDetails": {
+      "emailMode": "DEVELOPMENT_SANDBOX"
+    },
+    "sentAt": "2026-09-27T14:13:31.995Z",
+    "createdAt": "2026-09-27T14:13:31.995Z"
+  },
+  {
+    "id": "notif-1790518410965-rdfro",
+    "userId": null,
+    "email": "testclient@example.com",
+    "type": "CONSULTATION_CONFIRMED",
+    "channel": "EMAIL",
+    "title": "[Elegant Moments] Consultation Confirmed - Ref CON-410934",
+    "message": "\n        <div style=\"font-family: Arial, sans-serif; max-width: 600px; color: #2A1810; border: 1px solid #E5D5C5; padding: 24px; background: #FDFBF7;\">\n          <h2 style=\"color: #4A0E17; border-bottom: 2px solid #D4AF37; padding-bottom: 8px;\">ELEGANT MOMENTS</h2>\n          <p>Dear Test Client,</p>\n          <p>Your private consultation has been successfully booked and confirmed.</p>\n          <ul style=\"line-height: 1.8;\">\n            <li><strong>Consultation Reference:</strong> CON-410934</li>\n            <li><strong>Date:</strong> 2027-10-10</li>\n            <li><strong>Time:</strong> 10:00 AM</li>\n            <li><strong>Meeting Format:</strong> Video Call</li>\n            <li><strong>Payment Status:</strong> UNPAID</li>\n          </ul>\n          <p>We look forward to speaking with you and tailoring your dream celebration.</p>\n          <p style=\"font-size: 0.9rem; color: #666;\">Warmest regards,<br>The Elegant Moments Team</p>\n        </div>\n      ",
+    "reference": "CON-410934",
+    "status": "SENT",
+    "isRead": false,
+    "extraDetails": {
+      "emailMode": "DEVELOPMENT_SANDBOX"
+    },
+    "sentAt": "2026-09-27T14:13:30.965Z",
+    "createdAt": "2026-09-27T14:13:30.966Z"
+  },
+  {
+    "id": "notif-1790518410793-24kvd",
+    "userId": null,
+    "email": "testclient@example.com",
+    "type": "ENQUIRY_RECEIVED",
+    "channel": "EMAIL",
+    "title": "[Elegant Moments] Enquiry Received - ENQ-410756",
+    "message": "\n        <div style=\"font-family: Arial, sans-serif; max-width: 600px; color: #2A1810; border: 1px solid #E5D5C5; padding: 24px; background: #FDFBF7;\">\n          <h2 style=\"color: #4A0E17; border-bottom: 2px solid #D4AF37; padding-bottom: 8px;\">ELEGANT MOMENTS</h2>\n          <p>Dear Test Client,</p>\n          <p>Thank you for reaching out to Elegant Moments. We have received your celebration enquiry (Ref: <strong>ENQ-410756</strong>).</p>\n          <p>Our senior event design team is reviewing your vision and will get back to you within 24 hours.</p>\n          <div style=\"background: #FAF6F0; padding: 16px; border-left: 4px solid #D4AF37; margin: 16px 0;\">\n            <strong>Expected Next Step:</strong> A dedicated planning consultant will contact you to schedule an initial consultation.\n          </div>\n          <p style=\"font-size: 0.9rem; color: #666;\">Warmest regards,<br>The Elegant Moments Team</p>\n        </div>\n      ",
+    "reference": "ENQ-410756",
+    "status": "SENT",
+    "isRead": false,
+    "extraDetails": {
+      "emailMode": "DEVELOPMENT_SANDBOX"
+    },
+    "sentAt": "2026-09-27T14:13:30.794Z",
+    "createdAt": "2026-09-27T14:13:30.794Z"
+  },
+  {
+    "id": "notif-1790518398518-448gn",
+    "userId": "usr-client-1790518397498-2d640d",
+    "email": "client1_1790518397224@example.com",
+    "type": "CONSULTATION_CONFIRMED",
+    "channel": "EMAIL",
+    "title": "[Elegant Moments] Consultation Confirmed - Ref CON-398455",
+    "message": "\n        <div style=\"font-family: Arial, sans-serif; max-width: 600px; color: #2A1810; border: 1px solid #E5D5C5; padding: 24px; background: #FDFBF7;\">\n          <h2 style=\"color: #4A0E17; border-bottom: 2px solid #D4AF37; padding-bottom: 8px;\">ELEGANT MOMENTS</h2>\n          <p>Dear ClientOne M31,</p>\n          <p>Your private consultation has been successfully booked and confirmed.</p>\n          <ul style=\"line-height: 1.8;\">\n            <li><strong>Consultation Reference:</strong> CON-398455</li>\n            <li><strong>Date:</strong> </li>\n            <li><strong>Time:</strong> 10:00 AM</li>\n            <li><strong>Meeting Format:</strong> Video Call</li>\n            <li><strong>Payment Status:</strong> UNPAID</li>\n          </ul>\n          <p>We look forward to speaking with you and tailoring your dream celebration.</p>\n          <p style=\"font-size: 0.9rem; color: #666;\">Warmest regards,<br>The Elegant Moments Team</p>\n        </div>\n      ",
+    "reference": "CON-398455",
+    "status": "SENT",
+    "isRead": false,
+    "extraDetails": {
+      "emailMode": "DEVELOPMENT_SANDBOX"
+    },
+    "sentAt": "2026-09-27T14:13:18.518Z",
+    "createdAt": "2026-09-27T14:13:18.518Z"
+  },
+  {
+    "id": "notif-1790518398359-lk67j",
+    "userId": "usr-client-1790518397498-2d640d",
+    "email": "client1_1790518397224@example.com",
+    "type": "CONSULTATION_CONFIRMED",
+    "channel": "EMAIL",
+    "title": "[Elegant Moments] Consultation Confirmed - Ref CON-398352",
+    "message": "\n        <div style=\"font-family: Arial, sans-serif; max-width: 600px; color: #2A1810; border: 1px solid #E5D5C5; padding: 24px; background: #FDFBF7;\">\n          <h2 style=\"color: #4A0E17; border-bottom: 2px solid #D4AF37; padding-bottom: 8px;\">ELEGANT MOMENTS</h2>\n          <p>Dear ClientOne M31,</p>\n          <p>Your private consultation has been successfully booked and confirmed.</p>\n          <ul style=\"line-height: 1.8;\">\n            <li><strong>Consultation Reference:</strong> CON-398352</li>\n            <li><strong>Date:</strong> 2026-12-10</li>\n            <li><strong>Time:</strong> 11:00 AM</li>\n            <li><strong>Meeting Format:</strong> In Person</li>\n            <li><strong>Payment Status:</strong> UNPAID</li>\n          </ul>\n          <p>We look forward to speaking with you and tailoring your dream celebration.</p>\n          <p style=\"font-size: 0.9rem; color: #666;\">Warmest regards,<br>The Elegant Moments Team</p>\n        </div>\n      ",
+    "reference": "CON-398352",
+    "status": "SENT",
+    "isRead": false,
+    "extraDetails": {
+      "emailMode": "DEVELOPMENT_SANDBOX"
+    },
+    "sentAt": "2026-09-27T14:13:18.360Z",
+    "createdAt": "2026-09-27T14:13:18.360Z"
+  },
+  {
+    "id": "notif-1790518398279-utzqz",
+    "userId": "usr-client-1790518397498-2d640d",
+    "email": "client1_1790518397224@example.com",
+    "type": "CONSULTATION_CONFIRMED",
+    "channel": "EMAIL",
+    "title": "[Elegant Moments] Consultation Confirmed - Ref CON-398250",
+    "message": "\n        <div style=\"font-family: Arial, sans-serif; max-width: 600px; color: #2A1810; border: 1px solid #E5D5C5; padding: 24px; background: #FDFBF7;\">\n          <h2 style=\"color: #4A0E17; border-bottom: 2px solid #D4AF37; padding-bottom: 8px;\">ELEGANT MOMENTS</h2>\n          <p>Dear ClientOne M31,</p>\n          <p>Your private consultation has been successfully booked and confirmed.</p>\n          <ul style=\"line-height: 1.8;\">\n            <li><strong>Consultation Reference:</strong> CON-398250</li>\n            <li><strong>Date:</strong> 2026-12-01</li>\n            <li><strong>Time:</strong> 10:00 AM</li>\n            <li><strong>Meeting Format:</strong> Phone Call</li>\n            <li><strong>Payment Status:</strong> UNPAID</li>\n          </ul>\n          <p>We look forward to speaking with you and tailoring your dream celebration.</p>\n          <p style=\"font-size: 0.9rem; color: #666;\">Warmest regards,<br>The Elegant Moments Team</p>\n        </div>\n      ",
+    "reference": "CON-398250",
+    "status": "SENT",
+    "isRead": false,
+    "extraDetails": {
+      "emailMode": "DEVELOPMENT_SANDBOX"
+    },
+    "sentAt": "2026-09-27T14:13:18.280Z",
+    "createdAt": "2026-09-27T14:13:18.280Z"
+  },
+  {
+    "id": "notif-1790518397997-b5bed",
+    "userId": "usr-client-1790518397498-2d640d",
+    "email": "client1_1790518397224@example.com",
+    "type": "CONSULTATION_CONFIRMED",
+    "channel": "EMAIL",
+    "title": "[Elegant Moments] Consultation Confirmed - Ref CON-397952",
+    "message": "\n        <div style=\"font-family: Arial, sans-serif; max-width: 600px; color: #2A1810; border: 1px solid #E5D5C5; padding: 24px; background: #FDFBF7;\">\n          <h2 style=\"color: #4A0E17; border-bottom: 2px solid #D4AF37; padding-bottom: 8px;\">ELEGANT MOMENTS</h2>\n          <p>Dear ClientOne M31,</p>\n          <p>Your private consultation has been successfully booked and confirmed.</p>\n          <ul style=\"line-height: 1.8;\">\n            <li><strong>Consultation Reference:</strong> CON-397952</li>\n            <li><strong>Date:</strong> 2026-11-15</li>\n            <li><strong>Time:</strong> 02:00 PM</li>\n            <li><strong>Meeting Format:</strong> Video Call</li>\n            <li><strong>Payment Status:</strong> UNPAID</li>\n          </ul>\n          <p>We look forward to speaking with you and tailoring your dream celebration.</p>\n          <p style=\"font-size: 0.9rem; color: #666;\">Warmest regards,<br>The Elegant Moments Team</p>\n        </div>\n      ",
+    "reference": "CON-397952",
+    "status": "SENT",
+    "isRead": false,
+    "extraDetails": {
+      "emailMode": "DEVELOPMENT_SANDBOX"
+    },
+    "sentAt": "2026-09-27T14:13:17.998Z",
+    "createdAt": "2026-09-27T14:13:17.998Z"
+  },
+  {
     "id": "notif-1790408848003-nfc6z",
     "userId": null,
     "email": "dup.notif.1790408848003@test.com",

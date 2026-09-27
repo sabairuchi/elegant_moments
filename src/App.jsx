@@ -322,30 +322,45 @@ export default function App() {
           </main>
 
           {/* AI Concierge Trigger Floating Button */}
-          <button
-            onClick={() => setAiWidgetOpen(true)}
-            style={{
-              position: 'fixed',
-              bottom: '24px',
-              right: '24px',
-              backgroundColor: '#4A0E17',
-              color: '#D4AF37',
-              border: '1px solid #D4AF37',
-              borderRadius: '30px',
-              padding: '12px 20px',
-              fontWeight: 'bold',
-              fontSize: '0.82rem',
-              letterSpacing: '1px',
-              boxShadow: '0 8px 24px rgba(0,0,0,0.3)',
-              cursor: 'pointer',
-              zIndex: 9998,
-              display: 'flex',
-              alignItems: 'center',
-              gap: '8px',
-            }}
-          >
-            <span>✨ AI Concierge</span>
-          </button>
+          {!aiWidgetOpen && (
+            <button
+              onClick={() => setAiWidgetOpen(true)}
+              aria-label="Open Elegant AI Concierge"
+              style={{
+                position: 'fixed',
+                bottom: '24px',
+                right: '24px',
+                backgroundColor: '#4A0E17',
+                color: '#D4AF37',
+                border: '1px solid #D4AF37',
+                borderRadius: '30px',
+                padding: '12px 22px',
+                fontWeight: '600',
+                fontSize: '0.82rem',
+                letterSpacing: '0.1em',
+                boxShadow: '0 8px 25px rgba(74, 14, 23, 0.35)',
+                cursor: 'pointer',
+                zIndex: 9998,
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                transition: 'all 0.3s ease',
+                fontFamily: 'var(--font-sans)',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = '#D4AF37';
+                e.currentTarget.style.color = '#4A0E17';
+                e.currentTarget.style.transform = 'translateY(-2px)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = '#4A0E17';
+                e.currentTarget.style.color = '#D4AF37';
+                e.currentTarget.style.transform = 'none';
+              }}
+            >
+              <span>✨ Elegant AI Concierge</span>
+            </button>
+          )}
 
           <AiAssistantModal isOpen={aiWidgetOpen} onClose={() => setAiWidgetOpen(false)} />
 
